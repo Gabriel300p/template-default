@@ -90,6 +90,67 @@ class GitHubClient {
   }
 
   /**
+   * Obtém arquivos alterados no contexto do GitHub Actions
+   * Usa git diff para detectar mudanças entre commits
+   */
+  async getChangedFiles(ref = 'HEAD~1') {
+    try {
+      // Se estivermos em um ambiente local, usar a API do GitHub
+      if (!process.env.GITHUB_ACTIONS) {
+        console.log('🔍 Ambiente local: usando API do GitHub para obter últimos commits');
+        await this.ensureConfigLoaded();
+        const { owner, name } = this.config.repository;
+        
+        // Obter últimos commits
+        const { data: commits } = await this.octokit.repos.listCommits({
+          owner,
+          repo: name,
+          per_page: 2
+        });
+        
+        if (commits.length < 2) {
+          console.log('⚠️ Menos de 2 commits disponíveis, retornando lista vazia');
+          return [];
+        }
+        
+        // Comparar o último commit com o anterior
+        const latestSha = commits[0].sha;
+        const previousSha = commits[1].sha;
+        
+        const { data: comparison } = await this.octokit.repos.compareCommits({
+          owner,
+          repo: name,
+          base: previousSha,
+          head: latestSha
+        });
+        
+        return comparison.files.map(file => file.filename);
+      }
+      
+      // Se estivermos no GitHub Actions, usar git diretamente
+      console.log('🔍 GitHub Actions: usando git diff');
+      const { execSync } = require('child_process');
+      
+      try {
+        const gitOutput = execSync(`git diff --name-only ${ref} HEAD`, { 
+          encoding: 'utf8',
+          cwd: process.cwd()
+        });
+        
+        return gitOutput.trim().split('\n').filter(file => file.length > 0);
+      } catch (gitError) {
+        console.log('⚠️ git diff falhou, tentando últimos commits via API');
+        // Fallback para API se git falhar
+        return this.getChangedFiles(); // Recursão sem ref para usar API
+      }
+      
+    } catch (error) {
+      console.error('❌ Erro ao obter arquivos alterados:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Obtém conteúdo de um arquivo
    */
   async getFileContent(filePath, ref = 'main') {

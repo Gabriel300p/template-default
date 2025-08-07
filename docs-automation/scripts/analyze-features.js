@@ -12,9 +12,20 @@ const GitHubClient = require('./utils/github-client');
 const FeatureAnalyzer = require('./utils/feature-analyzer');
 
 class FeatureDocumentationGenerator {
-  constructor() {
-    this.openai = new OpenAIClient();
-    this.github = new GitHubClient();
+  constructor(options = {}) {
+    this.debugMode = options.debug || process.env.DEBUG_MODE === 'true';
+    this.skipOpenAI = options.skipOpenAI || process.env.OPENAI_API_KEY === 'test_key_for_local_testing';
+    this.skipGitHub = options.skipGitHub || process.env.TOKEN_GITHUB === 'test_token_for_local_testing';
+    
+    if (this.debugMode) {
+      console.log('🐛 Modo DEBUG ativado');
+      console.log(`   Skip OpenAI: ${this.skipOpenAI}`);
+      console.log(`   Skip GitHub: ${this.skipGitHub}`);
+    }
+    
+    // Inicializar clientes apenas se não estivermos pulando
+    this.openai = this.skipOpenAI ? null : new OpenAIClient();
+    this.github = this.skipGitHub ? null : new GitHubClient();
     this.featureAnalyzer = new FeatureAnalyzer();
     
     this.stats = {
@@ -77,6 +88,11 @@ class FeatureDocumentationGenerator {
    * Detecta features que foram alteradas baseado nos arquivos modificados
    */
   async detectChangedFeatures() {
+    if (this.skipGitHub) {
+      console.log('🐛 DEBUG: Simulando features alteradas');
+      return ['auth']; // Feature de teste
+    }
+    
     const changedFiles = await this.github.getChangedFiles();
     const features = new Set();
     
@@ -95,7 +111,13 @@ class FeatureDocumentationGenerator {
    * Analisa uma feature específica
    */
   async analyzeFeature(featureName) {
-    const featurePath = path.join(process.cwd(), 'frontend/src/features', featureName);
+    // Navegar para o diretório raiz do projeto (dois níveis acima de scripts)
+    const projectRoot = path.join(__dirname, '../..');
+    const featurePath = path.join(projectRoot, 'frontend/src/features', featureName);
+    
+    if (this.debugMode) {
+      console.log(`🐛 DEBUG: Caminho da feature: ${featurePath}`);
+    }
     
     // 1. Obter estrutura da feature
     const featureStructure = await this.featureAnalyzer.analyzeFeatureStructure(featurePath);
@@ -121,6 +143,16 @@ class FeatureDocumentationGenerator {
       path.join(__dirname, '../templates/feature-documentation.md'), 
       'utf-8'
     );
+
+    if (this.skipOpenAI) {
+      console.log(`🐛 DEBUG: Simulando geração de documentação para: ${featureName}`);
+      const mockResponse = {
+        content: `Documentação simulada da feature ${featureName}. Esta feature contém componentes, hooks e páginas relacionadas à ${featureName}.`,
+        usage: { total_tokens: 100 }
+      };
+      
+      return this.populateTemplate(template, featureName, mockResponse.content, structure);
+    }
 
     const prompt = this.buildFeatureAnalysisPrompt(featureName, structure, files);
     
@@ -215,6 +247,14 @@ features/${structure.name}/
    * Atualiza páginas da Wiki
    */
   async updateWikiPages(featureDocs) {
+    if (this.skipGitHub) {
+      console.log('🐛 DEBUG: Simulando atualização da Wiki');
+      return featureDocs.map(doc => ({
+        page: `Feature-${doc.name}`,
+        result: { success: true, message: 'Simulado' }
+      }));
+    }
+    
     const updates = [];
     
     for (const featureDoc of featureDocs) {
@@ -237,6 +277,11 @@ features/${structure.name}/
    * Atualiza a página índice das features
    */
   async updateFeatureIndex(featureDocs) {
+    if (this.skipGitHub) {
+      console.log('🐛 DEBUG: Simulando atualização do índice de features');
+      return;
+    }
+    
     const indexContent = this.generateFeatureIndex(featureDocs);
     await this.github.updateWikiPage('Features-Index', indexContent);
   }
