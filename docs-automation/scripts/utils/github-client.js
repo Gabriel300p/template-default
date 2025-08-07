@@ -4,12 +4,15 @@ const path = require('path');
 
 class GitHubClient {
   constructor() {
-    if (!process.env.TOKEN_GITHUB) {
-      throw new Error('TOKEN_GITHUB environment variable is required');
+    // Aceita TOKEN_GITHUB ou GITHUB_TOKEN (padrão do GitHub Actions)
+    const token = process.env.TOKEN_GITHUB || process.env.GITHUB_TOKEN;
+    
+    if (!token) {
+      throw new Error('TOKEN_GITHUB or GITHUB_TOKEN environment variable is required');
     }
     
     this.octokit = new Octokit({
-      auth: process.env.TOKEN_GITHUB,
+      auth: token,
     });
     
     // Configuração será carregada na primeira chamada
