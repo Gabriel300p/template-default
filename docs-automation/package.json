@@ -1,0 +1,26 @@
+{
+  "name": "docs-automation-features",
+  "version": "1.0.0",
+  "description": "Sistema de documentação automática de features",
+  "main": "scripts/analyze-features.js",
+  "scripts": {
+    "analyze": "node scripts/analyze-features.js",
+    "analyze:dev": "node scripts/analyze-features.js --dev"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "dotenv": "^17.2.1",
+    "openai": "^4.0.0"
+  },
+  "keywords": [
+    "documentation",
+    "features",
+    "automation",
+    "wiki"
+  ],
+  "author": "Gabriel (Sistema de Documentação de Features)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

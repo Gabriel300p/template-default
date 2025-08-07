@@ -1,0 +1,143 @@
+name: 📚 Documentação de Features
+
+on:
+  # Dispara apenas em mudanças nas features
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'frontend/src/features/**'
+  
+  # Permite execução manual
+  workflow_dispatch:
+    inputs:
+      feature:
+        description: 'Feature específica para documentar (opcional)'
+        required: false
+        type: string
+
+# Permissões necessárias
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  document-features:
+    name: 📝 Documentar Features
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+      - name: 🔍 Debug - Workflow iniciado
+        run: |
+          echo "✅ Documentação de Features iniciada!"
+          echo "📊 Informações:"
+          echo "   - Event: ${{ github.event_name }}"
+          echo "   - Branch: ${{ github.ref_name }}"
+          echo "   - Repository: ${{ github.repository }}"
+
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TOKEN_GITHUB }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 📦 Instalar dependências
+        working-directory: ./docs-automation
+        run: |
+          echo "🔄 Instalando dependências da documentação..."
+          npm ci --no-audit --no-fund --progress=false || npm install --no-audit --no-fund --progress=false
+          echo "✅ Dependências instaladas!"
+
+      - name: 🔍 Verificar variáveis de ambiente
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        run: |
+          echo "🔐 Verificando configurações..."
+          
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "❌ OPENAI_API_KEY não configurada"
+            exit 1
+          fi
+          echo "✅ OpenAI API Key configurada (${#OPENAI_API_KEY} chars)"
+          
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "❌ TOKEN_GITHUB não configurado"
+            exit 1
+          fi
+          echo "✅ GitHub Token configurado (${#GITHUB_TOKEN} chars)"
+
+      - name: 📊 Detectar features alteradas
+        id: detect-features
+        run: |
+          echo "🔍 Analisando arquivos alterados..."
+          
+          # Obter arquivos alterados (últimos 2 commits para capturar merge)
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          echo "Arquivos alterados:"
+          echo "$CHANGED_FILES"
+          
+          # Filtrar apenas features
+          FEATURE_CHANGES=$(echo "$CHANGED_FILES" | grep "frontend/src/features/" | cut -d'/' -f4 | sort | uniq)
+          
+          if [ -z "$FEATURE_CHANGES" ]; then
+            echo "ℹ️ Nenhuma feature alterada detectada"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "📋 Features alteradas detectadas:"
+            echo "$FEATURE_CHANGES"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "features<<EOF" >> $GITHUB_OUTPUT
+            echo "$FEATURE_CHANGES" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🎯 Gerar documentação das features
+        if: steps.detect-features.outputs.has_changes == 'true'
+        working-directory: ./docs-automation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          MANUAL_FEATURE: ${{ github.event.inputs.feature }}
+        run: |
+          echo "🚀 Gerando documentação das features..."
+          node scripts/analyze-features.js
+
+      - name: 📊 Resumo da execução
+        if: always()
+        run: |
+          echo "## 📚 Documentação de Features" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.detect-features.outputs.has_changes }}" = "true" ]; then
+            echo "✅ **Features documentadas:**" >> $GITHUB_STEP_SUMMARY
+            echo '${{ steps.detect-features.outputs.features }}' | while read feature; do
+              if [ -n "$feature" ]; then
+                echo "- 📄 [$feature](../../wiki/Feature-$feature)" >> $GITHUB_STEP_SUMMARY
+              fi
+            done
+          else
+            echo "ℹ️ Nenhuma feature alterada neste commit" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Links:**" >> $GITHUB_STEP_SUMMARY
+          echo "- [📚 Wiki](../../wiki)" >> $GITHUB_STEP_SUMMARY
+          echo "- [🎯 Índice de Features](../../wiki/Features-Index)" >> $GITHUB_STEP_SUMMARY
+
+      - name: 🗂️ Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: feature-docs-logs-${{ github.run_number }}
+          path: docs-automation/logs/
+          retention-days: 7
+          if-no-files-found: ignore
