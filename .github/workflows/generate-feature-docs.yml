@@ -3,15 +3,15 @@ name: 📚 Documentação de Features
 on:
   # Dispara apenas em mudanças nas features
   push:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
     paths:
-      - 'frontend/src/features/**'
-  
+      - "frontend/src/features/**"
+
   # Permite execução manual
   workflow_dispatch:
     inputs:
       feature:
-        description: 'Feature específica para documentar (opcional)'
+        description: "Feature específica para documentar (opcional)"
         required: false
         type: string
 
@@ -26,7 +26,7 @@ jobs:
     name: 📝 Documentar Features
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     steps:
       - name: 🔍 Debug - Workflow iniciado
         run: |
@@ -45,8 +45,8 @@ jobs:
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "18"
+          registry-url: "https://registry.npmjs.org"
 
       - name: 📦 Instalar dependências
         working-directory: ./docs-automation
@@ -61,13 +61,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
         run: |
           echo "🔐 Verificando configurações..."
-          
+
           if [ -z "$OPENAI_API_KEY" ]; then
             echo "❌ OPENAI_API_KEY não configurada"
             exit 1
           fi
           echo "✅ OpenAI API Key configurada (${#OPENAI_API_KEY} chars)"
-          
+
           if [ -z "$GITHUB_TOKEN" ]; then
             echo "❌ TOKEN_GITHUB não configurado"
             exit 1
@@ -78,15 +78,15 @@ jobs:
         id: detect-features
         run: |
           echo "🔍 Analisando arquivos alterados..."
-          
+
           # Obter arquivos alterados (últimos 2 commits para capturar merge)
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
           echo "Arquivos alterados:"
           echo "$CHANGED_FILES"
-          
+
           # Filtrar apenas features
           FEATURE_CHANGES=$(echo "$CHANGED_FILES" | grep "frontend/src/features/" | cut -d'/' -f4 | sort | uniq)
-          
+
           if [ -z "$FEATURE_CHANGES" ]; then
             echo "ℹ️ Nenhuma feature alterada detectada"
             echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -116,7 +116,7 @@ jobs:
         run: |
           echo "## 📚 Documentação de Features" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ steps.detect-features.outputs.has_changes }}" = "true" ]; then
             echo "✅ **Features documentadas:**" >> $GITHUB_STEP_SUMMARY
             echo '${{ steps.detect-features.outputs.features }}' | while read feature; do
@@ -127,7 +127,7 @@ jobs:
           else
             echo "ℹ️ Nenhuma feature alterada neste commit" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "🔗 **Links:**" >> $GITHUB_STEP_SUMMARY
           echo "- [📚 Wiki](../../wiki)" >> $GITHUB_STEP_SUMMARY

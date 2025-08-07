@@ -1,20 +1,22 @@
-const { Octokit } = require('@octokit/rest');
-const fs = require('fs').promises;
-const path = require('path');
+const { Octokit } = require("@octokit/rest");
+const fs = require("fs").promises;
+const path = require("path");
 
 class GitHubClient {
   constructor() {
     // Aceita TOKEN_GITHUB ou GITHUB_TOKEN (padrão do GitHub Actions)
     const token = process.env.TOKEN_GITHUB || process.env.GITHUB_TOKEN;
-    
+
     if (!token) {
-      throw new Error('TOKEN_GITHUB or GITHUB_TOKEN environment variable is required');
+      throw new Error(
+        "TOKEN_GITHUB or GITHUB_TOKEN environment variable is required"
+      );
     }
-    
+
     this.octokit = new Octokit({
       auth: token,
     });
-    
+
     // Configuração será carregada na primeira chamada
     this.config = null;
     this.configLoaded = false;
@@ -29,11 +31,11 @@ class GitHubClient {
 
   async loadProjectConfig() {
     try {
-      const configPath = path.join(__dirname, '../../config/project.json');
-      const configContent = await fs.readFile(configPath, 'utf8');
+      const configPath = path.join(__dirname, "../../config/project.json");
+      const configContent = await fs.readFile(configPath, "utf8");
       this.config = JSON.parse(configContent);
     } catch (error) {
-      console.error('Erro ao carregar configuração do projeto:', error);
+      console.error("Erro ao carregar configuração do projeto:", error);
       throw error;
     }
   }
@@ -44,7 +46,7 @@ class GitHubClient {
   async getModifiedFiles(prNumber = null, sha = null) {
     try {
       const { owner, name } = this.config.repository;
-      
+
       if (prNumber) {
         // Arquivos de um Pull Request
         const { data } = await this.octokit.pulls.listFiles({
@@ -52,17 +54,17 @@ class GitHubClient {
           repo: name,
           pull_number: prNumber,
         });
-        
-        return data.map(file => ({
+
+        return data.map((file) => ({
           filename: file.filename,
           status: file.status,
           patch: file.patch,
           additions: file.additions,
           deletions: file.deletions,
-          changes: file.changes
+          changes: file.changes,
         }));
       }
-      
+
       if (sha) {
         // Arquivos de um commit específico
         const { data } = await this.octokit.repos.getCommit({
@@ -70,21 +72,20 @@ class GitHubClient {
           repo: name,
           ref: sha,
         });
-        
-        return data.files.map(file => ({
+
+        return data.files.map((file) => ({
           filename: file.filename,
           status: file.status,
           patch: file.patch,
           additions: file.additions,
           deletions: file.deletions,
-          changes: file.changes
+          changes: file.changes,
         }));
       }
-      
-      throw new Error('Deve fornecer prNumber ou sha');
-      
+
+      throw new Error("Deve fornecer prNumber ou sha");
     } catch (error) {
-      console.error('Erro ao obter arquivos modificados:', error);
+      console.error("Erro ao obter arquivos modificados:", error);
       throw error;
     }
   }
@@ -93,59 +94,65 @@ class GitHubClient {
    * Obtém arquivos alterados no contexto do GitHub Actions
    * Usa git diff para detectar mudanças entre commits
    */
-  async getChangedFiles(ref = 'HEAD~1') {
+  async getChangedFiles(ref = "HEAD~1") {
     try {
       // Se estivermos em um ambiente local, usar a API do GitHub
       if (!process.env.GITHUB_ACTIONS) {
-        console.log('🔍 Ambiente local: usando API do GitHub para obter últimos commits');
+        console.log(
+          "🔍 Ambiente local: usando API do GitHub para obter últimos commits"
+        );
         await this.ensureConfigLoaded();
         const { owner, name } = this.config.repository;
-        
+
         // Obter últimos commits
         const { data: commits } = await this.octokit.repos.listCommits({
           owner,
           repo: name,
-          per_page: 2
+          per_page: 2,
         });
-        
+
         if (commits.length < 2) {
-          console.log('⚠️ Menos de 2 commits disponíveis, retornando lista vazia');
+          console.log(
+            "⚠️ Menos de 2 commits disponíveis, retornando lista vazia"
+          );
           return [];
         }
-        
+
         // Comparar o último commit com o anterior
         const latestSha = commits[0].sha;
         const previousSha = commits[1].sha;
-        
+
         const { data: comparison } = await this.octokit.repos.compareCommits({
           owner,
           repo: name,
           base: previousSha,
-          head: latestSha
+          head: latestSha,
         });
-        
-        return comparison.files.map(file => file.filename);
+
+        return comparison.files.map((file) => file.filename);
       }
-      
+
       // Se estivermos no GitHub Actions, usar git diretamente
-      console.log('🔍 GitHub Actions: usando git diff');
-      const { execSync } = require('child_process');
-      
+      console.log("🔍 GitHub Actions: usando git diff");
+      const { execSync } = require("child_process");
+
       try {
-        const gitOutput = execSync(`git diff --name-only ${ref} HEAD`, { 
-          encoding: 'utf8',
-          cwd: process.cwd()
+        const gitOutput = execSync(`git diff --name-only ${ref} HEAD`, {
+          encoding: "utf8",
+          cwd: process.cwd(),
         });
-        
-        return gitOutput.trim().split('\n').filter(file => file.length > 0);
+
+        return gitOutput
+          .trim()
+          .split("\n")
+          .filter((file) => file.length > 0);
       } catch (gitError) {
-        console.log('⚠️ git diff falhou, tentando últimos commits via API');
+        console.log("⚠️ git diff falhou, tentando últimos commits via API");
         // Fallback para API se git falhar
         return this.getChangedFiles(); // Recursão sem ref para usar API
       }
-      
     } catch (error) {
-      console.error('❌ Erro ao obter arquivos alterados:', error);
+      console.error("❌ Erro ao obter arquivos alterados:", error);
       throw error;
     }
   }
@@ -153,38 +160,37 @@ class GitHubClient {
   /**
    * Obtém conteúdo de um arquivo
    */
-  async getFileContent(filePath, ref = 'main') {
+  async getFileContent(filePath, ref = "main") {
     try {
       const { owner, name } = this.config.repository;
-      
+
       const { data } = await this.octokit.repos.getContent({
         owner,
         repo: name,
         path: filePath,
-        ref
+        ref,
       });
-      
-      if (data.type !== 'file') {
+
+      if (data.type !== "file") {
         throw new Error(`${filePath} não é um arquivo`);
       }
-      
+
       // Decodifica o conteúdo base64
-      const content = Buffer.from(data.content, 'base64').toString('utf-8');
-      
+      const content = Buffer.from(data.content, "base64").toString("utf-8");
+
       return {
         path: filePath,
         content,
         sha: data.sha,
         size: data.size,
-        encoding: data.encoding
+        encoding: data.encoding,
       };
-      
     } catch (error) {
       if (error.status === 404) {
         console.warn(`Arquivo não encontrado: ${filePath}`);
         return null;
       }
-      
+
       console.error(`Erro ao obter conteúdo do arquivo ${filePath}:`, error);
       throw error;
     }
@@ -196,29 +202,30 @@ class GitHubClient {
   async filterRelevantFiles(files) {
     await this.ensureConfigLoaded();
     const { include, exclude } = this.config.file_patterns;
-    
+
     console.log(`🔍 Filtrando ${files.length} arquivos...`);
-    
-    return files.filter(file => {
+
+    return files.filter((file) => {
       // Compatibilidade: string direta ou objeto com filename/path
-      const filename = typeof file === 'string' ? file : (file.filename || file.path);
-      
+      const filename =
+        typeof file === "string" ? file : file.filename || file.path;
+
       // Verifica exclusões
-      const isExcluded = exclude.some(pattern => {
+      const isExcluded = exclude.some((pattern) => {
         const regex = this.globToRegex(pattern);
         return regex.test(filename);
       });
-      
+
       if (isExcluded) return false;
-      
+
       // Verifica inclusões
-      const isIncluded = include.some(pattern => {
+      const isIncluded = include.some((pattern) => {
         const regex = this.globToRegex(pattern);
         const match = regex.test(filename);
         if (match) console.log(`     ✅ Incluído: ${filename}`);
         return match;
       });
-      
+
       return isIncluded;
     });
   }
@@ -228,22 +235,20 @@ class GitHubClient {
    */
   globToRegex(pattern) {
     // Primeira etapa: processar chaves
-    let step1 = pattern
-      .replace(/\{([^}]+)\}/g, '($1)')
-      .replace(/,/g, '|');
-    
+    let step1 = pattern.replace(/\{([^}]+)\}/g, "($1)").replace(/,/g, "|");
+
     // Segunda etapa: processar wildcards (** DEVE vir antes de *)
     let step2 = step1
-      .replace(/\*\*/g, '___DOUBLE_STAR___')  // Placeholder temporário
-      .replace(/\*/g, '[^/]*')                // * simples
-      .replace(/___DOUBLE_STAR___/g, '.*')    // ** duplo
-      .replace(/\?/g, '[^/]');               // ?
-    
+      .replace(/\*\*/g, "___DOUBLE_STAR___") // Placeholder temporário
+      .replace(/\*/g, "[^/]*") // * simples
+      .replace(/___DOUBLE_STAR___/g, ".*") // ** duplo
+      .replace(/\?/g, "[^/]"); // ?
+
     // Terceira etapa: escapar pontos (mas não mexer no .* que veio do **)
-    let step3 = step2.replace(/\.(?!\*)/g, '\\.');
-    
+    let step3 = step2.replace(/\.(?!\*)/g, "\\.");
+
     const regex = new RegExp(`^${step3}$`);
-    
+
     return regex;
   }
 
@@ -254,12 +259,12 @@ class GitHubClient {
     try {
       await this.ensureConfigLoaded();
       const { owner, name } = this.config.repository;
-      
+
       const { data } = await this.octokit.repos.get({
         owner,
         repo: name,
       });
-      
+
       return {
         name: data.name,
         fullName: data.full_name,
@@ -268,11 +273,10 @@ class GitHubClient {
         language: data.language,
         topics: data.topics,
         createdAt: data.created_at,
-        updatedAt: data.updated_at
+        updatedAt: data.updated_at,
       };
-      
     } catch (error) {
-      console.error('Erro ao obter informações do repositório:', error);
+      console.error("Erro ao obter informações do repositório:", error);
       throw error;
     }
   }
@@ -283,25 +287,27 @@ class GitHubClient {
   async createIssue(title, body, labels = []) {
     try {
       const { owner, name } = this.config.repository;
-      
+
       const { data } = await this.octokit.issues.create({
         owner,
         repo: name,
         title,
         body,
-        labels: [...labels, this.config.documentation.issue_labels['auto-generated']]
+        labels: [
+          ...labels,
+          this.config.documentation.issue_labels["auto-generated"],
+        ],
       });
-      
+
       console.log(`✅ Issue criada: #${data.number} - ${title}`);
-      
+
       return {
         number: data.number,
         url: data.html_url,
-        title: data.title
+        title: data.title,
       };
-      
     } catch (error) {
-      console.error('Erro ao criar issue:', error);
+      console.error("Erro ao criar issue:", error);
       throw error;
     }
   }
@@ -312,36 +318,35 @@ class GitHubClient {
   async updateWikiPage(pageName, content, commitMessage = null) {
     try {
       const { owner, name } = this.config.repository;
-      
+
       // Nome do repositório wiki
       const wikiRepo = `${name}.wiki`;
-      
+
       // Sanitiza o nome da página
       const sanitizedPageName = this.sanitizeWikiPageName(pageName);
       const fileName = `${sanitizedPageName}.md`;
-      
+
       const message = commitMessage || `📚 Atualização automática: ${pageName}`;
-      
+
       try {
         // Tenta obter o arquivo existente
         const { data: existingFile } = await this.octokit.repos.getContent({
           owner,
           repo: wikiRepo,
-          path: fileName
+          path: fileName,
         });
-        
+
         // Atualiza arquivo existente
         await this.octokit.repos.createOrUpdateFileContents({
           owner,
           repo: wikiRepo,
           path: fileName,
           message,
-          content: Buffer.from(content).toString('base64'),
-          sha: existingFile.sha
+          content: Buffer.from(content).toString("base64"),
+          sha: existingFile.sha,
         });
-        
+
         console.log(`📝 Wiki atualizada: ${pageName}`);
-        
       } catch (error) {
         if (error.status === 404) {
           // Cria novo arquivo
@@ -350,21 +355,20 @@ class GitHubClient {
             repo: wikiRepo,
             path: fileName,
             message,
-            content: Buffer.from(content).toString('base64')
+            content: Buffer.from(content).toString("base64"),
           });
-          
+
           console.log(`📝 Nova página wiki criada: ${pageName}`);
         } else {
           throw error;
         }
       }
-      
+
       return {
         pageName: sanitizedPageName,
         fileName,
-        url: `https://github.com/${owner}/${name}/wiki/${sanitizedPageName}`
+        url: `https://github.com/${owner}/${name}/wiki/${sanitizedPageName}`,
       };
-      
     } catch (error) {
       console.error(`Erro ao atualizar wiki page ${pageName}:`, error);
       throw error;
@@ -376,10 +380,10 @@ class GitHubClient {
    */
   sanitizeWikiPageName(name) {
     return name
-      .replace(/[^a-zA-Z0-9-_\s]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
+      .replace(/[^a-zA-Z0-9-_\s]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
   }
 
   /**
@@ -388,13 +392,13 @@ class GitHubClient {
   async getPullRequestInfo(prNumber) {
     try {
       const { owner, name } = this.config.repository;
-      
+
       const { data } = await this.octokit.pulls.get({
         owner,
         repo: name,
-        pull_number: prNumber
+        pull_number: prNumber,
       });
-      
+
       return {
         number: data.number,
         title: data.title,
@@ -404,9 +408,8 @@ class GitHubClient {
         headBranch: data.head.ref,
         state: data.state,
         createdAt: data.created_at,
-        updatedAt: data.updated_at
+        updatedAt: data.updated_at,
       };
-      
     } catch (error) {
       console.error(`Erro ao obter informações do PR ${prNumber}:`, error);
       throw error;
@@ -419,20 +422,19 @@ class GitHubClient {
   async listBranches() {
     try {
       const { owner, name } = this.config.repository;
-      
+
       const { data } = await this.octokit.repos.listBranches({
         owner,
-        repo: name
+        repo: name,
       });
-      
-      return data.map(branch => ({
+
+      return data.map((branch) => ({
         name: branch.name,
         sha: branch.commit.sha,
-        protected: branch.protected
+        protected: branch.protected,
       }));
-      
     } catch (error) {
-      console.error('Erro ao listar branches:', error);
+      console.error("Erro ao listar branches:", error);
       throw error;
     }
   }
@@ -440,33 +442,32 @@ class GitHubClient {
   /**
    * Obtém todos os arquivos do repositório recursivamente
    */
-  async getAllRepositoryFiles(path = '') {
+  async getAllRepositoryFiles(path = "") {
     try {
       await this.ensureConfigLoaded();
       const { owner, name } = this.config.repository;
-      
-      console.log(`📂 Explorando: ${path || 'raiz'}`);
-      
+
+      console.log(`📂 Explorando: ${path || "raiz"}`);
+
       const { data } = await this.octokit.repos.getContent({
         owner,
         repo: name,
-        path
+        path,
       });
-      
+
       const files = [];
-      
+
       for (const item of data) {
-        if (item.type === 'file') {
+        if (item.type === "file") {
           files.push(item.path);
-        } else if (item.type === 'dir') {
+        } else if (item.type === "dir") {
           // Recursão para subdiretórios
           const subFiles = await this.getAllRepositoryFiles(item.path);
           files.push(...subFiles);
         }
       }
-      
+
       return files;
-      
     } catch (error) {
       console.error(`Erro ao obter arquivos de ${path}:`, error.message);
       throw error;

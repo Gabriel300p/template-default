@@ -7,10 +7,12 @@ Sistema automatizado para gerar documentação de features React/TypeScript na W
 ## 🚀 Como Funciona
 
 ### Trigger Automático
+
 - ✅ **Push na main** com alterações em `frontend/src/features/**`
 - ✅ **Execução manual** via GitHub Actions
 
 ### Processo de Documentação
+
 1. 🔍 **Detecta features alteradas** baseado nos arquivos modificados
 2. 📊 **Analisa estrutura** (components, hooks, pages, services, schemas)
 3. 🤖 **Gera documentação** usando OpenAI com contexto da feature
@@ -38,7 +40,7 @@ docs-automation/
 Cada feature gera uma página wiki com:
 
 - 📋 **Visão Geral**: Propósito e funcionalidades
-- 🎨 **Interface**: Componentes e fluxo de navegação  
+- 🎨 **Interface**: Componentes e fluxo de navegação
 - ⚙️ **Implementação**: Estrutura técnica e dependências
 - 📊 **Dados**: Schemas, types e gerenciamento de estado
 - 🔌 **Integrações**: APIs e serviços utilizados
@@ -49,12 +51,14 @@ Cada feature gera uma página wiki com:
 ## 🔧 Configuração
 
 ### Secrets Necessárias
+
 - `OPENAI_API_KEY`: Chave da OpenAI
 - `TOKEN_GITHUB`: Token para acesso à Wiki
 
 ### Execução Manual
+
 1. Acesse **Actions** no GitHub
-2. Selecione "📚 Documentação de Features"  
+2. Selecione "📚 Documentação de Features"
 3. Clique "Run workflow"
 4. Opcionalmente especifique uma feature
 
@@ -65,7 +69,7 @@ Para a feature `comunicacoes`:
 ```
 frontend/src/features/comunicacoes/
 ├── components/     # 5 arquivos
-├── hooks/         # 3 arquivos  
+├── hooks/         # 3 arquivos
 ├── pages/         # 1 arquivo
 ├── services/      # 2 arquivos
 ├── schemas/       # 1 arquivo
@@ -76,18 +80,18 @@ frontend/src/features/comunicacoes/
 
 ## 🆚 vs Sistema Legacy
 
-| Aspecto | Features (Novo) | Legacy (Backup) |
-|---------|----------------|-----------------|
-| **Foco** | Features específicas | Projeto completo |
-| **Trigger** | Apenas features alteradas | Qualquer alteração |
-| **Performance** | ~2-3 min | ~10-15 min |
-| **Saída** | Wiki organizada | Wiki + Issues |
-| **Manutenção** | Automática por feature | Manual |
+| Aspecto         | Features (Novo)           | Legacy (Backup)    |
+| --------------- | ------------------------- | ------------------ |
+| **Foco**        | Features específicas      | Projeto completo   |
+| **Trigger**     | Apenas features alteradas | Qualquer alteração |
+| **Performance** | ~2-3 min                  | ~10-15 min         |
+| **Saída**       | Wiki organizada           | Wiki + Issues      |
+| **Manutenção**  | Automática por feature    | Manual             |
 
 ## 🎯 Roadmap
 
 - [ ] **Detecção de dependências** entre features
-- [ ] **Geração de diagramas** de fluxo automática  
+- [ ] **Geração de diagramas** de fluxo automática
 - [ ] **Análise de performance** por feature
 - [ ] **Integração com Storybook** para componentes
 - [ ] **Métricas de uso** das features
@@ -95,18 +99,22 @@ frontend/src/features/comunicacoes/
 ## 🐛 Troubleshooting
 
 ### Feature não documentada
+
 - Verifique se há alterações em `frontend/src/features/[nome]/`
 - Confirme que o workflow foi executado
 - Verifique logs nos Artifacts
 
 ### Erro de IA
+
 - Confirme OPENAI_API_KEY
 - Arquivo muito grande (>2000 chars é truncado)
 - Rate limit da OpenAI
 
-### Erro de Wiki  
+### Erro de Wiki
+
 - Confirme TOKEN_GITHUB com permissões de wiki
 - Verifique se repository tem wiki habilitada
 
 ---
-*Sistema criado reutilizando e otimizando o código existente*
+
+_Sistema criado reutilizando e otimizando o código existente_
