@@ -1,4 +1,4 @@
-name: 🤖 Generate Documentation
+name: 🤖 Gerar Documentação
 
 on:
   # Dispara em Pull Requests para branches principais  
@@ -13,8 +13,10 @@ on:
       - 'frontend/**'
       - 'backend/**'
       - 'mobile/**'
+      - 'automation/**'
       - '**.md'
       - '**.json'
+      - '.github/workflows/**'
   
   # Permite execução manual
   workflow_dispatch:
@@ -32,9 +34,10 @@ on:
 
 # Permissões necessárias
 permissions:
-  contents: read
+  contents: write
   issues: write
   pull-requests: write
+  actions: read
 
 jobs:
   generate-docs:
@@ -43,7 +46,17 @@ jobs:
     timeout-minutes: 15
     
     steps:
-      - name: 📥 Checkout código
+      - name: � Debug - Workflow iniciado
+        run: |
+          echo "✅ Workflow executando com sucesso!"
+          echo "📊 Informações do ambiente:"
+          echo "   - Runner OS: ${{ runner.os }}"
+          echo "   - GitHub Event: ${{ github.event_name }}"
+          echo "   - Branch: ${{ github.ref_name }}"
+          echo "   - Repository: ${{ github.repository }}"
+          echo "   - Timestamp: $(date)"
+
+      - name: �📥 Checkout código
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -58,16 +71,19 @@ jobs:
       - name: 🧹 Limpar cache do npm
         run: npm cache clean --force
 
-      - name: 📦 Instalar dependências (com retry)
+      - name: 📦 Instalar dependências
         working-directory: ./automation
         run: |
-          echo "🔄 Tentativa 1 de instalação..."
-          npm ci --prefer-offline=false --no-audit --progress=false || {
-            echo "❌ Falha na tentativa 1, limpando e tentando novamente..."
+          echo "🔄 Instalando dependências..."
+          if npm ci --no-audit --progress=false; then
+            echo "✅ Dependências instaladas com npm ci"
+          else
+            echo "⚠️ npm ci falhou, tentando npm install..."
             rm -rf node_modules package-lock.json
             npm cache clean --force
-            npm install --no-package-lock --no-audit --progress=false
-          }
+            npm install --no-audit --progress=false
+            echo "✅ Dependências instaladas com npm install"
+          fi
 
       - name: 🔍 Verificar variáveis de ambiente
         env:
