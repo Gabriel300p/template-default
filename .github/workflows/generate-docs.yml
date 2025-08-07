@@ -75,15 +75,24 @@ jobs:
         working-directory: ./automation
         run: |
           echo "🔄 Instalando dependências..."
-          if npm ci --no-audit --progress=false; then
-            echo "✅ Dependências instaladas com npm ci"
-          else
-            echo "⚠️ npm ci falhou, tentando npm install..."
+          echo "📁 Verificando arquivos:"
+          ls -la
+          echo "📄 Conteúdo do package.json:"
+          cat package.json | grep -A 10 '"scripts":'
+          
+          echo "🧹 Limpando cache..."
+          npm cache clean --force --loglevel=error 2>/dev/null || true
+          
+          echo "🚀 Tentando npm ci..."
+          npm ci --no-audit --no-fund --progress=false || {
+            echo "⚠️ npm ci falhou, usando npm install..."
             rm -rf node_modules package-lock.json
-            npm cache clean --force
-            npm install --no-audit --progress=false
-            echo "✅ Dependências instaladas com npm install"
-          fi
+            npm install --no-audit --no-fund --progress=false
+          }
+          
+          echo "✅ Dependências instaladas com sucesso!"
+          echo "📦 Verificando instalação:"
+          ls -la node_modules/ | head -5
 
       - name: 🔍 Verificar variáveis de ambiente
         env:
