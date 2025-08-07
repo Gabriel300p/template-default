@@ -1,0 +1,48 @@
+{
+  "name": "automation-docs",
+  "version": "1.0.0",
+  "description": "Sistema de automação de documentação inteligente",
+  "main": "scripts/analyze-code.js",
+  "bin": {
+    "analyze-code": "./scripts/analyze-code.js"
+  },
+  "scripts": {
+    "setup": "node scripts/setup-wizard.js",
+    "analyze": "node scripts/analyze-code.js",
+    "analyze:test": "node scripts/analyze-code.js --test",
+    "wiki:update": "node scripts/generate-wiki.js",
+    "install": "npm install",
+    "postinstall": "echo '✅ Sistema de documentação configurado! Execute: npm run setup'"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.0.2",
+    "dotenv": "^17.2.1",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "keywords": [
+    "documentation",
+    "automation",
+    "openai",
+    "github",
+    "wiki",
+    "ai"
+  ],
+  "author": "Gabriel (Sistema de Documentação Inteligente)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gabriel300p/default"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ]
+}

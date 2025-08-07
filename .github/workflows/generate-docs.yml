@@ -1,0 +1,221 @@
+name: 🤖 Generate Documentation
+
+on:
+  # Dispara em Pull Requests para branches principais  
+  pull_request:
+    branches: [ main, master, develop ]
+    types: [opened, synchronize, reopened]
+  
+  # Dispara em pushes para branch principal
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'mobile/**'
+      - '**.md'
+      - '**.json'
+  
+  # Permite execução manual
+  workflow_dispatch:
+    inputs:
+      analysis_type:
+        description: 'Tipo de análise'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - technical
+        - user
+        - executive
+
+# Permissões necessárias
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  generate-docs:
+    name: 📚 Gerar Documentação
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.TOKEN_GITHUB }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'automation/package-lock.json'
+
+      - name: 📦 Instalar dependências
+        working-directory: ./automation
+        run: npm ci
+
+      - name: 🔍 Verificar variáveis de ambiente
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+        run: |
+          echo "🔐 Verificando configurações..."
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "❌ OPENAI_API_KEY não configurada"
+            exit 1
+          fi
+          echo "✅ OpenAI API Key configurada"
+          
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "❌ GITHUB_TOKEN não configurado"
+            exit 1
+          fi
+          echo "✅ GitHub Token configurado"
+          
+          echo "📊 Contexto do evento:"
+          echo "   Evento: ${{ github.event_name }}"
+          echo "   Branch: ${{ github.ref_name }}"
+          echo "   Repository: ${{ github.repository }}"
+
+      - name: 🤖 Executar análise de código
+        working-directory: ./automation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          echo "🚀 Iniciando análise..."
+          node scripts/analyze-code.js
+        
+      - name: 📊 Resumo da execução
+        if: always()
+        run: |
+          echo "## 📋 Resumo da Execução" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "automation/logs/analysis-*.json" ]; then
+            LATEST_LOG=$(ls -t automation/logs/analysis-*.json | head -1)
+            echo "📈 **Estatísticas:**" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`json" >> $GITHUB_STEP_SUMMARY
+            cat "$LATEST_LOG" | jq '.stats' >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Nenhum log de análise encontrado" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Links Úteis:**" >> $GITHUB_STEP_SUMMARY
+          echo "- [📚 Wiki do Projeto](../../wiki)" >> $GITHUB_STEP_SUMMARY
+          echo "- [📋 Issues](../../issues)" >> $GITHUB_STEP_SUMMARY
+          echo "- [🤖 Workflows](../../actions)" >> $GITHUB_STEP_SUMMARY
+
+      - name: 💬 Comentar no PR (se aplicável)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Procurar pelo log mais recente
+            const logsDir = path.join(process.cwd(), 'automation/logs');
+            let logContent = null;
+            
+            try {
+              const logFiles = fs.readdirSync(logsDir)
+                .filter(file => file.startsWith('analysis-') && file.endsWith('.json'))
+                .sort()
+                .reverse();
+              
+              if (logFiles.length > 0) {
+                const latestLog = path.join(logsDir, logFiles[0]);
+                logContent = JSON.parse(fs.readFileSync(latestLog, 'utf8'));
+              }
+            } catch (error) {
+              console.log('Não foi possível ler logs:', error.message);
+            }
+            
+            const commentBody = `## 🤖 Documentação Atualizada
+            
+            A documentação foi atualizada automaticamente baseada nas mudanças deste PR.
+            
+            ### 📊 Estatísticas
+            ${logContent ? `
+            - **Arquivos analisados**: ${logContent.stats.processedFiles}
+            - **Total de tokens**: ${logContent.stats.totalTokens}
+            - **Custo estimado**: $${logContent.stats.totalCost.toFixed(4)}
+            ` : '- Estatísticas não disponíveis'}
+            
+            ### 🔗 Links da Documentação
+            - [📚 Documentação Técnica](../../wiki/📚-Documentação-Técnica)
+            - [👥 Guia do Usuário](../../wiki/👥-Guia-do-Usuário)
+            - [📈 Resumo Executivo](../../wiki/📈-Resumo-Executivo)
+            
+            ### 📋 Próximos Passos
+            - [ ] Revisar documentação gerada
+            - [ ] Validar precisão das informações
+            - [ ] Considerar feedback da equipe
+            
+            ---
+            *Gerado automaticamente pelo Sistema de Documentação Inteligente*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
+
+      - name: 🗂️ Fazer upload dos logs (para debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analysis-logs-${{ github.run_number }}
+          path: automation/logs/
+          retention-days: 30
+          if-no-files-found: ignore
+
+  # Job adicional para verificar saúde do sistema
+  health-check:
+    name: 🏥 Health Check
+    runs-on: ubuntu-latest
+    needs: generate-docs
+    if: always()
+    
+    steps:
+      - name: 📈 Verificar status do sistema
+        run: |
+          echo "## 🏥 Health Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ needs.generate-docs.result }}" == "success" ]; then
+            echo "✅ **Sistema funcionando corretamente**" >> $GITHUB_STEP_SUMMARY
+            echo "- Análise de código: ✅" >> $GITHUB_STEP_SUMMARY
+            echo "- Geração de documentação: ✅" >> $GITHUB_STEP_SUMMARY
+            echo "- Atualização do Wiki: ✅" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Sistema com problemas**" >> $GITHUB_STEP_SUMMARY
+            echo "- Status: ${{ needs.generate-docs.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Verificar logs para mais detalhes" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 **Métricas:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Trigger: ${{ github.event_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: 📧 Notificar sobre falhas (opcional)
+        if: failure()
+        run: |
+          echo "🚨 Sistema de documentação apresentou falhas!"
+          echo "Verificar logs e configurações."
+          # Aqui poderia adicionar notificação via email, Slack, etc.

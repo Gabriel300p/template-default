@@ -1,0 +1,73 @@
+{
+  "name": "Centro Educacional Alfa",
+  "description": "Sistema de gestão educacional moderno e escalável",
+  "main_branch": "main",
+  "repository": {
+    "owner": "Gabriel300p",
+    "name": "default"
+  },
+  "stack": {
+    "frontend": ["react", "typescript", "vite", "tailwindcss"],
+    "backend": ["nodejs", "supabase", "prisma"],
+    "mobile": ["react-native"],
+    "deployment": ["vercel", "github-actions"]
+  },
+  "documentation": {
+    "wiki_enabled": false,
+    "issue_labels": {
+      "documentation": "📚 documentation",
+      "auto-generated": "🤖 auto-generated",
+      "technical": "🔧 technical",
+      "user-guide": "👥 user-guide",
+      "executive": "📈 executive"
+    }
+  },
+  "ai": {
+    "model": "gpt-3.5-turbo",
+    "max_tokens": 2000,
+    "temperature": 0.3
+  },
+  "triggers": {
+    "pull_request": true,
+    "push_to_main": true,
+    "manual": true
+  },
+  "file_patterns": {
+    "include": [
+      "**/*.{ts,tsx,js,jsx}",
+      "**/*.{py,go,java,cs}",
+      "**/*.{md,mdx}",
+      "**/package.json",
+      "**/README.md",
+      "**/*.sql",
+      "**/*.prisma"
+    ],
+    "exclude": [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/build/**",
+      "**/*.min.js",
+      "**/coverage/**",
+      "**/.git/**"
+    ]
+  },
+  "output": {
+    "wiki": {
+      "enabled": true,
+      "structure": {
+        "technical": "📚-Documentação-Técnica",
+        "user": "👥-Guia-do-Usuário", 
+        "executive": "📈-Resumo-Executivo"
+      }
+    },
+    "issues": {
+      "enabled": true,
+      "template": "documentation-update"
+    }
+  },
+  "extensions": {
+    "n8n_ready": true,
+    "webhooks_ready": true,
+    "multi_repo": true
+  }
+}

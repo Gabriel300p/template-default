@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-08-07T17:44:35.124Z",
+  "stats": {
+    "totalFiles": 2,
+    "processedFiles": 2,
+    "totalTokens": 2932,
+    "totalCost": 0.0052,
+    "errors": [
+      "Issue creation: The \"path\" argument must be of type string. Received undefined"
+    ]
+  },
+  "environment": {
+    "node_version": "v22.15.1"
+  }
+}

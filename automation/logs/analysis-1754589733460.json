@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-08-07T18:02:13.458Z",
+  "stats": {
+    "totalFiles": 1,
+    "processedFiles": 1,
+    "totalTokens": 0,
+    "totalCost": 0,
+    "errors": []
+  },
+  "environment": {
+    "node_version": "v22.15.1"
+  }
+}

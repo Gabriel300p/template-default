@@ -1,0 +1,30 @@
+{
+  "technical": {
+    "system_prompt": "Você é um especialista em documentação técnica. Analise o código fornecido e gere documentação clara, precisa e bem estruturada para desenvolvedores.",
+    "prompts": {
+      "component_analysis": "Analise este componente {{file_type}} e gere documentação técnica completa:\n\n**Arquivo:** {{file_path}}\n**Tipo:** {{file_type}}\n**Linguagem:** {{language}}\n\n**Código:**\n```{{language}}\n{{file_content}}\n```\n\n**Gere documentação seguindo esta estrutura:**\n\n# {{file_name}}\n\n## 📋 Visão Geral\n[Descrição clara do propósito e responsabilidade]\n\n## 🔧 Funcionalidades\n[Lista das principais funcionalidades implementadas]\n\n## 📦 Dependências\n[Imports e dependências externas]\n\n## 🚀 Como Usar\n[Exemplos práticos de uso]\n\n## ⚙️ Configurações\n[Parâmetros e configurações disponíveis]\n\n## 🔍 Detalhes Técnicos\n[Implementação, algoritmos, padrões utilizados]\n\n## 🧪 Testes\n[Como testar este componente]\n\n## 📝 Notas\n[Observações importantes, limitações, TODOs]",
+
+      "api_analysis": "Analise esta API/endpoint e documente:\n\n**Arquivo:** {{file_path}}\n**Código:**\n```{{language}}\n{{file_content}}\n```\n\n**Gere documentação de API:**\n\n# {{file_name}}\n\n## 🌐 Endpoints\n[Lista de endpoints disponíveis]\n\n## 📋 Parâmetros\n[Parâmetros de entrada, tipos, validações]\n\n## 📤 Respostas\n[Formato das respostas, códigos de status]\n\n## 🔒 Autenticação\n[Métodos de autenticação necessários]\n\n## 📊 Exemplos\n[Exemplos de requests/responses]\n\n## ⚠️ Tratamento de Erros\n[Como a API lida com erros]",
+
+      "database_analysis": "Analise este schema/modelo de banco de dados:\n\n**Arquivo:** {{file_path}}\n**Código:**\n```{{language}}\n{{file_content}}\n```\n\n**Gere documentação do banco:**\n\n# {{file_name}}\n\n## 📊 Estrutura\n[Tabelas, campos, tipos de dados]\n\n## 🔗 Relacionamentos\n[Foreign keys, associações]\n\n## 📋 Regras de Negócio\n[Validações, constraints, triggers]\n\n## 🚀 Queries Comuns\n[Exemplos de queries típicas]\n\n## 🔧 Migrações\n[Como aplicar mudanças no schema]"
+    }
+  },
+
+  "user": {
+    "system_prompt": "Você é um especialista em experiência do usuário e documentação de produto. Transforme informações técnicas em guias práticos e acessíveis para usuários finais.",
+    "prompts": {
+      "feature_guide": "Com base neste código, gere um guia do usuário:\n\n**Funcionalidade:** {{file_name}}\n**Código:**\n```{{language}}\n{{file_content}}\n```\n\n**Gere guia seguindo esta estrutura:**\n\n# Como Usar: {{feature_name}}\n\n## 🎯 O que esta funcionalidade faz\n[Explicação clara em linguagem simples]\n\n## 📋 Passo a Passo\n[Tutorial detalhado com screenshots se aplicável]\n\n## ✅ Exemplos Práticos\n[Casos de uso reais]\n\n## ❓ Perguntas Frequentes\n[Dúvidas comuns e respostas]\n\n## ⚠️ Dicas Importantes\n[Coisas para prestar atenção]\n\n## 🆘 Resolução de Problemas\n[Como resolver problemas comuns]",
+
+      "workflow_guide": "Documente este workflow/processo para usuários:\n\n**Processo:** {{file_name}}\n**Código:**\n```{{language}}\n{{file_content}}\n```\n\n**Gere documentação de processo:**\n\n# Processo: {{workflow_name}}\n\n## 🎯 Objetivo\n[O que este processo alcança]\n\n## 👥 Quem Usa\n[Perfis de usuário que utilizam]\n\n## 📊 Fluxo do Processo\n[Diagrama/descrição do fluxo]\n\n## 📋 Checklist\n[Lista de verificação passo a passo]\n\n## 📱 Onde Encontrar\n[Como acessar no sistema]\n\n## 🎓 Treinamento\n[Recursos para aprender mais]"
+    }
+  },
+
+  "executive": {
+    "system_prompt": "Você é um consultor de negócios especializado em tecnologia. Transforme informações técnicas em insights de alto nível para executivos e tomadores de decisão.",
+    "prompts": {
+      "impact_analysis": "Analise o impacto de negócio destas mudanças:\n\n**Arquivos modificados:**\n{{file_list}}\n\n**Mudanças principais:**\n{{changes_summary}}\n\n**Gere análise executiva:**\n\n# Relatório Executivo - {{date}}\n\n## 📊 Resumo das Mudanças\n[Visão geral do que foi desenvolvido]\n\n## 💼 Impacto no Negócio\n[Como isso afeta operações, usuários, receita]\n\n## 📈 Métricas Esperadas\n[KPIs que podem ser impactados]\n\n## 💰 Valor Entregue\n[ROI, eficiência, redução de custos]\n\n## ⚠️ Riscos e Mitigações\n[Possíveis problemas e como prevenir]\n\n## 🎯 Próximos Passos\n[Recomendações estratégicas]",
+
+      "quality_report": "Gere relatório de qualidade baseado na análise do código:\n\n**Métricas de código:**\n{{code_metrics}}\n\n**Arquivos analisados:**\n{{file_count}}\n\n**Gere relatório de qualidade:**\n\n# Relatório de Qualidade - {{project_name}}\n\n## 📊 Visão Geral\n[Status geral do projeto]\n\n## 🏗️ Arquitetura\n[Avaliação da estrutura técnica]\n\n## 📋 Boas Práticas\n[Aderência a padrões de qualidade]\n\n## 🧪 Cobertura de Testes\n[Status dos testes automatizados]\n\n## 📈 Tendências\n[Evolução da qualidade ao longo do tempo]\n\n## 🎯 Recomendações\n[Ações para melhoria contínua]"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+# Automation Documentation System
+
+## 🎯 Overview
+
+Automated documentation generation system using AI and GitHub integration.
+
+## 🏗️ Structure
+
+- **scripts/**: Main automation scripts
+- **config/**: Configuration files
+- **templates/**: Documentation templates
+- **.github/workflows/**: GitHub Actions workflows
+
+## 🚀 Quick Start
+
+1. Configure API keys in GitHub Secrets
+2. Install dependencies: `npm install`
+3. Test: `npm run analyze:test`
+4. Create PR to trigger automation
+
+## 📚 Documentation
+
+- [Setup Guide](SETUP.md) - Complete configuration guide
+- [Project Config](config/project.json) - Project-specific settings
+- [AI Prompts](config/prompts.json) - AI generation prompts
+
+## 🔧 Scripts
+
+- `analyze-code.js` - Main analysis script
+- `utils/openai-client.js` - OpenAI API client
+- `utils/github-client.js` - GitHub API client
+- `utils/templates.js` - Documentation templates
+
+## ⚙️ Configuration
+
+Key files:
+- `project.json` - Project metadata and settings
+- `prompts.json` - AI prompt templates
+- `package.json` - Dependencies and scripts
+
+## 🤖 AI Integration
+
+Uses OpenAI GPT-3.5-turbo for:
+- Technical documentation
+- User guides
+- Executive reports
+
+## 📊 Features
+
+- Automatic trigger on PRs
+- Multi-level documentation
+- GitHub Wiki integration
+- Cost tracking
+- Error handling
+
+## 🔄 Future: N8N Migration
+
+Architecture ready for N8N:
+- Modular scripts
+- Centralized config
+- Standard APIs
+- Structured logs
+
+---
+
+*Generated documentation system - ready to scale*
