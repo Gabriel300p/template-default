@@ -40,6 +40,7 @@ jobs:
   generate-docs:
     name: 📚 Gerar Documentação
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: 📥 Checkout código
@@ -52,12 +53,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: 'automation/package-lock.json'
+          registry-url: 'https://registry.npmjs.org'
 
-      - name: 📦 Instalar dependências
+      - name: 🧹 Limpar cache do npm
+        run: npm cache clean --force
+
+      - name: 📦 Instalar dependências (com retry)
         working-directory: ./automation
-        run: npm ci
+        run: |
+          echo "🔄 Tentativa 1 de instalação..."
+          npm ci --prefer-offline=false --no-audit --progress=false || {
+            echo "❌ Falha na tentativa 1, limpando e tentando novamente..."
+            rm -rf node_modules package-lock.json
+            npm cache clean --force
+            npm install --no-package-lock --no-audit --progress=false
+          }
 
       - name: 🔍 Verificar variáveis de ambiente
         env:
@@ -65,22 +75,29 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
         run: |
           echo "🔐 Verificando configurações..."
+          
           if [ -z "$OPENAI_API_KEY" ]; then
             echo "❌ OPENAI_API_KEY não configurada"
+            echo "📝 Configure em: Settings → Secrets and variables → Actions"
             exit 1
           fi
-          echo "✅ OpenAI API Key configurada"
+          echo "✅ OpenAI API Key configurada (${#OPENAI_API_KEY} caracteres)"
           
           if [ -z "$GITHUB_TOKEN" ]; then
-            echo "❌ GITHUB_TOKEN não configurado"
+            echo "❌ TOKEN_GITHUB não configurado" 
+            echo "📝 Configure em: Settings → Secrets and variables → Actions"
             exit 1
           fi
-          echo "✅ GitHub Token configurado"
+          echo "✅ GitHub Token configurado (${#GITHUB_TOKEN} caracteres)"
           
           echo "📊 Contexto do evento:"
           echo "   Evento: ${{ github.event_name }}"
           echo "   Branch: ${{ github.ref_name }}"
           echo "   Repository: ${{ github.repository }}"
+          echo "   Working Directory: $(pwd)"
+          
+          echo "📁 Verificando estrutura de arquivos:"
+          ls -la automation/ || echo "❌ Pasta automation não encontrada"
 
       - name: 🤖 Executar análise de código
         working-directory: ./automation
