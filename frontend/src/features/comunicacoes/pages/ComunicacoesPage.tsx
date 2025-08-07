@@ -1,12 +1,12 @@
 import { EmptyState } from "@shared/components/common/EmptyState";
-import { FilterToolbarSkeleton } from "@shared/components/filters/FilterSkeletons";
+// import { FilterToolbarSkeleton } from "@shared/components/filters/FilterSkeletons";
 import { PlusCircleIcon } from "@shared/components/icons";
 import { Button } from "@shared/components/ui/button";
 import Divider from "@shared/components/ui/divider";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo } from "react";
 import {
-  ComunicacoesToolbar,
+  // ComunicacoesToolbar,
   createColumns,
   DataTable,
   ModalComunicacao,
@@ -45,10 +45,10 @@ export default function ComunicacoesPage() {
   }, [comunicacoes, filterComunicacoes]);
 
   // Extract unique autores for filter
-  const autores = useMemo(() => {
-    const uniqueAutores = Array.from(new Set(comunicacoes.map((c) => c.autor)));
-    return uniqueAutores.sort();
-  }, [comunicacoes]);
+  // const autores = useMemo(() => {
+  //   const uniqueAutores = Array.from(new Set(comunicacoes.map((c) => c.autor)));
+  //   return uniqueAutores.sort();
+  // }, [comunicacoes]);
 
   // Determine what to show
   const shouldShowEmptyState = !isLoading && comunicacoes.length === 0;
@@ -113,7 +113,7 @@ export default function ComunicacoesPage() {
           <span className="text-primary text-sm font-medium underline">
             Acessos
           </span>
-          <h1 className="text-2xl font-bold text-gray-900">Comunicações</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Comunicações 2</h1>
         </div>
         <Button
           onClick={openAddModal}
@@ -128,7 +128,7 @@ export default function ComunicacoesPage() {
       {/* Content */}
       <div className="space-y-4">
         {/* Filters Toolbar */}
-        <AnimatePresence mode="wait">
+        {/* <AnimatePresence mode="wait">
           {isLoading ? (
             <FilterToolbarSkeleton />
           ) : (
@@ -143,7 +143,7 @@ export default function ComunicacoesPage() {
               />
             </motion.div>
           )}
-        </AnimatePresence>
+        </AnimatePresence> */}
 
         {/* Content - Table or Empty States */}
         <AnimatePresence mode="wait">
