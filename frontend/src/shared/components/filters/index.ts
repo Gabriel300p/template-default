@@ -1,5 +1,6 @@
 // 🎯 Filter Components Exports
 export { DatePickerImproved } from "./DatePickerImproved";
+export { ModernCalendar } from "./ModernCalendar";
 export { DateRangeFilter } from "./DateRangeFilter";
 export { Filter } from "./Filter";
 export { FilterToolbar } from "./FilterToolbar";

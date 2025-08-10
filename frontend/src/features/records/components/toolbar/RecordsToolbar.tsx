@@ -1,5 +1,5 @@
 import {
-  DatePickerImproved,
+  ModernCalendar,
   Filter,
   FilterToolbar,
   TextFilter,
@@ -105,12 +105,15 @@ export function RecordsToolbar({ autores, totalCount }: RecordsToolbarProps) {
           />
         )}
 
-        {/* Date range filter */}
-        <DatePickerImproved
+        {/* Modern Date range filter */}
+        <ModernCalendar
           title={t("filters.createdAt")}
           value={filters.dateRange}
           onChange={setDateRange}
           icon={<CalendarIcon className="h-4 w-4" />}
+          variant="default"
+          showPresets={true}
+          showClearButton={true}
         />
       </FilterToolbar>
     </div>
