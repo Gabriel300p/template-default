@@ -34,22 +34,22 @@ export function ComunicacoesToolbar({
   const tipoOptions: FilterOption[] = useMemo(
     () => [
       {
-    label: t("form.types.comunicado"),
+        label: t("form.types.comunicado"),
         value: "Comunicado",
         icon: <FilterIcon className="h-4 w-4 text-blue-500" />,
       },
       {
-    label: t("form.types.aviso"),
+        label: t("form.types.aviso"),
         value: "Aviso",
         icon: <FilterIcon className="h-4 w-4 text-yellow-500" />,
       },
       {
-    label: t("form.types.noticia"),
+        label: t("form.types.noticia"),
         value: "Notícia",
         icon: <FilterIcon className="h-4 w-4 text-green-500" />,
       },
     ],
-  [t],
+    [t],
   );
 
   // 🎯 Autor options from data

@@ -3,9 +3,9 @@
  * Data management hook for the generic records feature
  */
 import { useToast } from "@shared/hooks";
-import { useTranslation } from "react-i18next";
+import { createAppError, ErrorHandler, ErrorTypes } from "@shared/lib/errors";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ErrorHandler, createAppError, ErrorTypes } from "@shared/lib/errors";
+import { useTranslation } from "react-i18next";
 import type { RecordForm } from "../schemas/record.schemas";
 import {
   createRecord,
@@ -17,11 +17,13 @@ import {
 // Generic query keys for records
 const RECORD_QUERY_KEYS = {
   records: {
-    all: ['records'] as const,
-    lists: () => [...RECORD_QUERY_KEYS.records.all, 'list'] as const,
-    list: (filters: unknown) => [...RECORD_QUERY_KEYS.records.lists(), { filters }] as const,
-    details: () => [...RECORD_QUERY_KEYS.records.all, 'detail'] as const,
-    detail: (id: string) => [...RECORD_QUERY_KEYS.records.details(), id] as const,
+    all: ["records"] as const,
+    lists: () => [...RECORD_QUERY_KEYS.records.all, "list"] as const,
+    list: (filters: unknown) =>
+      [...RECORD_QUERY_KEYS.records.lists(), { filters }] as const,
+    details: () => [...RECORD_QUERY_KEYS.records.all, "detail"] as const,
+    detail: (id: string) =>
+      [...RECORD_QUERY_KEYS.records.details(), id] as const,
   },
 };
 
@@ -30,7 +32,7 @@ export function useRecords() {
   const { success } = useToast();
   const { t } = useTranslation("records");
   const errorHandler = ErrorHandler.getInstance();
-  
+
   // 🔄 Query for fetching all records
   const {
     data: records = [],
@@ -53,12 +55,12 @@ export function useRecords() {
     onError: (error) => {
       const appError = createAppError(
         ErrorTypes.API_ERROR,
-        'CREATE_RECORD_FAILED',
+        "CREATE_RECORD_FAILED",
         t("errors.create.title"),
-        { 
-          details: error, 
-          context: { action: 'create', entity: 'record' } 
-        }
+        {
+          details: error,
+          context: { action: "create", entity: "record" },
+        },
       );
       errorHandler.handle(appError);
     },
@@ -66,7 +68,8 @@ export function useRecords() {
 
   // 🚀 Update mutation
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: RecordForm }) => updateRecord(id, data),
+    mutationFn: ({ id, data }: { id: string; data: RecordForm }) =>
+      updateRecord(id, data),
     onSuccess: () => {
       // Invalidate and refetch records
       // queryClient.invalidateQueries({ queryKey: RECORD_QUERY_KEYS.records.all });
@@ -74,12 +77,12 @@ export function useRecords() {
     onError: (error) => {
       const appError = createAppError(
         ErrorTypes.API_ERROR,
-        'UPDATE_RECORD_FAILED',
+        "UPDATE_RECORD_FAILED",
         t("errors.update.title"),
-        { 
-          details: error, 
-          context: { action: 'update', entity: 'record' } 
-        }
+        {
+          details: error,
+          context: { action: "update", entity: "record" },
+        },
       );
       errorHandler.handle(appError);
     },
@@ -95,12 +98,12 @@ export function useRecords() {
     onError: (error) => {
       const appError = createAppError(
         ErrorTypes.API_ERROR,
-        'DELETE_RECORD_FAILED',
+        "DELETE_RECORD_FAILED",
         t("errors.delete.title"),
-        { 
-          details: error, 
-          context: { action: 'delete', entity: 'record' } 
-        }
+        {
+          details: error,
+          context: { action: "delete", entity: "record" },
+        },
       );
       errorHandler.handle(appError);
     },

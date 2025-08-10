@@ -1,4 +1,8 @@
 import {
+  AnimatedBox,
+  AnimatedTableRow,
+} from "@shared/components/animations/motion";
+import {
   Table,
   TableBody,
   TableCell,
@@ -9,7 +13,6 @@ import {
 import type { Cell, Row, Table as TableType } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import { memo } from "react";
-import { AnimatedBox, AnimatedTableRow } from "@shared/components/animations/motion";
 
 interface OptimizedTableProps<TData> {
   table: TableType<TData>;
@@ -40,7 +43,7 @@ const TableRowMemo = memo(function TableRowMemo<TData>({
       </AnimatedTableRow>
     );
   }
-  
+
   return (
     <TableRow className="hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors">
       {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
@@ -59,10 +62,7 @@ export function OptimizedTable<TData>({
   const { rows } = table.getRowModel();
 
   return (
-    <AnimatedBox
-      variant="fadeIn"
-      className="rounded-md border"
-    >
+    <AnimatedBox variant="fadeIn" className="rounded-md border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

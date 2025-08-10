@@ -1,12 +1,12 @@
 import { useToast } from "@shared/hooks";
-import { useTranslation } from "react-i18next";
+import { ErrorHandler, ErrorTypes, createAppError } from "@shared/lib/errors";
 import {
   QUERY_KEYS,
   createMutationOptions,
   createQueryOptions,
 } from "@shared/lib/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ErrorHandler, createAppError, ErrorTypes } from "@shared/lib/errors";
+import { useTranslation } from "react-i18next";
 import type {
   Comunicacao,
   ComunicacaoForm,
@@ -23,7 +23,7 @@ export function useComunicacoes() {
   const { success } = useToast();
   const { t } = useTranslation("records");
   const errorHandler = ErrorHandler.getInstance();
-  
+
   // 🔄 Optimized query with centralized configuration
   const {
     data: comunicacoes = [],
@@ -52,12 +52,12 @@ export function useComunicacoes() {
       onError: (error) => {
         const appError = createAppError(
           ErrorTypes.API_ERROR,
-          'CREATE_COMUNICACAO_FAILED',
+          "CREATE_COMUNICACAO_FAILED",
           t("errors.create.title"),
-          { 
-            details: error, 
-            context: { action: 'create', entity: 'comunicacao' } 
-          }
+          {
+            details: error,
+            context: { action: "create", entity: "comunicacao" },
+          },
         );
         errorHandler.handle(appError);
       },
@@ -81,12 +81,12 @@ export function useComunicacoes() {
       onError: (error) => {
         const appError = createAppError(
           ErrorTypes.API_ERROR,
-          'UPDATE_COMUNICACAO_FAILED',
+          "UPDATE_COMUNICACAO_FAILED",
           t("errors.update.title"),
-          { 
-            details: error, 
-            context: { action: 'update', entity: 'comunicacao' } 
-          }
+          {
+            details: error,
+            context: { action: "update", entity: "comunicacao" },
+          },
         );
         errorHandler.handle(appError);
       },
@@ -105,12 +105,12 @@ export function useComunicacoes() {
       onError: (error) => {
         const appError = createAppError(
           ErrorTypes.API_ERROR,
-          'DELETE_COMUNICACAO_FAILED',
+          "DELETE_COMUNICACAO_FAILED",
           t("errors.delete.title"),
-          { 
-            details: error, 
-            context: { action: 'delete', entity: 'comunicacao' } 
-          }
+          {
+            details: error,
+            context: { action: "delete", entity: "comunicacao" },
+          },
         );
         errorHandler.handle(appError);
       },

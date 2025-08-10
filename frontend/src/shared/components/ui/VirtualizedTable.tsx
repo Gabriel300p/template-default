@@ -9,9 +9,13 @@ import {
 import type { Table as TableType } from "@tanstack/react-table";
 import { motion } from "framer-motion";
 
-interface VirtualizedTableProps<TData> { table: TableType<TData>; }
+interface VirtualizedTableProps<TData> {
+  table: TableType<TData>;
+}
 
-export function VirtualizedTable<TData>({ table }: VirtualizedTableProps<TData>) {
+export function VirtualizedTable<TData>({
+  table,
+}: VirtualizedTableProps<TData>) {
   const { rows } = table.getRowModel();
   // const visibleColumns = table.getVisibleFlatColumns(); // Removed unused variable
 
@@ -27,9 +31,13 @@ export function VirtualizedTable<TData>({ table }: VirtualizedTableProps<TData>)
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : (typeof header.column.columnDef.header === 'function'
-                        ? header.column.columnDef.header({ column: header.column, header, table })
-                        : header.column.columnDef.header)}
+                      : typeof header.column.columnDef.header === "function"
+                        ? header.column.columnDef.header({
+                            column: header.column,
+                            header,
+                            table,
+                          })
+                        : header.column.columnDef.header}
                   </TableHead>
                 ))}
               </TableRow>

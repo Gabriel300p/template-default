@@ -37,12 +37,8 @@ describe("DataTable", () => {
     // Check if table headers are rendered
     // i18n default (pt-BR) now replaced by dynamic translation; fallback may show English if detection changed
     // Accept both Portuguese or English labels to avoid brittle test
-    expect(
-      screen.getByText(/^(Título|Title)$/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/^(Autor|Author)$/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/^(Título|Title)$/)).toBeInTheDocument();
+    expect(screen.getByText(/^(Autor|Author)$/)).toBeInTheDocument();
     expect(screen.getByText(/^(Tipo|Type)$/)).toBeInTheDocument();
 
     // Check if data is rendered
@@ -100,7 +96,9 @@ describe("DataTable", () => {
     render(<DataTable data={mockData} columns={columns} />);
 
     // Find and click edit button (assuming it has "Editar" text or edit icon)
-  const editButtons = screen.getAllByLabelText(/Editar comunicação|Edit communication/);
+    const editButtons = screen.getAllByLabelText(
+      /Editar comunicação|Edit communication/,
+    );
     await user.click(editButtons[0]);
 
     expect(mockOnEdit).toHaveBeenCalledWith(mockData[0]);
@@ -112,7 +110,9 @@ describe("DataTable", () => {
     render(<DataTable data={mockData} columns={columns} />);
 
     // Find and click delete button
-  const deleteButtons = screen.getAllByLabelText(/Excluir comunicação|Delete communication/);
+    const deleteButtons = screen.getAllByLabelText(
+      /Excluir comunicação|Delete communication/,
+    );
     await user.click(deleteButtons[0]);
 
     expect(mockOnDelete).toHaveBeenCalledWith(mockData[0]);

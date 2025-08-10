@@ -1,9 +1,11 @@
 ## Pull Request
 
 ### Descrição
+
 <!-- Resuma a mudança e o objetivo. -->
 
 ### Tipo de Mudança
+
 - [ ] feat
 - [ ] fix
 - [ ] chore
@@ -15,6 +17,7 @@
 - [ ] ci
 
 ### Checklist de Qualidade
+
 - [ ] Conventional Commit no título
 - [ ] Lint / Type-check / Tests OK localmente
 - [ ] Coverage ≥ 70% preservado (ou explicado)
@@ -26,12 +29,15 @@
 - [ ] Acessibilidade verificada superficialmente (foco, aria) se aplicável
 
 ### Testes
+
 <!-- Liste novos testes ou explique ausência. -->
 
 ### Screenshots / GIF (se UI)
 
 ### Plano de Rollback
+
 <!-- Como reverter rapidamente esta mudança se necessário? -->
 
 ### Observações Adicionais
+
 <!-- Riscos, decisões arquiteturais, trade-offs. -->

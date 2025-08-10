@@ -2,31 +2,31 @@
  * 🎬 Animation wrapper components
  * Provides consistent motion animations across the application
  */
-import { motion } from 'framer-motion';
-import type { ComponentProps, ReactNode } from 'react';
+import { motion } from "framer-motion";
+import type { ComponentProps, ReactNode } from "react";
 import {
   fadeInVariants,
-  slideInVariants,
+  listItemVariants,
   scaleInVariants,
-  listItemVariants
-} from './variants';
+  slideInVariants,
+} from "./variants";
 
 // Animation wrapper components
 interface AnimatedBoxProps extends ComponentProps<typeof motion.div> {
   children: ReactNode;
-  variant?: 'fadeIn' | 'slideIn' | 'scaleIn';
+  variant?: "fadeIn" | "slideIn" | "scaleIn";
 }
 
-export function AnimatedBox({ 
-  children, 
-  variant = 'fadeIn', 
-  className, 
-  ...props 
+export function AnimatedBox({
+  children,
+  variant = "fadeIn",
+  className,
+  ...props
 }: AnimatedBoxProps) {
   const variants = {
     fadeIn: fadeInVariants,
     slideIn: slideInVariants,
-    scaleIn: scaleInVariants
+    scaleIn: scaleInVariants,
   }[variant];
 
   return (
@@ -49,13 +49,13 @@ interface AnimatedListProps {
   itemClassName?: string;
 }
 
-export function AnimatedList({ children, className, itemClassName }: AnimatedListProps) {
+export function AnimatedList({
+  children,
+  className,
+  itemClassName,
+}: AnimatedListProps) {
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      className={className}
-    >
+    <motion.div initial="hidden" animate="visible" className={className}>
       {children.map((child, i) => (
         <motion.div
           key={i}
@@ -71,11 +71,11 @@ export function AnimatedList({ children, className, itemClassName }: AnimatedLis
 }
 
 // Table row animation wrapper
-export function AnimatedTableRow({ 
-  children, 
-  index = 0, 
-  className, 
-  ...props 
+export function AnimatedTableRow({
+  children,
+  index = 0,
+  className,
+  ...props
 }: ComponentProps<typeof motion.tr> & { index?: number }) {
   return (
     <motion.tr

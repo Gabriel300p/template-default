@@ -1,45 +1,48 @@
 # Filters DSL Implementation
 
 ## Overview
+
 Declarative filter system with URL state synchronization for consistent filtering across the application.
 
 ## Architecture
 
 ### Filter Definition DSL
+
 ```typescript
 // Filter configuration with declarative syntax
 const recordFilters = {
   search: {
-    type: 'text',
-    field: 'titulo',
-    operator: 'contains',
-    placeholder: 'Search records...',
+    type: "text",
+    field: "titulo",
+    operator: "contains",
+    placeholder: "Search records...",
   },
   type: {
-    type: 'select',
-    field: 'tipo', 
+    type: "select",
+    field: "tipo",
     options: [
-      { value: 'Comunicado', label: 'Comunicado' },
-      { value: 'Aviso', label: 'Aviso' },
-      { value: 'Notícia', label: 'Notícia' },
+      { value: "Comunicado", label: "Comunicado" },
+      { value: "Aviso", label: "Aviso" },
+      { value: "Notícia", label: "Notícia" },
     ],
-    placeholder: 'Select type...',
+    placeholder: "Select type...",
   },
   author: {
-    type: 'text',
-    field: 'autor',
-    operator: 'equals',
-    placeholder: 'Filter by author...',
+    type: "text",
+    field: "autor",
+    operator: "equals",
+    placeholder: "Filter by author...",
   },
   dateRange: {
-    type: 'dateRange',
-    field: 'dataCriacao',
-    operator: 'between',
+    type: "dateRange",
+    field: "dataCriacao",
+    operator: "between",
   },
 } as const;
 ```
 
 ### URL State Management
+
 ```typescript
 // Automatic URL sync with query parameters
 const filterState = useFilterState(recordFilters);
@@ -49,6 +52,7 @@ const filterState = useFilterState(recordFilters);
 ```
 
 ### Filter Types
+
 - **Text Filters**: `contains`, `equals`, `startsWith`, `endsWith`
 - **Select Filters**: Single and multi-select options
 - **Date Filters**: Range, before, after, exact
@@ -58,9 +62,10 @@ const filterState = useFilterState(recordFilters);
 ### Implementation Components
 
 #### Filter State Hook
+
 ```typescript
 export function useFilterState<T extends Record<string, FilterDefinition>>(
-  filterDefinitions: T
+  filterDefinitions: T,
 ) {
   // URL state synchronization
   // Filter value management
@@ -70,11 +75,12 @@ export function useFilterState<T extends Record<string, FilterDefinition>>(
 ```
 
 #### Filter Toolbar Component
+
 ```typescript
-export function FilterToolbar<T>({ 
-  filters, 
+export function FilterToolbar<T>({
+  filters,
   onFiltersChange,
-  resetFilters 
+  resetFilters,
 }: FilterToolbarProps<T>) {
   // Render filter controls based on type
   // Handle filter state changes
@@ -83,11 +89,12 @@ export function FilterToolbar<T>({
 ```
 
 #### Filter Query Builder
+
 ```typescript
 export function buildFilterQuery<T>(
   data: T[],
   filters: FilterState,
-  definitions: FilterDefinitions
+  definitions: FilterDefinitions,
 ): T[] {
   // Apply filters to data array
   // Support complex filter combinations
@@ -96,6 +103,7 @@ export function buildFilterQuery<T>(
 ```
 
 ## Features
+
 - **Type Safety**: Full TypeScript support with generic constraints
 - **URL Persistence**: Filter state synced with browser URL
 - **Performance**: Optimized filtering with memoization
@@ -106,14 +114,15 @@ export function buildFilterQuery<T>(
 ## Usage Examples
 
 ### Basic Filter Setup
+
 ```typescript
 function RecordsPage() {
-  const { filteredData, filterState, setFilter, clearFilters } = 
+  const { filteredData, filterState, setFilter, clearFilters } =
     useFilterState(recordFilters);
-  
+
   return (
     <div>
-      <FilterToolbar 
+      <FilterToolbar
         filters={recordFilters}
         state={filterState}
         onFiltersChange={setFilter}
@@ -126,26 +135,29 @@ function RecordsPage() {
 ```
 
 ### Custom Filter Types
+
 ```typescript
 // Extend with custom filter type
 const customFilters = {
   priority: {
-    type: 'priority' as const,
-    field: 'priority',
-    options: ['low', 'medium', 'high'],
+    type: "priority" as const,
+    field: "priority",
+    options: ["low", "medium", "high"],
     renderFilter: PriorityFilterComponent,
-  }
+  },
 };
 ```
 
 ## Integration Points
+
 - React Query for server-side filtering
-- React Router for URL state management  
+- React Router for URL state management
 - i18next for internationalized labels
 - React Hook Form for filter form state
 - Tailwind CSS for responsive filter layouts
 
 ## Future Enhancements
+
 - Server-side filter processing
 - Saved filter presets
 - Advanced filter combinations (AND/OR)

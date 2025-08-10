@@ -11,23 +11,25 @@ const mockRecords: BaseRecord[] = [
     titulo: "Welcome to Records",
     autor: "System Admin",
     tipo: "Comunicado",
-    descricao: "This is a sample record to demonstrate the generic records feature.",
+    descricao:
+      "This is a sample record to demonstrate the generic records feature.",
     dataCriacao: new Date("2024-01-15"),
     dataAtualizacao: new Date("2024-01-15"),
   },
   {
-    id: "2", 
+    id: "2",
     titulo: "Feature Update",
     autor: "Development Team",
     tipo: "Notícia",
-    descricao: "The records feature has been successfully generalized for reuse across different domains.",
+    descricao:
+      "The records feature has been successfully generalized for reuse across different domains.",
     dataCriacao: new Date("2024-01-16"),
     dataAtualizacao: new Date("2024-01-16"),
   },
 ];
 
 // Simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // CRUD operations
 export async function fetchRecords(): Promise<BaseRecord[]> {
@@ -47,9 +49,12 @@ export async function createRecord(data: RecordForm): Promise<BaseRecord> {
   return newRecord;
 }
 
-export async function updateRecord(id: string, data: RecordForm): Promise<BaseRecord> {
+export async function updateRecord(
+  id: string,
+  data: RecordForm,
+): Promise<BaseRecord> {
   await delay(300);
-  const index = mockRecords.findIndex(record => record.id === id);
+  const index = mockRecords.findIndex((record) => record.id === id);
   if (index === -1) {
     throw new Error(`Record with id ${id} not found`);
   }
@@ -64,7 +69,7 @@ export async function updateRecord(id: string, data: RecordForm): Promise<BaseRe
 
 export async function deleteRecord(id: string): Promise<void> {
   await delay(200);
-  const index = mockRecords.findIndex(record => record.id === id);
+  const index = mockRecords.findIndex((record) => record.id === id);
   if (index === -1) {
     throw new Error(`Record with id ${id} not found`);
   }

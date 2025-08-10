@@ -22,8 +22,8 @@ import {
 } from "@shared/components/ui/select";
 import { Textarea } from "@shared/components/ui/textarea";
 import { memo, useEffect, useMemo } from "react";
-import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   comunicacaoFormSchema,
   type Comunicacao,
@@ -90,7 +90,10 @@ export const ModalComunicacao = memo(function ModalComunicacao({
       await onSave(data);
       onClose();
     } catch (error) {
-      console.error("Erro ao salvar comunicação:", error);
+      // Only log in development or when explicitly needed
+      if (process.env.NODE_ENV === "development") {
+        console.error("Erro ao salvar comunicação:", error);
+      }
     }
   };
 
@@ -106,7 +109,8 @@ export const ModalComunicacao = memo(function ModalComunicacao({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-3">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="titulo" className="text-sm font-medium">
-              {t("fields.title")}<span className="text-red-500">*</span>
+              {t("fields.title")}
+              <span className="text-red-500">*</span>
             </label>
             <Input
               id="titulo"
@@ -121,7 +125,8 @@ export const ModalComunicacao = memo(function ModalComunicacao({
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="autor" className="text-sm font-medium">
-              {t("fields.author")}<span className="text-red-500">*</span>
+              {t("fields.author")}
+              <span className="text-red-500">*</span>
             </label>
             <Input
               id="autor"
@@ -136,7 +141,8 @@ export const ModalComunicacao = memo(function ModalComunicacao({
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="tipo" className="text-sm font-medium">
-              {t("fields.type")}<span className="text-red-500">*</span>
+              {t("fields.type")}
+              <span className="text-red-500">*</span>
             </label>
             <Select
               value={watch("tipo")}
@@ -150,9 +156,13 @@ export const ModalComunicacao = memo(function ModalComunicacao({
                 <SelectValue placeholder={t("form.placeholders.type")} />
               </SelectTrigger>
               <SelectContent className="w-full">
-                <SelectItem value="Comunicado">{t("form.types.comunicado")}</SelectItem>
+                <SelectItem value="Comunicado">
+                  {t("form.types.comunicado")}
+                </SelectItem>
                 <SelectItem value="Aviso">{t("form.types.aviso")}</SelectItem>
-                <SelectItem value="Notícia">{t("form.types.noticia")}</SelectItem>
+                <SelectItem value="Notícia">
+                  {t("form.types.noticia")}
+                </SelectItem>
               </SelectContent>
             </Select>
             {errors.tipo && (
@@ -162,7 +172,8 @@ export const ModalComunicacao = memo(function ModalComunicacao({
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="descricao" className="text-sm font-medium">
-              {t("fields.description")}<span className="text-red-500">*</span>
+              {t("fields.description")}
+              <span className="text-red-500">*</span>
             </label>
             <Textarea
               id="descricao"

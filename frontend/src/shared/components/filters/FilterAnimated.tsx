@@ -169,7 +169,9 @@ export function Filter<TData, TValue>({
                                 Array.from(newSelectedValues);
 
                               if (externalOnChange) {
-                                externalOnChange(filterValues);
+                                externalOnChange(
+                                  filterValues as (string | boolean)[],
+                                );
                               } else {
                                 column?.setFilterValue(
                                   filterValues.length

@@ -1,6 +1,9 @@
-import type { ZodErrorMap, ZodIssue } from 'zod';
-import { z } from 'zod';
+import type { ZodErrorMap } from "zod";
+import { z } from "zod";
 
 // Pass-through global error map (placeholder for future global i18n)
-export const zodI18nErrorMap: ZodErrorMap = (_issue: ZodIssue, ctx) => ({ message: ctx.defaultError });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const zodI18nErrorMap = ((_issue: any, ctx: any) => ({
+  message: ctx.defaultError,
+})) as ZodErrorMap;
 z.setErrorMap(zodI18nErrorMap);

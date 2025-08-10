@@ -1,7 +1,7 @@
-import { useCallback, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { setLocale, SUPPORTED_LOCALES } from '@/i18n/init';
-import { Button } from '../ui/button';
+import { setLocale, SUPPORTED_LOCALES } from "@/i18n/init";
+import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button } from "../ui/button";
 
 interface LanguageOption {
   code: string;
@@ -9,8 +9,8 @@ interface LanguageOption {
 }
 
 const OPTIONS: LanguageOption[] = [
-  { code: 'pt-BR', label: 'PT' },
-  { code: 'en-US', label: 'EN' }
+  { code: "pt-BR", label: "PT" },
+  { code: "en-US", label: "EN" },
 ];
 
 export function LanguageSwitcher() {
@@ -30,25 +30,25 @@ export function LanguageSwitcher() {
       <Button
         variant="ghost"
         className="px-2 py-1 text-xs font-semibold"
-        onClick={() => setOpen(o => !o)}
+        onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        {current === 'pt-BR' ? 'PT-BR' : 'EN-US'}
+        {current === "pt-BR" ? "PT-BR" : "EN-US"}
       </Button>
       {open && (
         <ul
           role="listbox"
           className="absolute right-0 z-10 mt-1 min-w-[4rem] overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg"
         >
-          {OPTIONS.map(opt => (
+          {OPTIONS.map((opt) => (
             <li key={opt.code}>
               <button
                 type="button"
                 role="option"
                 aria-selected={current === opt.code}
                 onClick={() => change(opt.code)}
-                className={`w-full px-3 py-1 text-left text-xs hover:bg-slate-100 ${current === opt.code ? 'font-bold' : ''}`}
+                className={`w-full px-3 py-1 text-left text-xs hover:bg-slate-100 ${current === opt.code ? "font-bold" : ""}`}
               >
                 {opt.label}
               </button>

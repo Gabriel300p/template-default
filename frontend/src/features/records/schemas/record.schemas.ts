@@ -8,7 +8,7 @@ import { z } from "zod";
 export const baseRecordSchema = z.object({
   id: z.string(),
   titulo: z.string().min(1, "title.required"),
-  autor: z.string().min(1, "author.required"), 
+  autor: z.string().min(1, "author.required"),
   tipo: z.enum(["Comunicado", "Aviso", "Notícia"], {
     message: "type.required",
   }),
@@ -18,10 +18,10 @@ export const baseRecordSchema = z.object({
 });
 
 // Form schema for creating/editing records
-export const recordFormSchema = baseRecordSchema.omit({ 
-  id: true, 
-  dataCriacao: true, 
-  dataAtualizacao: true 
+export const recordFormSchema = baseRecordSchema.omit({
+  id: true,
+  dataCriacao: true,
+  dataAtualizacao: true,
 });
 
 // Types
@@ -34,11 +34,14 @@ export type GenericRecord = BaseRecord & {
   metadata?: Record<string, unknown>;
   tags?: string[];
   category?: string;
-  status?: 'draft' | 'published' | 'archived';
+  status?: "draft" | "published" | "archived";
 };
 
 // Form type for generic records
-export type GenericRecordForm = Omit<GenericRecord, 'id' | 'dataCriacao' | 'dataAtualizacao'>;
+export type GenericRecordForm = Omit<
+  GenericRecord,
+  "id" | "dataCriacao" | "dataAtualizacao"
+>;
 
 // Re-export communication types for backward compatibility
 export type Comunicacao = BaseRecord;

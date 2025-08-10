@@ -4,19 +4,25 @@
  */
 
 // Base filter operators
-export type FilterOperator = 
-  | 'equals' 
-  | 'contains' 
-  | 'startsWith' 
-  | 'endsWith'
-  | 'greaterThan'
-  | 'lessThan'
-  | 'between'
-  | 'in'
-  | 'notIn';
+export type FilterOperator =
+  | "equals"
+  | "contains"
+  | "startsWith"
+  | "endsWith"
+  | "greaterThan"
+  | "lessThan"
+  | "between"
+  | "in"
+  | "notIn";
 
 // Filter value types
-export type FilterValue = string | number | boolean | Date | (string | number)[] | null;
+export type FilterValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | (string | number)[]
+  | null;
 
 // Base filter definition
 export interface BaseFilterDefinition {
@@ -28,38 +34,38 @@ export interface BaseFilterDefinition {
 
 // Specific filter types
 export interface TextFilterDefinition extends BaseFilterDefinition {
-  type: 'text';
-  operator: 'equals' | 'contains' | 'startsWith' | 'endsWith';
+  type: "text";
+  operator: "equals" | "contains" | "startsWith" | "endsWith";
 }
 
 export interface SelectFilterDefinition extends BaseFilterDefinition {
-  type: 'select';
-  operator: 'equals' | 'in';
+  type: "select";
+  operator: "equals" | "in";
   options: Array<{ value: string | number; label: string }>;
   multiple?: boolean;
 }
 
 export interface NumberFilterDefinition extends BaseFilterDefinition {
-  type: 'number';
-  operator: 'equals' | 'greaterThan' | 'lessThan' | 'between';
+  type: "number";
+  operator: "equals" | "greaterThan" | "lessThan" | "between";
   min?: number;
   max?: number;
 }
 
 export interface DateFilterDefinition extends BaseFilterDefinition {
-  type: 'date' | 'dateRange';
-  operator: 'equals' | 'greaterThan' | 'lessThan' | 'between';
+  type: "date" | "dateRange";
+  operator: "equals" | "greaterThan" | "lessThan" | "between";
 }
 
 export interface BooleanFilterDefinition extends BaseFilterDefinition {
-  type: 'boolean';
-  operator: 'equals';
+  type: "boolean";
+  operator: "equals";
 }
 
 // Union type for all filter definitions
-export type FilterDefinition = 
+export type FilterDefinition =
   | TextFilterDefinition
-  | SelectFilterDefinition 
+  | SelectFilterDefinition
   | NumberFilterDefinition
   | DateFilterDefinition
   | BooleanFilterDefinition;

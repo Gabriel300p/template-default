@@ -34,7 +34,10 @@ export const ModalDeleteConfirm = memo(function ModalDeleteConfirm({
       await onConfirm();
       onClose();
     } catch (error) {
-      console.error("Erro ao remover comunicação:", error);
+      // Only log in development or when explicitly needed
+      if (process.env.NODE_ENV === "development") {
+        console.error("Erro ao remover comunicação:", error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -50,7 +53,9 @@ export const ModalDeleteConfirm = memo(function ModalDeleteConfirm({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>{t("delete.close")}</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>
+            {t("delete.close")}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}

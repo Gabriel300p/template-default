@@ -28,8 +28,8 @@
     "author": "Author",
     "authorPlaceholder": "Filter by author...",
     "createdAt": "Creation Date",
-  "count": "{{count}} communication found",
-  "count_plural": "{{count}} communications found"
+    "count": "{{count}} communication found",
+    "count_plural": "{{count}} communications found"
   },
   "form": {
     "editTitle": "Edit communication",

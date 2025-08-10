@@ -3,8 +3,8 @@
  */
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import { act } from "react";
 import type { ReactNode } from "react";
+import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 // Usa ToastProvider real (warnings minimizados usando act nas mutações)
 import { ToastProvider } from "@/shared/components/ui/toast/ToastProvider";

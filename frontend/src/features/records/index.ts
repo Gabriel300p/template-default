@@ -4,35 +4,38 @@
  */
 
 // ===== NEW GENERIC RECORDS FUNCTIONALITY =====
-export * from './records';
-export * from './hooks/useRecords';
-export * from './services/record.service';
+export * from "./hooks/useRecords";
+export * from "./records";
+export * from "./services/record.service";
 
 // Export specific schemas to avoid conflicts
-export { 
-  baseRecordSchema, 
+export {
+  baseRecordSchema,
   recordFormSchema,
   type BaseRecord,
+  type GenericRecord,
+  type GenericRecordForm,
   type RecordForm,
-  type GenericRecord, 
-  type GenericRecordForm 
-} from './schemas/record.schemas';
+} from "./schemas/record.schemas";
+
+// Export new records page
+export { default as RecordsPage } from "./pages/RecordsPage";
 
 // ===== BACKWARD COMPATIBILITY EXPORTS =====
 // Re-export select comunicacoes functionality for backward compatibility
-export { DataTable } from '../comunicacoes/components/table/DataTable';
-export { createColumns } from '../comunicacoes/components/table/columns';
-export { ModalComunicacao } from '../comunicacoes/components/dialogs/ModalComunicacao';
-export { ModalDeleteConfirm } from '../comunicacoes/components/dialogs/ModalDeleteConfirm';
-export { ComunicacoesToolbar } from '../comunicacoes/components/toolbar/ComunicacoesToolbar';
-export { useComunicacoes } from '../comunicacoes/hooks/useComunicacoes';
-export { useSearch } from '../comunicacoes/hooks/useSearch';
+export { ModalComunicacao } from "../comunicacoes/components/dialogs/ModalComunicacao";
+export { ModalDeleteConfirm } from "../comunicacoes/components/dialogs/ModalDeleteConfirm";
+export { createColumns } from "../comunicacoes/components/table/columns";
+export { DataTable } from "../comunicacoes/components/table/DataTable";
+export { ComunicacoesToolbar } from "../comunicacoes/components/toolbar/ComunicacoesToolbar";
+export { useComunicacoes } from "../comunicacoes/hooks/useComunicacoes";
+export { useSearch } from "../comunicacoes/hooks/useSearch";
 
 // Export specific types for compatibility
 export type {
   Comunicacao,
   ComunicacaoForm,
-} from '../comunicacoes/schemas/comunicacao.schemas';
+} from "../comunicacoes/schemas/comunicacao.schemas";
 
 // Default export for the page
-export { default as ComunicacoesPage } from '../comunicacoes/pages/ComunicacoesPage';
+export { default as ComunicacoesPage } from "../comunicacoes/pages/ComunicacoesPage";

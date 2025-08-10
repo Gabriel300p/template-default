@@ -5,30 +5,30 @@
 
 export const ErrorTypes = {
   // Network/API related
-  NETWORK: 'NETWORK',
-  API_ERROR: 'API_ERROR',
-  TIMEOUT: 'TIMEOUT',
-  UNAUTHORIZED: 'UNAUTHORIZED',
-  FORBIDDEN: 'FORBIDDEN',
-  NOT_FOUND: 'NOT_FOUND',
-  
+  NETWORK: "NETWORK",
+  API_ERROR: "API_ERROR",
+  TIMEOUT: "TIMEOUT",
+  UNAUTHORIZED: "UNAUTHORIZED",
+  FORBIDDEN: "FORBIDDEN",
+  NOT_FOUND: "NOT_FOUND",
+
   // Validation/Input related
-  VALIDATION: 'VALIDATION',
-  FORM_ERROR: 'FORM_ERROR',
-  
+  VALIDATION: "VALIDATION",
+  FORM_ERROR: "FORM_ERROR",
+
   // Application logic
-  BUSINESS_RULE: 'BUSINESS_RULE',
-  RESOURCE_CONFLICT: 'RESOURCE_CONFLICT',
-  
+  BUSINESS_RULE: "BUSINESS_RULE",
+  RESOURCE_CONFLICT: "RESOURCE_CONFLICT",
+
   // System/Technical
-  RUNTIME: 'RUNTIME',
-  CONFIGURATION: 'CONFIGURATION',
-  
+  RUNTIME: "RUNTIME",
+  CONFIGURATION: "CONFIGURATION",
+
   // Unknown/Unexpected
-  UNKNOWN: 'UNKNOWN'
+  UNKNOWN: "UNKNOWN",
 } as const;
 
-export type ErrorType = typeof ErrorTypes[keyof typeof ErrorTypes];
+export type ErrorType = (typeof ErrorTypes)[keyof typeof ErrorTypes];
 
 export interface AppError {
   type: ErrorType;
@@ -62,7 +62,7 @@ export function createAppError(
   type: ErrorType,
   code: string,
   message: string,
-  options: Partial<AppError> = {}
+  options: Partial<AppError> = {},
 ): AppError {
   return {
     type,
@@ -70,7 +70,7 @@ export function createAppError(
     message,
     timestamp: new Date(),
     recoverable: true,
-    ...options
+    ...options,
   };
 }
 
@@ -79,70 +79,70 @@ export const errorStrategies: Record<ErrorType, ErrorHandlingStrategy> = {
   [ErrorTypes.NETWORK]: {
     showToast: true,
     logError: true,
-    retryable: true
+    retryable: true,
   },
   [ErrorTypes.API_ERROR]: {
     showToast: true,
     logError: true,
     reportError: true,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.TIMEOUT]: {
     showToast: true,
     logError: true,
-    retryable: true
+    retryable: true,
   },
   [ErrorTypes.UNAUTHORIZED]: {
     showToast: true,
     logError: true,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.FORBIDDEN]: {
     showToast: true,
     logError: true,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.NOT_FOUND]: {
     showToast: true,
     logError: false,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.VALIDATION]: {
     showToast: false, // Usually shown in form context
     logError: false,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.FORM_ERROR]: {
     showToast: false,
     logError: false,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.BUSINESS_RULE]: {
     showToast: true,
     logError: true,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.RESOURCE_CONFLICT]: {
     showToast: true,
     logError: true,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.RUNTIME]: {
     showToast: true,
     logError: true,
     reportError: true,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.CONFIGURATION]: {
     showToast: true,
     logError: true,
     reportError: true,
-    retryable: false
+    retryable: false,
   },
   [ErrorTypes.UNKNOWN]: {
     showToast: true,
     logError: true,
     reportError: true,
-    retryable: false
-  }
+    retryable: false,
+  },
 };

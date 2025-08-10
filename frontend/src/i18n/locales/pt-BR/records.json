@@ -28,8 +28,8 @@
     "author": "Autor",
     "authorPlaceholder": "Filtrar por autor...",
     "createdAt": "Data de Criação",
-  "count": "{{count}} comunicação encontrada",
-  "count_plural": "{{count}} comunicações encontradas"
+    "count": "{{count}} comunicação encontrada",
+    "count_plural": "{{count}} comunicações encontradas"
   },
   "form": {
     "editTitle": "Editar comunicação",
@@ -40,7 +40,11 @@
       "description": "Digite a descrição da comunicação",
       "type": "Selecione o tipo"
     },
-    "types": { "comunicado": "Comunicado", "aviso": "Aviso", "noticia": "Notícia" },
+    "types": {
+      "comunicado": "Comunicado",
+      "aviso": "Aviso",
+      "noticia": "Notícia"
+    },
     "close": "Fechar",
     "saving": "Salvando...",
     "saveNew": "Adicionar",
