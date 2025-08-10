@@ -1,6 +1,6 @@
 // 🎯 Public API for Auth Feature
 // Main exports for clean imports
-// Updated: Sistema de documentação automática ativo
+// Updated: Sistema novo de documentação (teste final)
 
 // Types (most commonly used)
 export type { AuthStore as AuthState, User } from "@app/store/auth";

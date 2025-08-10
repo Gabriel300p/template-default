@@ -1,36 +1,22 @@
-name: 🤖 Gerar Documentação
+name: 🤖 Gerar Documentação (DESABILITADO - SISTEMA ANTIGO)
 
 on:
-  # Dispara em Pull Requests para branches principais
-  pull_request:
-    branches: [main, master, develop]
-    types: [opened, synchronize, reopened]
+  # DESABILITADO: Este é o workflow antigo com problemas
+  # O novo sistema está em generate-feature-docs.yml
 
-  # Dispara em pushes para branch principal
-  push:
-    branches: [main, master, develop]
-    paths:
-      - "frontend/**"
-      - "backend/**"
-      - "mobile/**"
-      - "automation/**"
-      - "**.md"
-      - "**.json"
-      - ".github/workflows/**"
-
-  # Permite execução manual
+  # Apenas execução manual para emergências
   workflow_dispatch:
     inputs:
-      analysis_type:
-        description: "Tipo de análise"
+      force_run:
+        description: "Forçar execução do sistema antigo (apenas para emergência)"
         required: false
-        default: "full"
+        default: "false"
         type: choice
         options:
           - full
-          - technical
-          - user
-          - executive
+            - technical
+            - user
+            - executive
 
 # Permissões necessárias
 permissions:
