@@ -7,22 +7,13 @@ import {
   TableRow,
 } from "@shared/components/ui/table";
 import type { Table as TableType } from "@tanstack/react-table";
-import { flexRender } from "@tanstack/react-table";
 import { motion } from "framer-motion";
-import { memo } from "react";
 
-interface OptimizedTableProps<TData> {
-  table: TableType<TData>;
-  enableAnimations?: boolean;
-}
+interface VirtualizedTableProps<TData> { table: TableType<TData>; }
 
-export function VirtualizedTable<TData>({
-  table,
-  height = 400,
-  itemHeight = 50,
-}: VirtualizedTableProps<TData>) {
+export function VirtualizedTable<TData>({ table }: VirtualizedTableProps<TData>) {
   const { rows } = table.getRowModel();
-  const visibleColumns = table.getVisibleFlatColumns();
+  // const visibleColumns = table.getVisibleFlatColumns(); // Removed unused variable
 
   // Don't virtualize if we have less than 20 rows for better UX
   if (rows.length < 20) {
@@ -36,7 +27,9 @@ export function VirtualizedTable<TData>({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : header.column.columnDef.header}
+                      : (typeof header.column.columnDef.header === 'function'
+                        ? header.column.columnDef.header({ column: header.column, header, table })
+                        : header.column.columnDef.header)}
                   </TableHead>
                 ))}
               </TableRow>
@@ -64,43 +57,6 @@ export function VirtualizedTable<TData>({
     );
   }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="rounded-md border"
-    >
-      {/* Fixed Header */}
-      <div className="bg-muted/50 border-b">
-        <div className="flex">
-          {table.getHeaderGroups().map((headerGroup) =>
-            headerGroup.headers.map((header) => (
-              <div
-                key={header.id}
-                className="flex items-center px-4 py-3 font-medium"
-                style={{ width: header.getSize() }}
-              >
-                {header.isPlaceholder ? null : header.column.columnDef.header}
-              </div>
-            )),
-          )}
-        </div>
-      </div>
-
-      {/* Virtualized Body */}
-      <List
-        height={height}
-        itemCount={rows.length}
-        itemSize={itemHeight}
-        itemData={{
-          rows: rows.map((row) => row.getVisibleCells()),
-          visibleColumns,
-        }}
-        className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-      >
-        {VirtualizedRow}
-      </List>
-    </motion.div>
-  );
+  // Virtualization disabled (future optimization). For >=20 rows, return null or a placeholder.
+  return null;
 }

@@ -1,0 +1,75 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Coverage reports
+coverage/
+coverage-e2e/
+
+# Logs
+*.log
+logs/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Environment files
+.env
+.env.*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Prisma generated files
+prisma/migrations/
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+
+# Git files
+.git/
+.gitignore
+
+# Package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Test files that should not be formatted
+test/fixtures/
+test/snapshots/
+
+# Generated documentation
+docs/api/
+
+# Temporary files
+tmp/
+temp/
+
+# Cache directories
+.cache/
+.parcel-cache/
+
+# Editor backup files
+*~
+*.swp
+*.swo
+
+# Compiled TypeScript
+*.js.map
+*.d.ts
+
+# ESLint cache
+.eslintcache
+

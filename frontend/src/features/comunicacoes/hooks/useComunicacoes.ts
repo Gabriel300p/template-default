@@ -1,10 +1,12 @@
 import { useToast } from "@shared/hooks";
+import { useTranslation } from "react-i18next";
 import {
   QUERY_KEYS,
   createMutationOptions,
   createQueryOptions,
 } from "@shared/lib/react-query";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { ErrorHandler, createAppError, ErrorTypes } from "@shared/lib/errors";
 import type {
   Comunicacao,
   ComunicacaoForm,
@@ -18,7 +20,10 @@ import {
 
 // 🚀 Optimized hook with advanced caching and optimistic updates
 export function useComunicacoes() {
-  const { success, error: showErrorToast } = useToast();
+  const { success } = useToast();
+  const { t } = useTranslation("records");
+  const errorHandler = ErrorHandler.getInstance();
+  
   // 🔄 Optimized query with centralized configuration
   const {
     data: comunicacoes = [],
@@ -45,12 +50,16 @@ export function useComunicacoes() {
         return [...comunicacoesList, optimisticComunicacao];
       },
       onError: (error) => {
-        console.error("Failed to create comunicacao:", error);
-        showErrorToast(
-          "Erro ao criar comunicação",
-          "Falha ao salvar no sistema.",
-          "Verifique sua conexão com a internet e certifique-se de que todos os campos obrigatórios foram preenchidos corretamente.",
+        const appError = createAppError(
+          ErrorTypes.API_ERROR,
+          'CREATE_COMUNICACAO_FAILED',
+          t("errors.create.title"),
+          { 
+            details: error, 
+            context: { action: 'create', entity: 'comunicacao' } 
+          }
         );
+        errorHandler.handle(appError);
       },
     }),
   );
@@ -70,12 +79,16 @@ export function useComunicacoes() {
         );
       },
       onError: (error) => {
-        console.error("Failed to update comunicacao:", error);
-        showErrorToast(
-          "Erro ao atualizar comunicação",
-          "Falha ao salvar alterações.",
-          "As alterações não puderam ser salvas. Verifique sua conexão e tente novamente em alguns instantes.",
+        const appError = createAppError(
+          ErrorTypes.API_ERROR,
+          'UPDATE_COMUNICACAO_FAILED',
+          t("errors.update.title"),
+          { 
+            details: error, 
+            context: { action: 'update', entity: 'comunicacao' } 
+          }
         );
+        errorHandler.handle(appError);
       },
     }),
   );
@@ -90,12 +103,16 @@ export function useComunicacoes() {
         return comunicacoesList.filter((comunicacao) => comunicacao.id !== id);
       },
       onError: (error) => {
-        console.error("Failed to delete comunicacao:", error);
-        showErrorToast(
-          "Erro ao excluir comunicação",
-          "Falha ao remover do sistema.",
-          "A comunicação não pôde ser removida do sistema. Verifique suas permissões e tente novamente.",
+        const appError = createAppError(
+          ErrorTypes.API_ERROR,
+          'DELETE_COMUNICACAO_FAILED',
+          t("errors.delete.title"),
+          { 
+            details: error, 
+            context: { action: 'delete', entity: 'comunicacao' } 
+          }
         );
+        errorHandler.handle(appError);
       },
     }),
   );
@@ -104,9 +121,9 @@ export function useComunicacoes() {
   const createWithToast = async (data: ComunicacaoForm) => {
     const result = await createMutation.mutateAsync(data);
     success(
-      "Comunicação criada com sucesso!",
-      `A comunicação "${data.titulo}" foi adicionada ao sistema.`,
-      "A nova comunicação está agora disponível para visualização por todos os usuários autorizados.",
+      t("toasts.create.title"),
+      t("toasts.create.subtitle", { title: data.titulo }),
+      t("toasts.create.description"),
     );
     return result;
   };
@@ -114,9 +131,9 @@ export function useComunicacoes() {
   const updateWithToast = async (id: string, data: ComunicacaoForm) => {
     const result = await updateMutation.mutateAsync({ id, data });
     success(
-      "Comunicação atualizada com sucesso!",
-      `As alterações na comunicação "${data.titulo}" foram salvas.`,
-      "Todas as modificações estão agora visíveis para os usuários do sistema.",
+      t("toasts.update.title"),
+      t("toasts.update.subtitle", { title: data.titulo }),
+      t("toasts.update.description"),
     );
     return result;
   };
@@ -124,9 +141,9 @@ export function useComunicacoes() {
   const deleteWithToast = async (id: string) => {
     const result = await deleteMutation.mutateAsync(id);
     success(
-      "Comunicação excluída com sucesso!",
-      "A comunicação foi removida permanentemente.",
-      "Esta ação não pode ser desfeita. Os dados foram completamente removidos do sistema.",
+      t("toasts.delete.title"),
+      t("toasts.delete.subtitle"),
+      t("toasts.delete.description"),
     );
     return result;
   };

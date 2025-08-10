@@ -7,6 +7,7 @@ import {
 } from "@shared/components/filters";
 import { CalendarIcon, FilterIcon, TagIcon, UserIcon } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useFilters } from "../../hooks/useFilters";
 
 interface ComunicacoesToolbarProps {
@@ -27,27 +28,28 @@ export function ComunicacoesToolbar({
     setAutor,
     setDateRange,
   } = useFilters();
+  const { t } = useTranslation("records");
 
   // 🎯 Tipo options with icons
   const tipoOptions: FilterOption[] = useMemo(
     () => [
       {
-        label: "Comunicado",
+    label: t("form.types.comunicado"),
         value: "Comunicado",
         icon: <FilterIcon className="h-4 w-4 text-blue-500" />,
       },
       {
-        label: "Aviso",
+    label: t("form.types.aviso"),
         value: "Aviso",
         icon: <FilterIcon className="h-4 w-4 text-yellow-500" />,
       },
       {
-        label: "Notícia",
+    label: t("form.types.noticia"),
         value: "Notícia",
         icon: <FilterIcon className="h-4 w-4 text-green-500" />,
       },
     ],
-    [],
+  [t],
   );
 
   // 🎯 Autor options from data
@@ -68,14 +70,13 @@ export function ComunicacoesToolbar({
         <TextFilter
           value={filters.search}
           onChange={setSearch}
-          placeholder="Pesquisar comunicações..."
+          placeholder={t("filters.searchPlaceholder")}
           className="max-w-sm"
         />
 
         {totalCount && (
           <div className="text-muted-foreground text-sm">
-            {totalCount} comunicaç{totalCount === 1 ? "ão" : "ões"} encontrada
-            {totalCount === 1 ? "" : "s"}
+            {t("filters.count", { count: totalCount })}
           </div>
         )}
       </div>
@@ -84,7 +85,7 @@ export function ComunicacoesToolbar({
       <FilterToolbar hasActiveFilters={hasActiveFilters} onReset={resetFilters}>
         {/* Tipo filter */}
         <Filter
-          title="Tipo"
+          title={t("filters.type")}
           options={tipoOptions}
           icon={<TagIcon className="h-4 w-4" />}
           value={filters.tipo}
@@ -96,20 +97,20 @@ export function ComunicacoesToolbar({
         {/* Autor filter */}
         {autorOptions.length > 0 && (
           <Filter
-            title="Autor"
+            title={t("filters.author")}
             options={autorOptions}
             icon={<UserIcon className="h-4 w-4" />}
             value={filters.autor ? [filters.autor] : []}
             onChange={(values: (string | boolean)[]) =>
               setAutor((values[0] as string) || "")
             }
-            placeholder="Filtrar por autor..."
+            placeholder={t("filters.authorPlaceholder")}
           />
         )}
 
         {/* Date range filter */}
         <DatePickerImproved
-          title="Data de Criação"
+          title={t("filters.createdAt")}
           value={filters.dateRange}
           onChange={setDateRange}
           icon={<CalendarIcon className="h-4 w-4" />}

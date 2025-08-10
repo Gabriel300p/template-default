@@ -4,6 +4,7 @@ import TableSort from "@shared/components/ui/table-sort";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import i18n from "@/i18n/init";
 import type { Comunicacao } from "../../schemas/comunicacao.schemas";
 
 interface ColumnsProps {
@@ -15,12 +16,19 @@ interface ColumnsProps {
 export const createColumns = ({
   onEdit,
   onDelete,
-}: ColumnsProps): ColumnDef<Comunicacao>[] => [
+}: ColumnsProps): ColumnDef<Comunicacao>[] => {
+  const t = i18n.getFixedT(i18n.language, "records");
+  const typeMap: Record<string, string> = {
+    Comunicado: t("form.types.comunicado", { defaultValue: "Comunicado" }),
+    Aviso: t("form.types.aviso", { defaultValue: "Aviso" }),
+    "Notícia": t("form.types.noticia", { defaultValue: "Notícia" }),
+  };
+  return [
   {
     accessorKey: "titulo",
     header: ({ column }) => (
       <TableSort column={column} className="ml-5">
-        Título
+  {t("fields.title")}
       </TableSort>
     ),
     cell: ({ row }) => (
@@ -34,7 +42,7 @@ export const createColumns = ({
     enableSorting: true,
     header: ({ column }) => (
       <TableSort column={column} align="center">
-        Autor
+  {t("fields.author")}
       </TableSort>
     ),
     cell: ({ row }) => (
@@ -47,7 +55,7 @@ export const createColumns = ({
     accessorKey: "tipo",
     header: ({ column }) => (
       <TableSort column={column} align="center">
-        Tipo
+  {t("fields.type")}
       </TableSort>
     ),
     cell: ({ row }) => {
@@ -70,7 +78,7 @@ export const createColumns = ({
               tipo,
             )}`}
           >
-            {tipo}
+            {typeMap[tipo] || tipo}
           </span>
         </div>
       );
@@ -80,7 +88,7 @@ export const createColumns = ({
     accessorKey: "dataCriacao",
     header: ({ column }) => (
       <TableSort column={column} align="center">
-        Data criação
+  {t("fields.createdAt")}
       </TableSort>
     ),
     cell: ({ row }) => {
@@ -96,7 +104,7 @@ export const createColumns = ({
     accessorKey: "dataAtualizacao",
     header: ({ column }) => (
       <TableSort column={column} align="center">
-        Data atualização
+  {t("fields.updatedAt")}
       </TableSort>
     ),
     cell: ({ row }) => {
@@ -110,7 +118,7 @@ export const createColumns = ({
   },
   {
     id: "actions",
-    header: "Ações",
+  header: t("fields.actions"),
     size: 120, // Define uma largura fixa para a coluna
     cell: ({ row }) => {
       const comunicacao = row.original;
@@ -121,7 +129,7 @@ export const createColumns = ({
             variant="ghost"
             size="sm"
             className="text-primary hover:text-primary/80 hover:bg-primary/10 -mr-1 h-10 w-10 p-0 transition-colors"
-            aria-label="Editar comunicação"
+            aria-label={t("actions.edit", { defaultValue: "Editar comunicação" })}
             onClick={() => onEdit(comunicacao)}
           >
             <PencilSimpleLineIcon className="size-5" weight="fill" />
@@ -130,7 +138,7 @@ export const createColumns = ({
             variant="ghost"
             size="sm"
             className="h-10 w-10 p-0 text-red-600 transition-colors hover:bg-red-50 hover:text-red-700"
-            aria-label="Excluir comunicação"
+            aria-label={t("actions.delete", { defaultValue: "Excluir comunicação" })}
             onClick={() => onDelete(comunicacao)}
           >
             <XCircleIcon weight="fill" className="size-5" />
@@ -139,4 +147,5 @@ export const createColumns = ({
       );
     },
   },
-];
+  ];
+};

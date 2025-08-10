@@ -1,54 +1,55 @@
 import { z } from "zod";
+import { applyComunicacoesErrorMap } from "../i18n/zodErrorMap";
 
 // 🎯 Schema principal para Comunicação (entidade completa)
-export const comunicacaoSchema = z.object({
+export const comunicacaoSchema = applyComunicacoesErrorMap(z.object({
   id: z.string(),
   titulo: z
     .string()
-    .min(1, "Título é obrigatório")
-    .min(3, "Título deve ter pelo menos 3 caracteres")
-    .max(100, "Título deve ter no máximo 100 caracteres"),
+  .min(1, { message: "validation.title.required" })
+  .min(3, { message: "validation.title.min" })
+  .max(100, { message: "validation.title.max" }),
   autor: z
     .string()
-    .min(1, "Autor é obrigatório")
-    .min(2, "Nome do autor deve ter pelo menos 2 caracteres")
-    .max(50, "Nome do autor deve ter no máximo 50 caracteres"),
+  .min(1, { message: "validation.author.required" })
+  .min(2, { message: "validation.author.min" })
+  .max(50, { message: "validation.author.max" }),
   tipo: z.enum(["Comunicado", "Aviso", "Notícia"], {
-    message: "Tipo deve ser: Comunicado, Aviso ou Notícia",
+  message: "validation.type.enum",
   }),
   descricao: z
     .string()
-    .min(1, "Descrição é obrigatória")
-    .min(10, "Descrição deve ter pelo menos 10 caracteres")
-    .max(1000, "Descrição deve ter no máximo 1000 caracteres"),
+  .min(1, { message: "validation.description.required" })
+  .min(10, { message: "validation.description.min" })
+  .max(1000, { message: "validation.description.max" }),
   dataCriacao: z.date(),
   dataAtualizacao: z.date(),
-});
+}));
 
 // 🎯 Schema para formulário (sem id e datas - gerados automaticamente)
-export const comunicacaoFormSchema = z.object({
+export const comunicacaoFormSchema = applyComunicacoesErrorMap(z.object({
   titulo: z
     .string()
-    .min(1, "Título é obrigatório")
-    .min(3, "Título deve ter pelo menos 3 caracteres")
-    .max(100, "Título deve ter no máximo 100 caracteres")
+  .min(1, { message: "validation.title.required" })
+  .min(3, { message: "validation.title.min" })
+  .max(100, { message: "validation.title.max" })
     .trim(), // Sanitização automática
   autor: z
     .string()
-    .min(1, "Autor é obrigatório")
-    .min(2, "Nome do autor deve ter pelo menos 2 caracteres")
-    .max(50, "Nome do autor deve ter no máximo 50 caracteres")
+  .min(1, { message: "validation.author.required" })
+  .min(2, { message: "validation.author.min" })
+  .max(50, { message: "validation.author.max" })
     .trim(), // Sanitização automática
   tipo: z.enum(["Comunicado", "Aviso", "Notícia"], {
-    message: "Tipo deve ser: Comunicado, Aviso ou Notícia",
+  message: "validation.type.enum",
   }),
   descricao: z
     .string()
-    .min(1, "Descrição é obrigatória")
-    .min(10, "Descrição deve ter pelo menos 10 caracteres")
-    .max(1000, "Descrição deve ter no máximo 1000 caracteres")
+  .min(1, { message: "validation.description.required" })
+  .min(10, { message: "validation.description.min" })
+  .max(1000, { message: "validation.description.max" })
     .trim(), // Sanitização automática
-});
+}));
 
 // 🎯 Schema para criação (igual ao form, mas pode ter id opcional para otimistic updates)
 export const comunicacaoCreateSchema = comunicacaoFormSchema.extend({
@@ -56,11 +57,13 @@ export const comunicacaoCreateSchema = comunicacaoFormSchema.extend({
 });
 
 // 🎯 Schema para atualização (todos os campos opcionais exceto pelo menos um)
-export const comunicacaoUpdateSchema = comunicacaoFormSchema
-  .partial()
-  .refine((data) => Object.keys(data).length > 0, {
-    message: "Pelo menos um campo deve ser fornecido para atualização",
-  });
+export const comunicacaoUpdateSchema = applyComunicacoesErrorMap(
+  comunicacaoFormSchema
+    .partial()
+    .refine((data) => Object.keys(data).length > 0, {
+      message: "validation.update.atLeastOne",
+    }),
+);
 
 // 🎯 Tipos inferidos dos schemas (única fonte da verdade)
 export type Comunicacao = z.infer<typeof comunicacaoSchema>;

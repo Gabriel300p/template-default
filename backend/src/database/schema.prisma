@@ -1,0 +1,176 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum RoleType {
+  ADMIN
+  USER
+  MODERATOR
+}
+
+enum ComunicacaoTipo {
+  AVISO
+  COMUNICADO
+  NOTICIA
+  EVENTO
+}
+
+enum ComunicacaoStatus {
+  RASCUNHO
+  PUBLICADO
+  ARQUIVADO
+}
+
+enum ComunicacaoPrioridade {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum OAuthProvider {
+  GOOGLE
+  GITHUB
+  MICROSOFT
+}
+
+// Models
+model User {
+  id            String     @id @default(uuid())
+  email         String     @unique
+  password      String?    // Nullable for OAuth users
+  nome          String
+  telefone      String?
+  avatar        String?
+  status        UserStatus @default(ACTIVE)
+  emailVerified Boolean    @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  roles                Role[]
+  oauthAccounts        OAuthAccount[]
+  refreshTokens        RefreshToken[]
+  createdComunicacoes  Comunicacao[]  @relation("ComunicacaoCreatedBy")
+  updatedComunicacoes  Comunicacao[]  @relation("ComunicacaoUpdatedBy")
+  auditLogs            AuditLog[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  type        RoleType
+  name        String
+  description String?
+  permissions String[] // JSON array of permissions
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users User[]
+
+  @@unique([type])
+  @@map("roles")
+}
+
+model OAuthAccount {
+  id           String        @id @default(uuid())
+  provider     OAuthProvider
+  providerId   String        // ID from OAuth provider
+  providerData Json?         // Additional data from provider
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@map("oauth_accounts")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revokedAt DateTime?
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Comunicacao {
+  id              String                  @id @default(uuid())
+  titulo          String
+  autor           String
+  tipo            ComunicacaoTipo
+  descricao       String
+  conteudo        String?
+  anexos          Json?                   // JSON array of attachments
+  tags            String[]                // Array of tags
+  prioridade      ComunicacaoPrioridade   @default(MEDIA)
+  dataPublicacao  DateTime?
+  dataExpiracao   DateTime?
+  status          ComunicacaoStatus       @default(RASCUNHO)
+  visualizacoes   Int                     @default(0)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  // Relations
+  createdBy String
+  createdByUser User @relation("ComunicacaoCreatedBy", fields: [createdBy], references: [id])
+  
+  updatedBy String?
+  updatedByUser User? @relation("ComunicacaoUpdatedBy", fields: [updatedBy], references: [id])
+
+  @@map("comunicacoes")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   // CREATE, UPDATE, DELETE, LOGIN, etc.
+  resource  String   // users, comunicacoes, etc.
+  resourceId String?
+  oldValues Json?
+  newValues Json?
+  metadata  Json?    // Additional context (IP, user agent, etc.)
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model SystemConfig {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_config")
+}
+

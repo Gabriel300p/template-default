@@ -33,21 +33,25 @@ automation/
 ## 🚀 Como Funciona
 
 ### 1. **Triggers Automáticos**
+
 - ✅ Pull Requests para `main`
 - ✅ Push para `main`
 - ✅ Execução manual via GitHub Actions
 
 ### 2. **Análise Inteligente**
+
 - 🤖 IA analisa código modificado
 - 📊 Filtra apenas arquivos relevantes (.ts, .tsx, .js, .jsx, .md, etc.)
 - 🎯 Detecta tipo de arquivo (componente, API, database, etc.)
 
 ### 3. **Documentação Multi-Nível**
+
 - **📚 Técnica**: Para desenvolvedores (código, arquitetura, APIs)
 - **👥 Usuário**: Guias práticos para usuários finais
 - **📈 Executiva**: Relatórios para gestores (ROI, métricas, impacto)
 
 ### 4. **Output Organizado**
+
 - 📝 GitHub Wiki automaticamente atualizado
 - 📋 Issues de notificação com resumo
 - 💬 Comentários em Pull Requests
@@ -56,11 +60,13 @@ automation/
 ## 💰 Custo Estimado
 
 ### Mensal
+
 - **OpenAI API**: R$ 50-100 (GPT-3.5-turbo)
 - **GitHub Actions**: Gratuito (2000 min/mês inclusos)
 - **Total**: ~R$ 50-100/mês
 
 ### Por Execução
+
 - **10-20 arquivos**: $0.05-0.20
 - **PR típico**: $0.02-0.10
 - **Análise completa**: $0.50-2.00
@@ -68,45 +74,53 @@ automation/
 ## 📋 Configuração Rápida
 
 ### 1. Instalar Dependências
+
 ```bash
 cd automation
 npm install
 ```
 
 ### 2. Executar Setup Wizard
+
 ```bash
 npm run setup
 ```
 
 ### 3. Configurar GitHub Secrets
+
 No GitHub: **Settings** → **Secrets and variables** → **Actions**
 
-| Secret | Valor |
-|--------|-------|
-| `OPENAI_API_KEY` | `sk-...` (da OpenAI) |
-| `TOKEN_GITHUB` | `ghp_...` (do GitHub) |
+| Secret           | Valor                 |
+| ---------------- | --------------------- |
+| `OPENAI_API_KEY` | `sk-...` (da OpenAI)  |
+| `TOKEN_GITHUB`   | `ghp_...` (do GitHub) |
 
 ### 4. Testar
+
 ```bash
 npm run analyze:test
 ```
 
 ### 5. Criar PR
+
 Qualquer PR para `main` vai disparar o sistema automaticamente!
 
 ## 🎯 Benefícios Imediatos
 
 ### ✅ **Para Desenvolvedores**
+
 - Documentação sempre atualizada
 - Menos tempo em docs manuais
 - Onboarding mais rápido
 
 ### ✅ **Para Gestores**
+
 - Visibilidade do progresso técnico
 - Relatórios automáticos de impacto
 - Métricas de produtividade
 
 ### ✅ **Para Usuários**
+
 - Guias sempre atualizados
 - Documentação em linguagem simples
 - Tutoriais contextualizados
@@ -114,13 +128,16 @@ Qualquer PR para `main` vai disparar o sistema automaticamente!
 ## 🔮 Evolução Futura
 
 ### N8N Migration (Quando necessário)
+
 A arquitetura já está preparada:
+
 - ✅ Scripts modulares
-- ✅ Configuração centralizada  
+- ✅ Configuração centralizada
 - ✅ APIs padronizadas
 - ✅ Logs estruturados
 
 ### Expansões Possíveis
+
 - 📊 Dashboard de métricas
 - 📧 Notificações por email/Slack
 - 🌐 Múltiplos repositórios
@@ -130,6 +147,7 @@ A arquitetura já está preparada:
 ## 🏗️ Arquitetura Flexível
 
 ### Componentes Principais
+
 1. **GitHub Actions**: Orquestração e triggers
 2. **OpenAI Client**: Geração inteligente de conteúdo
 3. **GitHub Client**: Integração com repositório e wiki
@@ -137,6 +155,7 @@ A arquitetura já está preparada:
 5. **Configuration**: Personalização por projeto
 
 ### Padrões Implementados
+
 - ✅ **Modularity**: Cada cliente é independente
 - ✅ **Configuration**: Tudo configurável via JSON
 - ✅ **Error Handling**: Tratamento robusto de erros
@@ -148,6 +167,7 @@ A arquitetura já está preparada:
 O sistema foi projetado para ser um **template reutilizável**:
 
 ### Para Adaptar a Outros Projetos:
+
 1. **Copie** a pasta `/automation`
 2. **Edite** `config/project.json` com dados do novo projeto
 3. **Ajuste** prompts em `config/prompts.json` se necessário
@@ -155,8 +175,9 @@ O sistema foi projetado para ser um **template reutilizável**:
 5. **Pronto!** Sistema funcionando
 
 ### Stack Agnóstico
+
 - ✅ React/Next.js
-- ✅ Vue/Nuxt.js  
+- ✅ Vue/Nuxt.js
 - ✅ Node.js/Express
 - ✅ Python/Django
 - ✅ .NET Core
@@ -165,6 +186,7 @@ O sistema foi projetado para ser um **template reutilizável**:
 ## 🚀 Status: PRONTO PARA USO!
 
 ### ✅ Implementado
+
 - [x] Análise de código com IA
 - [x] Documentação multi-nível
 - [x] GitHub Wiki integration
@@ -175,8 +197,9 @@ O sistema foi projetado para ser um **template reutilizável**:
 - [x] Template reutilizável
 
 ### 🔄 Próximos Passos Sugeridos
+
 1. **Teste** com PR pequeno
-2. **Ajuste** prompts conforme necessário  
+2. **Ajuste** prompts conforme necessário
 3. **Configure** para outros projetos
 4. **Evolua** para N8N quando precisar de mais complexidade
 
@@ -185,11 +208,13 @@ O sistema foi projetado para ser um **template reutilizável**:
 ## 📞 Suporte
 
 **Dúvidas?** Consulte:
+
 - 📚 [Setup Guide](automation/SETUP.md)
 - 📋 [Project Config](automation/config/project.json)
 - 🤖 [AI Prompts](automation/config/prompts.json)
 
 **Problemas?** Verifique:
+
 - 🔐 Secrets configurados no GitHub
 - 📦 Dependências instaladas (`npm install`)
 - ⚙️ Configuração em `project.json`
@@ -198,4 +223,4 @@ O sistema foi projetado para ser um **template reutilizável**:
 
 **🎉 PARABÉNS! Você agora tem um sistema de documentação automática inteligente!**
 
-*Sistema desenvolvido para ser genérico, flexível e pronto para escalar para múltiplos projetos.*
+_Sistema desenvolvido para ser genérico, flexível e pronto para escalar para múltiplos projetos._

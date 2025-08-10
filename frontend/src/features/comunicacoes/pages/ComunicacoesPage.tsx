@@ -1,12 +1,13 @@
 import { EmptyState } from "@shared/components/common/EmptyState";
-// import { FilterToolbarSkeleton } from "@shared/components/filters/FilterSkeletons";
+import { FilterToolbarSkeleton } from "@shared/components/filters/FilterSkeletons";
 import { PlusCircleIcon } from "@shared/components/icons";
 import { Button } from "@shared/components/ui/button";
 import Divider from "@shared/components/ui/divider";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  // ComunicacoesToolbar,
+  ComunicacoesToolbar,
   createColumns,
   DataTable,
   ModalComunicacao,
@@ -17,6 +18,7 @@ import { useComunicacoes, useFilters, useModals } from "../hooks/_index";
 import type { ComunicacaoForm } from "../schemas/comunicacao.schemas";
 
 export default function ComunicacoesPage() {
+  const { t } = useTranslation("records");
   const {
     comunicacoes,
     isLoading,
@@ -45,10 +47,10 @@ export default function ComunicacoesPage() {
   }, [comunicacoes, filterComunicacoes]);
 
   // Extract unique autores for filter
-  // const autores = useMemo(() => {
-  //   const uniqueAutores = Array.from(new Set(comunicacoes.map((c) => c.autor)));
-  //   return uniqueAutores.sort();
-  // }, [comunicacoes]);
+  const autores = useMemo(() => {
+    const uniqueAutores = Array.from(new Set(comunicacoes.map((c) => c.autor)));
+    return uniqueAutores.sort();
+  }, [comunicacoes]);
 
   // Determine what to show
   const shouldShowEmptyState = !isLoading && comunicacoes.length === 0;
@@ -89,7 +91,7 @@ export default function ComunicacoesPage() {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="text-red-600">
-          Erro ao carregar comunicações: {error.message}
+          {t("error.load", { message: error.message })}
         </div>
       </div>
     );
@@ -111,9 +113,9 @@ export default function ComunicacoesPage() {
       >
         <div>
           <span className="text-primary text-sm font-medium underline">
-            Acessos
+            {t("breadcrumb.section")}
           </span>
-          <h1 className="text-2xl font-bold text-gray-900">Comunicações 2</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
         </div>
         <Button
           onClick={openAddModal}
@@ -121,14 +123,14 @@ export default function ComunicacoesPage() {
           className="flex items-center gap-1.5 rounded-md px-3.5 py-3 transition-opacity duration-300 hover:opacity-80"
         >
           <PlusCircleIcon weight="fill" className="size-5" />
-          <span className="hidden sm:block">Nova Comunicação</span>
+          <span className="hidden sm:block">{t("actions.new")}</span>
         </Button>
       </motion.div>
       <Divider />
       {/* Content */}
       <div className="space-y-4">
         {/* Filters Toolbar */}
-        {/* <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
           {isLoading ? (
             <FilterToolbarSkeleton />
           ) : (
@@ -143,7 +145,7 @@ export default function ComunicacoesPage() {
               />
             </motion.div>
           )}
-        </AnimatePresence> */}
+        </AnimatePresence>
 
         {/* Content - Table or Empty States */}
         <AnimatePresence mode="wait">
@@ -153,7 +155,7 @@ export default function ComunicacoesPage() {
             <EmptyState
               type="noData"
               action={{
-                label: "Criar primeira comunicação",
+                label: t("empty.noData.action"),
                 onClick: openAddModal,
               }}
             />
@@ -161,7 +163,7 @@ export default function ComunicacoesPage() {
             <EmptyState
               type="filtered"
               action={{
-                label: "Limpar filtros",
+                label: t("empty.filtered.action"),
                 onClick: resetFilters,
               }}
             />

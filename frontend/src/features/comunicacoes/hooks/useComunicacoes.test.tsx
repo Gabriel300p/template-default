@@ -3,9 +3,11 @@
  */
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
+import { act } from "react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ToastProvider } from "../../../shared/components/ui/toast/ToastProvider";
+// Usa ToastProvider real (warnings minimizados usando act nas mutações)
+import { ToastProvider } from "@/shared/components/ui/toast/ToastProvider";
 import { setQueryClient } from "../../../shared/lib/react-query";
 import {
   createTestQueryClient,
@@ -106,11 +108,13 @@ describe("useComunicacoes", () => {
     expect(result.current.comunicacoes).toHaveLength(2);
 
     // Create new comunicacao
-    await result.current.createComunicacao({
-      titulo: "New Communication",
-      autor: "Test Author",
-      tipo: "Comunicado",
-      descricao: "Test description",
+    await act(async () => {
+      await result.current.createComunicacao({
+        titulo: "New Communication",
+        autor: "Test Author",
+        tipo: "Comunicado",
+        descricao: "Test description",
+      });
     });
 
     expect(mockedService.createComunicacao).toHaveBeenCalledWith({
@@ -134,11 +138,13 @@ describe("useComunicacoes", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    await result.current.updateComunicacao("1", {
-      titulo: "Updated Title",
-      autor: "Test Author",
-      tipo: "Comunicado",
-      descricao: "Test description",
+    await act(async () => {
+      await result.current.updateComunicacao("1", {
+        titulo: "Updated Title",
+        autor: "Test Author",
+        tipo: "Comunicado",
+        descricao: "Test description",
+      });
     });
 
     expect(mockedService.updateComunicacao).toHaveBeenCalledWith("1", {
@@ -161,7 +167,9 @@ describe("useComunicacoes", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    await result.current.deleteComunicacao("1");
+    await act(async () => {
+      await result.current.deleteComunicacao("1");
+    });
 
     expect(mockedService.deleteComunicacao).toHaveBeenCalledWith("1");
   });

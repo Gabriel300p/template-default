@@ -9,6 +9,7 @@ import {
   AlertDialogTitle,
 } from "@shared/components/ui/alert-dialog";
 import { memo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Comunicacao } from "../../schemas/comunicacao.schemas";
 
 interface ModalDeleteConfirmProps {
@@ -25,6 +26,7 @@ export const ModalDeleteConfirm = memo(function ModalDeleteConfirm({
   onConfirm,
 }: ModalDeleteConfirmProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation("records");
 
   const handleConfirm = async () => {
     setIsLoading(true);
@@ -42,20 +44,19 @@ export const ModalDeleteConfirm = memo(function ModalDeleteConfirm({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Deseja remover essa comunicação?</AlertDialogTitle>
+          <AlertDialogTitle>{t("delete.title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Esta comunicação não será excluída permanentemente. Você poderá
-            recuperá-la posteriormente, se necessário.
+            {t("delete.description")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading}>Fechar</AlertDialogCancel>
+          <AlertDialogCancel disabled={isLoading}>{t("delete.close")}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
             className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
           >
-            {isLoading ? "Removendo..." : "Remover"}
+            {isLoading ? t("delete.removing") : t("delete.confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

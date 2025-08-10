@@ -1,6 +1,7 @@
 import Logo from "@/assets/logo.svg";
 import { LogOut } from "lucide-react";
 import { Button } from "../ui/button";
+import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
 
 export function TopBar() {
   const handleLogout = () => {
@@ -21,7 +22,7 @@ export function TopBar() {
         />
 
         {/* Usuário */}
-        <div className="flex items-center gap-3 md:gap-5">
+  <div className="flex items-center gap-3 md:gap-5">
           <div className="flex items-center space-x-2">
             <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full md:h-9 md:w-9">
               <span className="text-xs font-medium text-white md:text-sm">
@@ -36,6 +37,7 @@ export function TopBar() {
             </span>
           </div>
           <hr className="h-4 w-px border border-slate-600 md:h-6" />
+          <LanguageSwitcher />
           {/* Botão de Logout */}
           <Button
             variant="ghost"

@@ -8,8 +8,8 @@ import {
 } from "@shared/components/ui/table";
 import type { Cell, Row, Table as TableType } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import { motion } from "framer-motion";
 import { memo } from "react";
+import { AnimatedBox, AnimatedTableRow } from "@shared/components/animations/motion";
 
 interface OptimizedTableProps<TData> {
   table: TableType<TData>;
@@ -26,27 +26,29 @@ const TableRowMemo = memo(function TableRowMemo<TData>({
   index: number;
   enableAnimations?: boolean;
 }) {
-  const RowComponent = enableAnimations ? motion.tr : "tr";
-  const animationProps = enableAnimations
-    ? {
-        initial: { opacity: 0, x: -10 },
-        animate: { opacity: 1, x: 0 },
-        transition: { delay: index * 0.05, duration: 0.3 },
-      }
-    : {};
-
+  if (enableAnimations) {
+    return (
+      <AnimatedTableRow
+        index={index}
+        className="hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors"
+      >
+        {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
+          <TableCell key={cell.id}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </TableCell>
+        ))}
+      </AnimatedTableRow>
+    );
+  }
+  
   return (
-    <RowComponent
-      key={row.id}
-      {...animationProps}
-      className="hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors"
-    >
+    <TableRow className="hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors">
       {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
         <TableCell key={cell.id}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
       ))}
-    </RowComponent>
+    </TableRow>
   );
 });
 
@@ -57,10 +59,8 @@ export function OptimizedTable<TData>({
   const { rows } = table.getRowModel();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+    <AnimatedBox
+      variant="fadeIn"
       className="rounded-md border"
     >
       <Table>
@@ -102,6 +102,6 @@ export function OptimizedTable<TData>({
           )}
         </TableBody>
       </Table>
-    </motion.div>
+    </AnimatedBox>
   );
 }
