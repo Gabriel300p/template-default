@@ -1,0 +1,283 @@
+{
+  "templates": {
+    "default": {
+      "name": "Template Padrão",
+      "description": "Template completo para documentação de features",
+      "enabled": true,
+      "audiences": {
+        "developer": {
+          "enabled": true,
+          "filename": "technical.md",
+          "sections": [
+            "overview",
+            "components",
+            "props",
+            "hooks",
+            "apis",
+            "examples",
+            "tests"
+          ]
+        },
+        "designer": {
+          "enabled": true,
+          "filename": "design.md",
+          "sections": [
+            "overview",
+            "ui-elements",
+            "interactions",
+            "responsive",
+            "accessibility"
+          ]
+        },
+        "business": {
+          "enabled": true,
+          "filename": "business.md",
+          "sections": [
+            "overview",
+            "user-flows",
+            "business-rules",
+            "acceptance-criteria"
+          ]
+        }
+      }
+    },
+    "minimal": {
+      "name": "Template Mínimo",
+      "description": "Template simplificado com informações essenciais",
+      "enabled": false,
+      "audiences": {
+        "all": {
+          "enabled": true,
+          "filename": "readme.md",
+          "sections": [
+            "overview",
+            "usage",
+            "components"
+          ]
+        }
+      }
+    },
+    "comprehensive": {
+      "name": "Template Completo",
+      "description": "Template detalhado com todas as informações possíveis",
+      "enabled": false,
+      "audiences": {
+        "developer": {
+          "enabled": true,
+          "filename": "technical-detailed.md",
+          "sections": [
+            "overview",
+            "architecture",
+            "components",
+            "props",
+            "hooks",
+            "services",
+            "types",
+            "apis",
+            "state-management",
+            "performance",
+            "examples",
+            "tests",
+            "troubleshooting"
+          ]
+        },
+        "designer": {
+          "enabled": true,
+          "filename": "design-detailed.md",
+          "sections": [
+            "overview",
+            "design-system",
+            "ui-elements",
+            "interactions",
+            "animations",
+            "responsive",
+            "accessibility",
+            "user-flows",
+            "mockups"
+          ]
+        },
+        "business": {
+          "enabled": true,
+          "filename": "business-detailed.md",
+          "sections": [
+            "overview",
+            "business-context",
+            "user-stories",
+            "user-flows",
+            "business-rules",
+            "acceptance-criteria",
+            "kpis",
+            "risks"
+          ]
+        },
+        "qa": {
+          "enabled": true,
+          "filename": "testing.md",
+          "sections": [
+            "overview",
+            "test-scenarios",
+            "acceptance-criteria",
+            "edge-cases",
+            "performance-requirements",
+            "accessibility-tests"
+          ]
+        }
+      }
+    }
+  },
+  "sections": {
+    "overview": {
+      "title": "Visão Geral",
+      "description": "Descrição geral da feature",
+      "required": true
+    },
+    "components": {
+      "title": "Componentes",
+      "description": "Lista e descrição dos componentes"
+    },
+    "props": {
+      "title": "Propriedades",
+      "description": "Props dos componentes principais"
+    },
+    "hooks": {
+      "title": "Hooks",
+      "description": "Hooks customizados utilizados"
+    },
+    "apis": {
+      "title": "APIs",
+      "description": "Endpoints e serviços utilizados"
+    },
+    "ui-elements": {
+      "title": "Elementos de Interface",
+      "description": "Filtros, botões, formulários, tabelas, etc."
+    },
+    "interactions": {
+      "title": "Interações",
+      "description": "Como o usuário interage com a interface"
+    },
+    "user-flows": {
+      "title": "Fluxos do Usuário",
+      "description": "Jornadas e fluxos principais"
+    },
+    "business-rules": {
+      "title": "Regras de Negócio",
+      "description": "Lógica de negócio implementada"
+    },
+    "acceptance-criteria": {
+      "title": "Critérios de Aceite",
+      "description": "Critérios para validação da feature"
+    },
+    "examples": {
+      "title": "Exemplos",
+      "description": "Exemplos de uso e implementação"
+    },
+    "tests": {
+      "title": "Testes",
+      "description": "Estratégias e casos de teste"
+    },
+    "responsive": {
+      "title": "Responsividade",
+      "description": "Comportamento em diferentes telas"
+    },
+    "accessibility": {
+      "title": "Acessibilidade",
+      "description": "Recursos de acessibilidade"
+    },
+    "usage": {
+      "title": "Como Usar",
+      "description": "Instruções de uso"
+    },
+    "architecture": {
+      "title": "Arquitetura",
+      "description": "Estrutura e organização do código"
+    },
+    "services": {
+      "title": "Serviços",
+      "description": "Serviços e integrações"
+    },
+    "types": {
+      "title": "Tipos",
+      "description": "Definições de tipos TypeScript"
+    },
+    "state-management": {
+      "title": "Gerenciamento de Estado",
+      "description": "Como o estado é gerenciado"
+    },
+    "performance": {
+      "title": "Performance",
+      "description": "Otimizações e métricas"
+    },
+    "troubleshooting": {
+      "title": "Solução de Problemas",
+      "description": "Problemas comuns e soluções"
+    },
+    "design-system": {
+      "title": "Design System",
+      "description": "Componentes do design system utilizados"
+    },
+    "animations": {
+      "title": "Animações",
+      "description": "Animações e transições"
+    },
+    "mockups": {
+      "title": "Mockups",
+      "description": "Designs e protótipos"
+    },
+    "business-context": {
+      "title": "Contexto de Negócio",
+      "description": "Contexto e justificativa da feature"
+    },
+    "user-stories": {
+      "title": "Histórias de Usuário",
+      "description": "User stories relacionadas"
+    },
+    "kpis": {
+      "title": "KPIs",
+      "description": "Indicadores de sucesso"
+    },
+    "risks": {
+      "title": "Riscos",
+      "description": "Riscos identificados"
+    },
+    "test-scenarios": {
+      "title": "Cenários de Teste",
+      "description": "Cenários principais de teste"
+    },
+    "edge-cases": {
+      "title": "Casos Extremos",
+      "description": "Casos extremos e validações"
+    },
+    "performance-requirements": {
+      "title": "Requisitos de Performance",
+      "description": "Métricas e requisitos de performance"
+    },
+    "accessibility-tests": {
+      "title": "Testes de Acessibilidade",
+      "description": "Validações de acessibilidade"
+    }
+  },
+  "output": {
+    "baseDir": "docs/features",
+    "createSubdirectories": true,
+    "includeTimestamp": true,
+    "includeMetadata": true
+  },
+  "features": {
+    "screenshots": {
+      "enabled": false,
+      "automatic": false,
+      "directory": "screenshots"
+    },
+    "diagrams": {
+      "enabled": true,
+      "automatic": true,
+      "types": ["flowchart", "sequence"]
+    },
+    "openai": {
+      "enabled": true,
+      "enhance_descriptions": true,
+      "generate_examples": true,
+      "create_diagrams": true
+    }
+  }
+}
