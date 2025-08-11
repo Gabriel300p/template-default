@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-08-11T14:04:33.598Z",
+  "project": "backend",
+  "type": "api-documentation",
+  "controllers": [],
+  "models": [],
+  "endpoints": [],
+  "summary": {
+    "totalControllers": 0,
+    "totalEndpoints": 0,
+    "totalModels": 0,
+    "httpMethods": [],
+    "routes": []
+  }
+}

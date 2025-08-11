@@ -1,0 +1,703 @@
+{
+  "timestamp": "2025-08-11T14:04:50.698Z",
+  "project": "backend",
+  "type": "architecture-documentation",
+  "architecture": {
+    "folders": {
+      ".eslintrc.js": {
+        "type": "file",
+        "extension": ".js",
+        "size": 4429,
+        "purpose": "JavaScript file"
+      },
+      ".github": {
+        "type": "directory",
+        "children": {
+          "workflows": {
+            "type": "directory",
+            "children": {
+              "ci.yml": {
+                "type": "file",
+                "extension": ".yml",
+                "size": 7812,
+                "purpose": "YAML configuration"
+              }
+            },
+            "fileCount": 1,
+            "purpose": "Mixed files"
+          }
+        },
+        "fileCount": 1,
+        "purpose": "Mixed files"
+      },
+      ".husky": {
+        "type": "directory",
+        "children": {},
+        "fileCount": 1,
+        "purpose": "Mixed files"
+      },
+      ".lintstagedrc.json": {
+        "type": "file",
+        "extension": ".json",
+        "size": 172,
+        "purpose": "Configuration/data file"
+      },
+      "CHANGELOG.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 5800,
+        "purpose": "Documentation file"
+      },
+      "CONTRIBUTING.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 14516,
+        "purpose": "Documentation file"
+      },
+      "DEV_GUIDE.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 15073,
+        "purpose": "Documentation file"
+      },
+      "docker": {
+        "type": "directory",
+        "children": {},
+        "fileCount": 0,
+        "purpose": "Mixed files"
+      },
+      "docker-compose.yml": {
+        "type": "file",
+        "extension": ".yml",
+        "size": 2664,
+        "purpose": "Docker services configuration"
+      },
+      "docs": {
+        "type": "directory",
+        "children": {
+          "api": {
+            "type": "directory",
+            "children": {
+              "README.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 3069,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 1,
+            "purpose": "API endpoints"
+          },
+          "architecture": {
+            "type": "directory",
+            "children": {
+              "README.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 8530,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 1,
+            "purpose": "Documentation"
+          },
+          "deployment": {
+            "type": "directory",
+            "children": {
+              "README.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 11721,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 1,
+            "purpose": "Documentation"
+          }
+        },
+        "fileCount": 3,
+        "purpose": "Documentation"
+      },
+      "jest.config.js": {
+        "type": "file",
+        "extension": ".js",
+        "size": 1430,
+        "purpose": "Jest testing configuration"
+      },
+      "nest-cli.json": {
+        "type": "file",
+        "extension": ".json",
+        "size": 459,
+        "purpose": "Configuration/data file"
+      },
+      "package.json": {
+        "type": "file",
+        "extension": ".json",
+        "size": 4718,
+        "purpose": "Project dependencies and configuration"
+      },
+      "README.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 5467,
+        "purpose": "Documentation file"
+      },
+      "scripts": {
+        "type": "directory",
+        "children": {},
+        "fileCount": 0,
+        "purpose": "Build/utility scripts"
+      },
+      "src": {
+        "type": "directory",
+        "children": {
+          "app": {
+            "type": "directory",
+            "children": {
+              "app.controller.ts": {
+                "type": "file",
+                "extension": ".ts",
+                "size": 1065,
+                "purpose": "TypeScript file"
+              },
+              "app.module.ts": {
+                "type": "file",
+                "extension": ".ts",
+                "size": 3721,
+                "purpose": "TypeScript file"
+              },
+              "app.service.ts": {
+                "type": "file",
+                "extension": ".ts",
+                "size": 742,
+                "purpose": "TypeScript file"
+              }
+            },
+            "fileCount": 3,
+            "purpose": "JavaScript/TypeScript files"
+          },
+          "database": {
+            "type": "directory",
+            "children": {
+              "migrations": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 0,
+                "purpose": "Mixed files"
+              },
+              "seeds": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 0,
+                "purpose": "Mixed files"
+              }
+            },
+            "fileCount": 1,
+            "purpose": "Database related files"
+          },
+          "main.ts": {
+            "type": "file",
+            "extension": ".ts",
+            "size": 3579,
+            "purpose": "TypeScript file"
+          },
+          "modules": {
+            "type": "directory",
+            "children": {
+              "auth": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 0,
+                "purpose": "Mixed files"
+              },
+              "comunicacoes": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 0,
+                "purpose": "Mixed files"
+              },
+              "health": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 2,
+                "purpose": "JavaScript/TypeScript files"
+              },
+              "users": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 0,
+                "purpose": "Mixed files"
+              }
+            },
+            "fileCount": 2,
+            "purpose": "Mixed files"
+          },
+          "shared": {
+            "type": "directory",
+            "children": {
+              "common": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 17,
+                "purpose": "Mixed files"
+              },
+              "config": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 4,
+                "purpose": "Configuration files"
+              },
+              "constants": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 1,
+                "purpose": "JavaScript/TypeScript files"
+              },
+              "schemas": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 2,
+                "purpose": "JavaScript/TypeScript files"
+              },
+              "types": {
+                "type": "directory",
+                "children": {},
+                "fileCount": 0,
+                "purpose": "TypeScript type definitions"
+              }
+            },
+            "fileCount": 24,
+            "purpose": "Mixed files"
+          }
+        },
+        "fileCount": 31,
+        "purpose": "Source code"
+      },
+      "test": {
+        "type": "directory",
+        "children": {
+          "e2e": {
+            "type": "directory",
+            "children": {},
+            "fileCount": 0,
+            "purpose": "Mixed files"
+          },
+          "fixtures": {
+            "type": "directory",
+            "children": {},
+            "fileCount": 0,
+            "purpose": "Mixed files"
+          },
+          "health.e2e-spec.ts": {
+            "type": "file",
+            "extension": ".ts",
+            "size": 5281,
+            "purpose": "TypeScript file"
+          },
+          "integration": {
+            "type": "directory",
+            "children": {},
+            "fileCount": 0,
+            "purpose": "Mixed files"
+          },
+          "jest-e2e.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 707,
+            "purpose": "Configuration/data file"
+          },
+          "setup-e2e.ts": {
+            "type": "file",
+            "extension": ".ts",
+            "size": 5539,
+            "purpose": "TypeScript file"
+          },
+          "setup.ts": {
+            "type": "file",
+            "extension": ".ts",
+            "size": 3610,
+            "purpose": "TypeScript file"
+          },
+          "unit": {
+            "type": "directory",
+            "children": {},
+            "fileCount": 0,
+            "purpose": "Mixed files"
+          }
+        },
+        "fileCount": 4,
+        "purpose": "Test files"
+      },
+      "tsconfig.json": {
+        "type": "file",
+        "extension": ".json",
+        "size": 786,
+        "purpose": "TypeScript configuration"
+      }
+    },
+    "dependencies": {
+      "framework": [
+        {
+          "name": "@nestjs/common",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@nestjs/core",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@nestjs/platform-express",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@nestjs/config",
+          "version": "^3.0.0"
+        },
+        {
+          "name": "@nestjs/jwt",
+          "version": "^10.1.0"
+        },
+        {
+          "name": "@nestjs/passport",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@nestjs/swagger",
+          "version": "^7.1.0"
+        },
+        {
+          "name": "@nestjs/throttler",
+          "version": "^5.0.0"
+        },
+        {
+          "name": "@nestjs/terminus",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@nestjs/event-emitter",
+          "version": "^2.0.0"
+        },
+        {
+          "name": "@nestjs/cache-manager",
+          "version": "^2.0.0"
+        },
+        {
+          "name": "@nestjs/schedule",
+          "version": "^3.0.0"
+        },
+        {
+          "name": "express-rate-limit",
+          "version": "^6.8.0"
+        },
+        {
+          "name": "nestjs-zod",
+          "version": "^3.0.0"
+        },
+        {
+          "name": "swagger-ui-express",
+          "version": "^5.0.0"
+        },
+        {
+          "name": "@nestjs/cli",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@nestjs/schematics",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@nestjs/testing",
+          "version": "^10.0.0"
+        },
+        {
+          "name": "@types/express",
+          "version": "^4.17.17"
+        }
+      ],
+      "ui": [],
+      "state": [],
+      "routing": [],
+      "testing": [
+        {
+          "name": "@types/jest",
+          "version": "^29.5.2"
+        },
+        {
+          "name": "jest",
+          "version": "^29.5.0"
+        },
+        {
+          "name": "ts-jest",
+          "version": "^29.1.0"
+        }
+      ],
+      "build": [
+        {
+          "name": "@typescript-eslint/eslint-plugin",
+          "version": "^6.0.0"
+        },
+        {
+          "name": "@typescript-eslint/parser",
+          "version": "^6.0.0"
+        },
+        {
+          "name": "typescript",
+          "version": "^5.1.3"
+        }
+      ],
+      "utility": [
+        {
+          "name": "date-fns",
+          "version": "^2.30.0"
+        },
+        {
+          "name": "lodash",
+          "version": "^4.17.21"
+        },
+        {
+          "name": "@types/lodash",
+          "version": "^4.14.195"
+        }
+      ],
+      "database": [
+        {
+          "name": "@prisma/client",
+          "version": "^5.0.0"
+        },
+        {
+          "name": "prisma",
+          "version": "^5.0.0"
+        }
+      ],
+      "other": [
+        {
+          "name": "passport",
+          "version": "^0.6.0"
+        },
+        {
+          "name": "passport-jwt",
+          "version": "^4.0.1"
+        },
+        {
+          "name": "passport-local",
+          "version": "^1.0.0"
+        },
+        {
+          "name": "passport-google-oauth20",
+          "version": "^2.0.0"
+        },
+        {
+          "name": "passport-github2",
+          "version": "^0.1.12"
+        },
+        {
+          "name": "bcrypt",
+          "version": "^5.1.0"
+        },
+        {
+          "name": "helmet",
+          "version": "^7.0.0"
+        },
+        {
+          "name": "compression",
+          "version": "^1.7.4"
+        },
+        {
+          "name": "cors",
+          "version": "^2.8.5"
+        },
+        {
+          "name": "class-validator",
+          "version": "^0.14.0"
+        },
+        {
+          "name": "class-transformer",
+          "version": "^0.5.1"
+        },
+        {
+          "name": "zod",
+          "version": "^3.22.0"
+        },
+        {
+          "name": "uuid",
+          "version": "^9.0.0"
+        },
+        {
+          "name": "winston",
+          "version": "^3.10.0"
+        },
+        {
+          "name": "nest-winston",
+          "version": "^1.9.4"
+        },
+        {
+          "name": "cache-manager",
+          "version": "^5.2.0"
+        },
+        {
+          "name": "cache-manager-redis-store",
+          "version": "^3.0.1"
+        },
+        {
+          "name": "redis",
+          "version": "^4.6.0"
+        },
+        {
+          "name": "nodemailer",
+          "version": "^6.9.0"
+        },
+        {
+          "name": "handlebars",
+          "version": "^4.7.8"
+        },
+        {
+          "name": "multer",
+          "version": "^1.4.5-lts.1"
+        },
+        {
+          "name": "sharp",
+          "version": "^0.32.0"
+        },
+        {
+          "name": "reflect-metadata",
+          "version": "^0.1.13"
+        },
+        {
+          "name": "rxjs",
+          "version": "^7.8.1"
+        },
+        {
+          "name": "@types/node",
+          "version": "^20.3.1"
+        },
+        {
+          "name": "@types/supertest",
+          "version": "^2.0.12"
+        },
+        {
+          "name": "@types/bcrypt",
+          "version": "^5.0.0"
+        },
+        {
+          "name": "@types/passport-jwt",
+          "version": "^3.0.9"
+        },
+        {
+          "name": "@types/passport-local",
+          "version": "^1.0.35"
+        },
+        {
+          "name": "@types/passport-google-oauth20",
+          "version": "^2.0.11"
+        },
+        {
+          "name": "@types/uuid",
+          "version": "^9.0.2"
+        },
+        {
+          "name": "@types/nodemailer",
+          "version": "^6.4.8"
+        },
+        {
+          "name": "@types/multer",
+          "version": "^1.4.7"
+        },
+        {
+          "name": "@types/compression",
+          "version": "^1.7.2"
+        },
+        {
+          "name": "@types/cors",
+          "version": "^2.8.13"
+        },
+        {
+          "name": "eslint",
+          "version": "^8.42.0"
+        },
+        {
+          "name": "eslint-config-prettier",
+          "version": "^8.8.0"
+        },
+        {
+          "name": "eslint-plugin-prettier",
+          "version": "^4.2.1"
+        },
+        {
+          "name": "husky",
+          "version": "^8.0.3"
+        },
+        {
+          "name": "lint-staged",
+          "version": "^13.2.3"
+        },
+        {
+          "name": "prettier",
+          "version": "^2.8.8"
+        },
+        {
+          "name": "source-map-support",
+          "version": "^0.5.21"
+        },
+        {
+          "name": "supertest",
+          "version": "^6.3.3"
+        },
+        {
+          "name": "ts-loader",
+          "version": "^9.4.3"
+        },
+        {
+          "name": "ts-node",
+          "version": "^10.9.1"
+        },
+        {
+          "name": "tsconfig-paths",
+          "version": "^4.2.0"
+        }
+      ]
+    },
+    "patterns": [
+      {
+        "name": "Modular Architecture",
+        "description": "Application organized in feature modules"
+      }
+    ],
+    "technologies": [
+      "NestJS",
+      "TypeScript",
+      "Jest",
+      "Prisma",
+      "Docker",
+      "Docker Compose"
+    ]
+  },
+  "summary": {
+    "technologies": [
+      "NestJS",
+      "TypeScript",
+      "Jest",
+      "Prisma",
+      "Docker",
+      "Docker Compose"
+    ],
+    "patterns": [
+      "Modular Architecture"
+    ],
+    "totalFolders": 30,
+    "totalFiles": 23,
+    "mainDependencies": [
+      {
+        "name": "@nestjs/common",
+        "version": "^10.0.0"
+      },
+      {
+        "name": "@nestjs/core",
+        "version": "^10.0.0"
+      },
+      {
+        "name": "@nestjs/platform-express",
+        "version": "^10.0.0"
+      }
+    ]
+  }
+}

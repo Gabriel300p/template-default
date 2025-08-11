@@ -1,0 +1,61 @@
+{
+  "output": {
+    "dev": "docs/dev",
+    "ai": "docs/ai",
+    "export": "docs/export"
+  },
+  "generators": {
+    "api": true,
+    "components": true,
+    "architecture": true
+  },
+  "formats": ["markdown", "json"],
+  "includePatterns": ["**/*.ts", "**/*.js", "**/*.jsx", "**/*.tsx", "**/*.vue"],
+  "excludePatterns": [
+    "node_modules/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/*.d.ts"
+  ],
+  "api": {
+    "scanDecorators": [
+      "@Controller",
+      "@Get",
+      "@Post",
+      "@Put",
+      "@Delete",
+      "@Patch"
+    ],
+    "includeSwagger": true,
+    "includeValidation": true
+  },
+  "components": {
+    "scanPatterns": ["**/*.vue", "**/*.tsx", "**/*.jsx"],
+    "includeProps": true,
+    "includeEvents": true,
+    "includeSlots": true
+  },
+  "architecture": {
+    "generateDiagrams": true,
+    "includeDatabase": true,
+    "includeAPI": true,
+    "diagramFormats": ["mermaid", "plantuml"]
+  },
+  "openai": {
+    "enabled": true,
+    "model": "gpt-4o-mini",
+    "maxTokens": 2000,
+    "temperature": 0.3,
+    "enhance": {
+      "projectOverview": true,
+      "apiDocumentation": true,
+      "componentDocumentation": true,
+      "architectureDocumentation": true,
+      "generateReadmes": true,
+      "generateDiagrams": true
+    }
+  }
+}

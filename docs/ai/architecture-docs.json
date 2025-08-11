@@ -1,0 +1,400 @@
+{
+  "timestamp": "2025-08-11T14:05:30.451Z",
+  "project": "docs",
+  "type": "architecture-documentation",
+  "architecture": {
+    "folders": {
+      "ai": {
+        "type": "directory",
+        "children": {
+          "api-backend.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 290,
+            "purpose": "Configuration/data file"
+          },
+          "architecture-automation.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 12748,
+            "purpose": "Configuration/data file"
+          },
+          "architecture-backend.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 16883,
+            "purpose": "Configuration/data file"
+          },
+          "project-context.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 1346,
+            "purpose": "Configuration/data file"
+          }
+        },
+        "fileCount": 4,
+        "purpose": "Configuration files"
+      },
+      "ai-guides": {
+        "type": "directory",
+        "children": {
+          "AI_DEVELOPMENT_GUIDE.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 15188,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 1,
+        "purpose": "Documentation"
+      },
+      "architecture": {
+        "type": "directory",
+        "children": {
+          "api-contracts.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 14952,
+            "purpose": "Documentation file"
+          },
+          "legacy-architecture.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 33927,
+            "purpose": "Documentation file"
+          },
+          "SYSTEM_ARCHITECTURE.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 34356,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 3,
+        "purpose": "Documentation"
+      },
+      "dev": {
+        "type": "directory",
+        "children": {
+          "API_BACKEND.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 3127,
+            "purpose": "Documentation file"
+          },
+          "ARCHITECTURE_AUTOMATION.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 8739,
+            "purpose": "Documentation file"
+          },
+          "ARCHITECTURE_BACKEND.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 6764,
+            "purpose": "Documentation file"
+          },
+          "PROJECT_OVERVIEW.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 3424,
+            "purpose": "Documentation file"
+          },
+          "README_ENHANCED.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 2998,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 5,
+        "purpose": "Documentation"
+      },
+      "development": {
+        "type": "directory",
+        "children": {
+          "design-system.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 7619,
+            "purpose": "Documentation file"
+          },
+          "DEVELOPER_GUIDE.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 13367,
+            "purpose": "Documentation file"
+          },
+          "error-resolution.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 3699,
+            "purpose": "Documentation file"
+          },
+          "frontend-implementation.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 6128,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 4,
+        "purpose": "Documentation"
+      },
+      "export": {
+        "type": "directory",
+        "children": {
+          "automation-architecture.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 556,
+            "purpose": "Documentation file"
+          },
+          "backend-api.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 65,
+            "purpose": "Documentation file"
+          },
+          "backend-architecture.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 554,
+            "purpose": "Documentation file"
+          },
+          "overview.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 325,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 4,
+        "purpose": "Documentation"
+      },
+      "features": {
+        "type": "directory",
+        "children": {
+          "RECORDS_FEATURE.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 45936,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 1,
+        "purpose": "Documentation"
+      },
+      "frontend": {
+        "type": "directory",
+        "children": {
+          "animations": {
+            "type": "directory",
+            "children": {
+              "executive-summary.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 8314,
+                "purpose": "Documentation file"
+              },
+              "implementation-guide.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 1807,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 2,
+            "purpose": "Documentation"
+          },
+          "ci-cd": {
+            "type": "directory",
+            "children": {
+              "setup-guide.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 4831,
+                "purpose": "Documentation file"
+              },
+              "test-checklist.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 3170,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 2,
+            "purpose": "Documentation"
+          },
+          "features": {
+            "type": "directory",
+            "children": {
+              "filters-dsl.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 3874,
+                "purpose": "Documentation file"
+              },
+              "filters.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 6145,
+                "purpose": "Documentation file"
+              },
+              "i18n-conventions.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 2913,
+                "purpose": "Documentation file"
+              },
+              "toast-system.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 10179,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 4,
+            "purpose": "Documentation"
+          },
+          "optimization": {
+            "type": "directory",
+            "children": {
+              "barrel-exports.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 4436,
+                "purpose": "Documentation file"
+              },
+              "code-splitting.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 5954,
+                "purpose": "Documentation file"
+              },
+              "rendering.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 5386,
+                "purpose": "Documentation file"
+              },
+              "tanstack-query.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 7604,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 4,
+            "purpose": "Documentation"
+          },
+          "testing": {
+            "type": "directory",
+            "children": {
+              "final-report.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 5438,
+                "purpose": "Documentation file"
+              },
+              "status-report.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 5461,
+                "purpose": "Documentation file"
+              },
+              "strategy.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 8754,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 3,
+            "purpose": "Test files"
+          }
+        },
+        "fileCount": 15,
+        "purpose": "Mixed files"
+      },
+      "INDEX.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 7305,
+        "purpose": "Entry point file"
+      },
+      "ORGANIZATION_SUMMARY.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 7383,
+        "purpose": "Documentation file"
+      },
+      "project-planning": {
+        "type": "directory",
+        "children": {
+          "implementation-plan.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 8267,
+            "purpose": "Documentation file"
+          },
+          "project-analysis-v2.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 8933,
+            "purpose": "Documentation file"
+          },
+          "project-analysis.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 10404,
+            "purpose": "Documentation file"
+          },
+          "structure-proposal.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 19867,
+            "purpose": "Documentation file"
+          },
+          "todo.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 2870,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 5,
+        "purpose": "Documentation"
+      },
+      "system": {
+        "type": "directory",
+        "children": {
+          "documentation-system.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 6223,
+            "purpose": "Documentation file"
+          },
+          "executive-summary.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 7990,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 2,
+        "purpose": "Documentation"
+      }
+    },
+    "dependencies": [],
+    "patterns": [],
+    "technologies": []
+  },
+  "summary": {
+    "technologies": [],
+    "patterns": [],
+    "totalFolders": 15,
+    "totalFiles": 46,
+    "mainDependencies": []
+  }
+}

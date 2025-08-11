@@ -1,0 +1,465 @@
+{
+  "timestamp": "2025-08-11T14:03:43.513Z",
+  "project": "automation",
+  "type": "architecture-documentation",
+  "architecture": {
+    "folders": {
+      "config": {
+        "type": "directory",
+        "children": {
+          "project.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 1751,
+            "purpose": "Configuration/data file"
+          },
+          "prompts.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 5214,
+            "purpose": "Configuration/data file"
+          }
+        },
+        "fileCount": 2,
+        "purpose": "Configuration files"
+      },
+      "doc-generator": {
+        "type": "directory",
+        "children": {
+          "config": {
+            "type": "directory",
+            "children": {
+              "doc-config.json": {
+                "type": "file",
+                "extension": ".json",
+                "size": 1354,
+                "purpose": "Configuration/data file"
+              }
+            },
+            "fileCount": 1,
+            "purpose": "Configuration files"
+          },
+          "enhancers": {
+            "type": "directory",
+            "children": {
+              "openai-enhancer.js": {
+                "type": "file",
+                "extension": ".js",
+                "size": 9940,
+                "purpose": "JavaScript file"
+              }
+            },
+            "fileCount": 1,
+            "purpose": "JavaScript/TypeScript files"
+          },
+          "generators": {
+            "type": "directory",
+            "children": {
+              "api-docs.js": {
+                "type": "file",
+                "extension": ".js",
+                "size": 13950,
+                "purpose": "JavaScript file"
+              },
+              "architecture.js": {
+                "type": "file",
+                "extension": ".js",
+                "size": 21620,
+                "purpose": "JavaScript file"
+              },
+              "component-docs.js": {
+                "type": "file",
+                "extension": ".js",
+                "size": 20848,
+                "purpose": "JavaScript file"
+              }
+            },
+            "fileCount": 3,
+            "purpose": "JavaScript/TypeScript files"
+          },
+          "main.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 12109,
+            "purpose": "JavaScript file"
+          },
+          "MVP_SUMMARY.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 11265,
+            "purpose": "Documentation file"
+          },
+          "OPENAI_SETUP.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 5617,
+            "purpose": "Documentation file"
+          },
+          "README.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 6181,
+            "purpose": "Documentation file"
+          },
+          "SEPARATION_GUIDE.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 4241,
+            "purpose": "Documentation file"
+          },
+          "templates": {
+            "type": "directory",
+            "children": {},
+            "fileCount": 1,
+            "purpose": "Mixed files"
+          }
+        },
+        "fileCount": 11,
+        "purpose": "Documentation"
+      },
+      "docs": {
+        "type": "directory",
+        "children": {
+          "ai": {
+            "type": "directory",
+            "children": {
+              "architecture-docs.json": {
+                "type": "file",
+                "extension": ".json",
+                "size": 1786,
+                "purpose": "Configuration/data file"
+              },
+              "project-context.json": {
+                "type": "file",
+                "extension": ".json",
+                "size": 629,
+                "purpose": "Configuration/data file"
+              }
+            },
+            "fileCount": 2,
+            "purpose": "Configuration files"
+          },
+          "dev": {
+            "type": "directory",
+            "children": {
+              "ARCHITECTURE_DOCS.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 670,
+                "purpose": "Documentation file"
+              },
+              "PROJECT_OVERVIEW.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 298,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 2,
+            "purpose": "Documentation"
+          },
+          "export": {
+            "type": "directory",
+            "children": {
+              "docs-architecture.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 238,
+                "purpose": "Documentation file"
+              },
+              "overview.md": {
+                "type": "file",
+                "extension": ".md",
+                "size": 174,
+                "purpose": "Documentation file"
+              }
+            },
+            "fileCount": 2,
+            "purpose": "Documentation"
+          },
+          "GITHUB_SECRETS_SETUP.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 2878,
+            "purpose": "Documentation file"
+          },
+          "SETUP.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 4810,
+            "purpose": "Documentation file"
+          },
+          "TESTE_GITHUB_ACTIONS.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 1837,
+            "purpose": "Documentation file"
+          }
+        },
+        "fileCount": 9,
+        "purpose": "Documentation"
+      },
+      "generate-docs.js": {
+        "type": "file",
+        "extension": ".js",
+        "size": 2000,
+        "purpose": "JavaScript file"
+      },
+      "logs": {
+        "type": "directory",
+        "children": {
+          "analysis-1754587214044.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 336,
+            "purpose": "Configuration/data file"
+          },
+          "analysis-1754588481097.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 540,
+            "purpose": "Configuration/data file"
+          },
+          "analysis-1754588623737.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 306,
+            "purpose": "Configuration/data file"
+          },
+          "analysis-1754588675125.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 325,
+            "purpose": "Configuration/data file"
+          },
+          "analysis-1754588725500.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 231,
+            "purpose": "Configuration/data file"
+          },
+          "analysis-1754589288200.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 336,
+            "purpose": "Configuration/data file"
+          },
+          "analysis-1754589418941.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 223,
+            "purpose": "Configuration/data file"
+          },
+          "analysis-1754589733460.json": {
+            "type": "file",
+            "extension": ".json",
+            "size": 223,
+            "purpose": "Configuration/data file"
+          }
+        },
+        "fileCount": 8,
+        "purpose": "Configuration files"
+      },
+      "package-lock.json": {
+        "type": "file",
+        "extension": ".json",
+        "size": 37439,
+        "purpose": "Configuration/data file"
+      },
+      "package.json": {
+        "type": "file",
+        "extension": ".json",
+        "size": 1478,
+        "purpose": "Project dependencies and configuration"
+      },
+      "README-TESTS.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 5341,
+        "purpose": "Documentation file"
+      },
+      "README.md": {
+        "type": "file",
+        "extension": ".md",
+        "size": 2585,
+        "purpose": "Documentation file"
+      },
+      "scripts": {
+        "type": "directory",
+        "children": {
+          "analyze-code.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 26549,
+            "purpose": "JavaScript file"
+          },
+          "setup-wizard.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 7651,
+            "purpose": "JavaScript file"
+          },
+          "utils": {
+            "type": "directory",
+            "children": {
+              "github-client.js": {
+                "type": "file",
+                "extension": ".js",
+                "size": 11159,
+                "purpose": "JavaScript file"
+              },
+              "openai-client.js": {
+                "type": "file",
+                "extension": ".js",
+                "size": 7679,
+                "purpose": "JavaScript file"
+              },
+              "templates.js": {
+                "type": "file",
+                "extension": ".js",
+                "size": 12221,
+                "purpose": "JavaScript file"
+              }
+            },
+            "fileCount": 3,
+            "purpose": "Utility functions"
+          }
+        },
+        "fileCount": 5,
+        "purpose": "Build/utility scripts"
+      },
+      "templates": {
+        "type": "directory",
+        "children": {},
+        "fileCount": 0,
+        "purpose": "Mixed files"
+      },
+      "test-openai.js": {
+        "type": "file",
+        "extension": ".js",
+        "size": 1877,
+        "purpose": "JavaScript file"
+      },
+      "test-performance.js": {
+        "type": "file",
+        "extension": ".js",
+        "size": 9383,
+        "purpose": "JavaScript file"
+      },
+      "test-quick.js": {
+        "type": "file",
+        "extension": ".js",
+        "size": 2338,
+        "purpose": "JavaScript file"
+      },
+      "test-system.js": {
+        "type": "file",
+        "extension": ".js",
+        "size": 12346,
+        "purpose": "JavaScript file"
+      },
+      "tests": {
+        "type": "directory",
+        "children": {
+          "debug-files.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 1824,
+            "purpose": "JavaScript file"
+          },
+          "debug-filter.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 2348,
+            "purpose": "JavaScript file"
+          },
+          "quick-test.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 1403,
+            "purpose": "JavaScript file"
+          },
+          "README.md": {
+            "type": "file",
+            "extension": ".md",
+            "size": 1194,
+            "purpose": "Documentation file"
+          },
+          "test-final.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 1474,
+            "purpose": "JavaScript file"
+          },
+          "test-github.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 1920,
+            "purpose": "JavaScript file"
+          },
+          "test-openai.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 1786,
+            "purpose": "JavaScript file"
+          },
+          "test-optimized.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 2137,
+            "purpose": "JavaScript file"
+          },
+          "test-production.js": {
+            "type": "file",
+            "extension": ".js",
+            "size": 1151,
+            "purpose": "JavaScript file"
+          }
+        },
+        "fileCount": 9,
+        "purpose": "Test files"
+      }
+    },
+    "dependencies": {
+      "framework": [],
+      "ui": [],
+      "state": [],
+      "routing": [],
+      "testing": [],
+      "build": [],
+      "utility": [],
+      "database": [],
+      "other": [
+        {
+          "name": "@octokit/rest",
+          "version": "^20.0.2"
+        },
+        {
+          "name": "dotenv",
+          "version": "^17.2.1"
+        },
+        {
+          "name": "openai",
+          "version": "^4.0.0"
+        },
+        {
+          "name": "eslint",
+          "version": "^8.0.0"
+        },
+        {
+          "name": "prettier",
+          "version": "^3.0.0"
+        }
+      ]
+    },
+    "patterns": [],
+    "technologies": []
+  },
+  "summary": {
+    "technologies": [],
+    "patterns": [],
+    "totalFolders": 15,
+    "totalFiles": 52,
+    "mainDependencies": []
+  }
+}

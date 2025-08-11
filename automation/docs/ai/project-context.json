@@ -1,0 +1,30 @@
+{
+  "timestamp": "2025-08-11T16:28:07.631Z",
+  "project": {
+    "name": "automation",
+    "type": "monorepo",
+    "structure": {
+      "isMonorepo": true,
+      "projects": [
+        {
+          "name": "docs",
+          "path": "C:\\Desenvolvimento\\template-default\\automation\\docs",
+          "type": "docs",
+          "hasPackageJson": false
+        }
+      ],
+      "hasBackend": false,
+      "hasFrontend": false,
+      "hasAutomation": false,
+      "hasDocs": true
+    }
+  },
+  "summary": {
+    "totalProjects": 1,
+    "projectTypes": {
+      "docs": 1
+    },
+    "technologies": [],
+    "architecture": "monorepo"
+  }
+}
