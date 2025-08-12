@@ -1,0 +1,32 @@
+{
+  "templates": {
+    "technical": {
+      "name": "Documentação Técnica",
+      "description": "Para desenvolvedores - APIs, componentes, arquitetura",
+      "filename": "technical.md",
+      "system_prompt": "Você é um especialista em documentação técnica. Analise o código fornecido e gere documentação clara, precisa e bem estruturada para desenvolvedores.",
+      "prompt_template": "Analise esta feature {{feature_name}} e gere documentação técnica completa:\n\n**Feature:** {{feature_name}}\n**Componentes:** {{components_count}}\n**Hooks:** {{hooks_count}}\n\n**Componentes Encontrados:**\n{{components_summary}}\n\n**Gere documentação seguindo esta estrutura:**\n\n# {{feature_name}} - Documentação Técnica\n\n## 📋 Visão Geral\n[Descrição clara do propósito e responsabilidades da feature]\n\n## 🏗️ Arquitetura\n[Estrutura de componentes, hooks e serviços]\n\n## 🔧 Componentes\n[Documentação detalhada de cada componente com props, hooks utilizados]\n\n## 📦 Dependências\n[Imports e dependências externas importantes]\n\n## 🚀 Como Usar\n[Exemplos práticos de implementação e uso]\n\n## ⚙️ Configurações\n[Parâmetros e configurações disponíveis]\n\n## 🔍 Detalhes de Implementação\n[Padrões utilizados, decisões arquiteturais]\n\n## 🧪 Estratégias de Teste\n[Como testar os componentes desta feature]\n\n## 📝 Notas para Desenvolvedores\n[Limitações, TODOs, considerações importantes]"
+    },
+    "user": {
+      "name": "Guia do Usuário",
+      "description": "Para usuários finais - como usar as funcionalidades",
+      "filename": "user-guide.md",
+      "system_prompt": "Você é um especialista em experiência do usuário e documentação de produto. Transforme informações técnicas em guias práticos e acessíveis para usuários finais.",
+      "prompt_template": "Com base na análise desta feature {{feature_name}}, gere um guia do usuário:\n\n**Funcionalidade:** {{feature_name}}\n**Componentes UI:** {{ui_components}}\n**Elementos detectados:** {{ui_elements}}\n\n**Gere guia seguindo esta estrutura:**\n\n# Como Usar: {{feature_name}}\n\n## 🎯 O que esta funcionalidade faz\n[Explicação clara em linguagem simples do que o usuário pode fazer]\n\n## 📋 Passo a Passo\n[Tutorial detalhado de como usar a funcionalidade]\n\n## ✅ Exemplos Práticos\n[Casos de uso reais e cenários comuns]\n\n## 🎨 Interface\n[Explicação dos elementos da interface que o usuário verá]\n\n## ❓ Perguntas Frequentes\n[Dúvidas comuns e suas respostas]\n\n## ⚠️ Dicas Importantes\n[Coisas importantes que o usuário deve saber]\n\n## 🆘 Resolução de Problemas\n[Como resolver problemas comuns que o usuário pode enfrentar]"
+    },
+    "executive": {
+      "name": "Resumo Executivo",
+      "description": "Para gestores - impacto, valor, métricas",
+      "filename": "executive-summary.md",
+      "system_prompt": "Você é um consultor de negócios especializado em tecnologia. Transforme informações técnicas em insights de alto nível para executivos e tomadores de decisão.",
+      "prompt_template": "Analise o valor de negócio desta feature {{feature_name}}:\n\n**Feature:** {{feature_name}}\n**Complexidade:** {{complexity_level}}\n**Componentes:** {{components_count}}\n**Funcionalidades:** {{feature_capabilities}}\n\n**Gere análise executiva:**\n\n# {{feature_name}} - Resumo Executivo\n\n## 📊 Visão Geral\n[Resumo do que foi desenvolvido e seu propósito no negócio]\n\n## 💼 Valor para o Negócio\n[Como esta feature impacta operações, usuários, produtividade]\n\n## 🎯 Funcionalidades Entregues\n[Lista das principais capacidades implementadas]\n\n## 📈 Métricas e KPIs\n[Indicadores que podem ser impactados por esta feature]\n\n## 💰 Retorno do Investimento\n[Benefícios esperados: eficiência, redução de custos, melhoria da experiência]\n\n## 🏗️ Impacto Técnico\n[Qualidade da implementação, escalabilidade, manutenibilidade]\n\n## ⚠️ Riscos e Considerações\n[Possíveis problemas e como foram mitigados]\n\n## 🚀 Próximos Passos\n[Recomendações para evolução e melhorias futuras]"
+    },
+    "overview": {
+      "name": "Visão Geral",
+      "description": "Resumo geral da feature para todos os públicos",
+      "filename": "overview.md",
+      "system_prompt": "Você é um especialista em comunicação técnica que consegue explicar funcionalidades complexas de forma clara para diferentes públicos.",
+      "prompt_template": "Crie uma visão geral abrangente da feature {{feature_name}}:\n\n**Feature:** {{feature_name}}\n**Componentes:** {{components_summary}}\n**Público-alvo:** Desenvolvedores, usuários e gestores\n\n**Gere documentação geral:**\n\n# {{feature_name}} - Visão Geral\n\n## 🎯 Propósito\n[O que esta feature faz e por que foi criada]\n\n## 👥 Para Quem É\n[Quem se beneficia desta funcionalidade]\n\n## ⭐ Principais Benefícios\n[Vantagens e melhorias que oferece]\n\n## 🏗️ Como Funciona\n[Explicação simples do funcionamento interno]\n\n## 🎨 Interface e Experiência\n[Como os usuários interagem com a feature]\n\n## 🔧 Para Desenvolvedores\n[Aspectos técnicos relevantes em linguagem acessível]\n\n## 📊 Métricas de Sucesso\n[Como medir se a feature está funcionando bem]\n\n## 🔄 Evolução\n[Histórico e planejamento futuro]"
+    }
+  }
+}

@@ -3,18 +3,18 @@
  * Sistema completo de geração de documentação para features
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 class DocumentationGenerator {
   constructor(config = {}) {
     this.config = {
-      format: 'markdown',
-      template: 'standard',
-      audience: 'developer',
-      language: 'pt-BR',
+      format: "markdown",
+      template: "standard",
+      audience: "developer",
+      language: "pt-BR",
       includeIndex: true,
-      ...config
+      ...config,
     };
 
     this.templates = this.loadTemplates();
@@ -24,14 +24,19 @@ class DocumentationGenerator {
    * Carrega templates de documentação
    */
   loadTemplates() {
-    const templatesPath = path.join(__dirname, '..', 'config', 'templates-config.json');
-    
+    const templatesPath = path.join(
+      __dirname,
+      "..",
+      "config",
+      "templates-config.json"
+    );
+
     try {
       if (fs.existsSync(templatesPath)) {
-        return JSON.parse(fs.readFileSync(templatesPath, 'utf8'));
+        return JSON.parse(fs.readFileSync(templatesPath, "utf8"));
       }
     } catch (error) {
-      console.warn('⚠️ Erro ao carregar templates, usando padrão');
+      console.warn("⚠️ Erro ao carregar templates, usando padrão");
     }
 
     // Template padrão se não conseguir carregar
@@ -40,19 +45,25 @@ class DocumentationGenerator {
         standard: {
           audiences: {
             developer: {
-              sections: ['overview', 'components', 'apis', 'examples', 'testing'],
-              format: 'technical'
-            }
-          }
-        }
+              sections: [
+                "overview",
+                "components",
+                "apis",
+                "examples",
+                "testing",
+              ],
+              format: "technical",
+            },
+          },
+        },
       },
       sections: {
-        overview: { title: 'Visão Geral', required: true },
-        components: { title: 'Componentes', required: true },
-        apis: { title: 'APIs', required: false },
-        examples: { title: 'Exemplos', required: false },
-        testing: { title: 'Testes', required: false }
-      }
+        overview: { title: "Visão Geral", required: true },
+        components: { title: "Componentes", required: true },
+        apis: { title: "APIs", required: false },
+        examples: { title: "Exemplos", required: false },
+        testing: { title: "Testes", required: false },
+      },
     };
   }
 
@@ -61,85 +72,434 @@ class DocumentationGenerator {
    */
   async generateFeatureDoc(feature, options = {}) {
     const config = { ...this.config, ...options };
-    
+
     console.log(`📝 Gerando documentação para feature: ${feature.name}`);
-    
+
     try {
       const documentation = {
         metadata: this.generateMetadata(feature),
         content: await this.generateContent(feature, config),
-        files: []
+        files: [],
       };
 
       // Gerar arquivo principal
       const mainContent = await this.renderTemplate(documentation, config);
       const fileName = this.getFileName(feature.name, config.format);
-      const filePath = path.join(config.outputPath || './docs/features', fileName);
+      const filePath = path.join(
+        config.outputPath || "./docs/features",
+        fileName
+      );
 
       documentation.files.push({
         path: filePath,
         content: mainContent,
-        type: 'main'
+        type: "main",
       });
 
       // Gerar arquivos adicionais se necessário
       if (config.generateComponentDocs) {
-        const componentDocs = await this.generateComponentDocs(feature.components, config);
+        const componentDocs = await this.generateComponentDocs(
+          feature.components,
+          config
+        );
         documentation.files.push(...componentDocs);
       }
 
       return documentation;
-      
     } catch (error) {
-      console.error(`❌ Erro ao gerar documentação para ${feature.name}:`, error.message);
+      console.error(
+        `❌ Erro ao gerar documentação para ${feature.name}:`,
+        error.message
+      );
       throw error;
     }
   }
 
   /**
-   * Alias para compatibilidade com o engine
+   * Gera documentação usando template específico e IA
    */
+  async generateWithTemplate(feature, templateKey, options = {}) {
+    const templatesPath = path.join(
+      __dirname,
+      "..",
+      "config",
+      "documentation-templates.json"
+    );
+    let templates = {};
+
+    try {
+      if (fs.existsSync(templatesPath)) {
+        templates = JSON.parse(
+          fs.readFileSync(templatesPath, "utf8")
+        ).templates;
+      }
+    } catch (error) {
+      console.warn("⚠️ Erro ao carregar templates, usando fallback básico");
+      return await this.generateBasicDoc(feature, options);
+    }
+
+    const template = templates[templateKey];
+    if (!template) {
+      console.warn(
+        `⚠️ Template '${templateKey}' não encontrado, usando básico`
+      );
+      return await this.generateBasicDoc(feature, options);
+    }
+
+    try {
+      // Tentar gerar com IA primeiro
+      if (options.useAI) {
+        if (!process.env.OPENAI_API_KEY) {
+          console.log(
+            "⚠️ OpenAI_API_KEY não configurada, usando método básico"
+          );
+          console.log(
+            "   💡 Configure sua API key no arquivo .env para usar IA"
+          );
+        } else {
+          console.log("🤖 Gerando com OpenAI...");
+          const aiResult = await this.generateWithAI(
+            feature,
+            template,
+            options
+          );
+          if (aiResult.success) {
+            return aiResult;
+          }
+          console.log("⚠️ IA falhou, usando método básico");
+        }
+      } else {
+        console.log("📝 Usando método básico (IA desabilitada)");
+      }
+
+      // Fallback para método básico
+      return await this.generateBasicDoc(feature, options, template);
+    } catch (error) {
+      console.error(`❌ Erro na geração: ${error.message}`);
+      return {
+        success: false,
+        error: error.message,
+        filePath: null,
+      };
+    }
+  }
+
+  /**
+   * Gera documentação com IA usando template
+   */
+  async generateWithAI(feature, template, options) {
+    try {
+      const openai = await this.getOpenAIClient({});
+      if (!openai) {
+        return { success: false, error: "OpenAI não disponível" };
+      }
+
+      // Preparar dados para o template
+      const templateData = this.prepareTemplateData(feature);
+      const prompt = this.fillTemplate(template.prompt_template, templateData);
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: template.system_prompt,
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: 3000,
+        temperature: 0.3,
+      });
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        return { success: false, error: "Resposta vazia da IA" };
+      }
+
+      // Salvar arquivo
+      const outputPath = path.join(
+        options.outputPath || "./docs/features",
+        feature.name
+      );
+      if (!fs.existsSync(outputPath)) {
+        fs.mkdirSync(outputPath, { recursive: true });
+      }
+
+      const filePath = path.join(outputPath, template.filename);
+      fs.writeFileSync(filePath, content, "utf8");
+
+      return {
+        success: true,
+        filePath,
+        content,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  /**
+   * Prepara dados para substituição no template
+   */
+  prepareTemplateData(feature) {
+    const components = feature.components || [];
+    const hooks = feature.hooks || [];
+
+    return {
+      feature_name: feature.name,
+      components_count: components.length,
+      hooks_count: hooks.length,
+      complexity_level: this.calculateOverallComplexity(components),
+      components_summary: components
+        .map(
+          (c) =>
+            `- ${c.name} (${c.type}): ${c.description || "Componente " + c.type}`
+        )
+        .join("\n"),
+      ui_components: components.filter(
+        (c) => c.type === "react" || c.type === "vue"
+      ).length,
+      ui_elements: this.extractUIElements(components).join(", "),
+      feature_capabilities: this.inferCapabilities(feature),
+    };
+  }
+
+  /**
+   * Substitui placeholders no template
+   */
+  fillTemplate(template, data) {
+    let result = template;
+    for (const [key, value] of Object.entries(data)) {
+      const regex = new RegExp(`{{${key}}}`, "g");
+      result = result.replace(regex, value || "");
+    }
+    return result;
+  }
+
+  calculateOverallComplexity(components) {
+    if (!components.length) return "baixa";
+
+    const complexities = components.map((c) => c.complexity || "low");
+    const highCount = complexities.filter((c) => c === "high").length;
+    const mediumCount = complexities.filter((c) => c === "medium").length;
+
+    if (highCount > 0) return "alta";
+    if (mediumCount > components.length / 2) return "média";
+    return "baixa";
+  }
+
+  extractUIElements(components) {
+    const elements = new Set();
+    components.forEach((component) => {
+      if (component.uiElements) {
+        component.uiElements.forEach((el) => elements.add(el.type));
+      }
+    });
+    return Array.from(elements);
+  }
+
+  inferCapabilities(feature) {
+    const components = feature.components || [];
+    const capabilities = [];
+
+    if (components.some((c) => c.name.toLowerCase().includes("modal"))) {
+      capabilities.push("Modais e diálogos");
+    }
+    if (
+      components.some(
+        (c) =>
+          c.name.toLowerCase().includes("table") ||
+          c.name.toLowerCase().includes("list")
+      )
+    ) {
+      capabilities.push("Listagem de dados");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("form"))) {
+      capabilities.push("Formulários");
+    }
+    if (
+      components.some(
+        (c) =>
+          c.name.toLowerCase().includes("toolbar") ||
+          c.name.toLowerCase().includes("filter")
+      )
+    ) {
+      capabilities.push("Filtros e busca");
+    }
+
+    return capabilities.join(", ") || "Funcionalidades gerais do sistema";
+  }
+
+  /**
+   * Gera documentação básica sem IA
+   */
+  async generateBasicDoc(feature, options, template = null) {
+    const content = this.generateBasicContent(feature, template);
+
+    const outputPath = path.join(
+      options.outputPath || "./docs/features",
+      feature.name
+    );
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(outputPath, { recursive: true });
+    }
+
+    const filename = template?.filename || `${feature.name}.md`;
+    const filePath = path.join(outputPath, filename);
+    fs.writeFileSync(filePath, content, "utf8");
+
+    return {
+      success: true,
+      filePath,
+      content,
+    };
+  }
+
+  generateBasicContent(feature, template) {
+    const templateName = template?.name || "Documentação";
+
+    let content = `# ${feature.name} - ${templateName}\n\n`;
+    content += `> Documentação da feature ${feature.name}\n\n`;
+    content += `**Última atualização:** ${new Date().toLocaleDateString("pt-BR")}\n\n`;
+
+    // Resumo da feature
+    content += `## 📋 Resumo\n\n`;
+    content += `Esta feature contém ${feature.components?.length || 0} componentes `;
+    content += `e está localizada no diretório \`${feature.path}\`.\n\n`;
+
+    if (feature.components && feature.components.length > 0) {
+      content += `## 🧩 Componentes (${feature.components.length})\n\n`;
+
+      feature.components.forEach((comp) => {
+        content += `### ${comp.name}\n`;
+        content += `- **Tipo:** ${comp.type}\n`;
+        content += `- **Arquivo:** \`${comp.path}\`\n`;
+
+        if (comp.props && comp.props.length > 0) {
+          content += `- **Props:** ${comp.props.length} propriedades\n`;
+          content += `  - ${comp.props
+            .slice(0, 3)
+            .map((p) => `\`${p.name}\``)
+            .join(", ")}`;
+          if (comp.props.length > 3)
+            content += ` e mais ${comp.props.length - 3}`;
+          content += `\n`;
+        }
+
+        if (comp.hooks && comp.hooks.length > 0) {
+          content += `- **Hooks:** ${comp.hooks.map((h) => `\`${h.name || h}\``).join(", ")}\n`;
+        }
+
+        if (comp.imports && comp.imports.length > 0) {
+          const externalImports = comp.imports.filter(
+            (i) => i.type === "external"
+          ).length;
+          const internalImports = comp.imports.filter(
+            (i) => i.type === "internal"
+          ).length;
+          if (externalImports > 0 || internalImports > 0) {
+            content += `- **Dependências:** ${externalImports} externas, ${internalImports} internas\n`;
+          }
+        }
+
+        content += "\n";
+      });
+
+      // Seção de análise técnica
+      content += `## 🔍 Análise Técnica\n\n`;
+
+      // Estatísticas gerais
+      const totalProps = feature.components.reduce(
+        (acc, comp) => acc + (comp.props?.length || 0),
+        0
+      );
+      const totalHooks = feature.components.reduce(
+        (acc, comp) => acc + (comp.hooks?.length || 0),
+        0
+      );
+
+      content += `### Métricas\n`;
+      content += `- **Total de propriedades:** ${totalProps}\n`;
+      content += `- **Total de hooks:** ${totalHooks}\n`;
+      content += `- **Componentes com testes:** ${feature.components.filter((c) => c.name.includes(".test")).length}\n\n`;
+
+      // Padrões detectados
+      const hooksUsed = [
+        ...new Set(
+          feature.components
+            .filter((c) => c.hooks)
+            .flatMap((c) => c.hooks.map((h) => h.name || h))
+        ),
+      ];
+
+      if (hooksUsed.length > 0) {
+        content += `### Hooks Utilizados\n`;
+        hooksUsed.forEach((hook) => {
+          const count = feature.components.filter((c) =>
+            c.hooks?.some((h) => (h.name || h) === hook)
+          ).length;
+          content += `- \`${hook}\` (${count} componente${count > 1 ? "s" : ""})\n`;
+        });
+        content += `\n`;
+      }
+    }
+
+    // Nota sobre IA
+    content += `---\n\n`;
+    content += `💡 **Dica:** Para documentação mais detalhada e contextualizada, `;
+    content += `configure a integração OpenAI seguindo o guia em \`SETUP_OPENAI.md\`.\n`;
+
+    return content;
+  }
   async generateForFeature(feature, options = {}) {
     try {
       const documentation = await this.generateFeatureDoc(feature, options);
-      
+
       // Salvar arquivos no sistema
-      const outputPath = options.outputPath || './docs/features';
+      const outputPath = options.outputPath || "./docs/features";
       const featureOutputPath = path.join(outputPath, feature.name);
-      
+
       // Criar diretório da feature
       if (!fs.existsSync(featureOutputPath)) {
         fs.mkdirSync(featureOutputPath, { recursive: true });
       }
-      
+
       const savedFiles = [];
       let documentsGenerated = 0;
-      
+
       // Salvar cada arquivo
       for (const file of documentation.files) {
         const fullPath = path.join(featureOutputPath, path.basename(file.path));
-        fs.writeFileSync(fullPath, file.content, 'utf8');
+        fs.writeFileSync(fullPath, file.content, "utf8");
         savedFiles.push(fullPath);
         documentsGenerated++;
         console.log(`✅ Arquivo gerado: ${fullPath}`);
       }
-      
+
       return {
         name: feature.name,
         documentsGenerated,
         savedFiles,
         outputPath: featureOutputPath,
-        success: true
+        success: true,
       };
-      
     } catch (error) {
-      console.error(`❌ Erro ao gerar documentação para ${feature.name}:`, error.message);
+      console.error(
+        `❌ Erro ao gerar documentação para ${feature.name}:`,
+        error.message
+      );
       return {
         name: feature.name,
         documentsGenerated: 0,
         savedFiles: [],
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -151,12 +511,13 @@ class DocumentationGenerator {
     return {
       name: feature.name,
       title: this.formatTitle(feature.name),
-      description: feature.description || `Documentação da feature ${feature.name}`,
-      version: '1.0.0',
+      description:
+        feature.description || `Documentação da feature ${feature.name}`,
+      version: "1.0.0",
       lastUpdated: new Date().toISOString(),
       components: feature.components ? feature.components.length : 0,
       pages: feature.pages ? feature.pages.length : 0,
-      hooks: feature.hooks ? feature.hooks.length : 0
+      hooks: feature.hooks ? feature.hooks.length : 0,
     };
   }
 
@@ -166,25 +527,34 @@ class DocumentationGenerator {
   async generateContent(feature, config) {
     // Garantir que templates existem
     if (!this.templates || !this.templates.templates) {
-      console.warn('⚠️ Templates não carregados, usando template padrão simples');
+      console.warn(
+        "⚠️ Templates não carregados, usando template padrão simples"
+      );
       return await this.generateSimpleContent(feature, config);
     }
 
-    const template = this.templates.templates[config.template] || this.templates.templates.standard;
-    
+    const template =
+      this.templates.templates[config.template] ||
+      this.templates.templates.standard;
+
     if (!template || !template.audiences) {
-      console.warn('⚠️ Template inválido, usando template padrão simples');
+      console.warn("⚠️ Template inválido, usando template padrão simples");
       return await this.generateSimpleContent(feature, config);
     }
 
-    const audienceConfig = template.audiences[config.audience] || template.audiences.developer;
-    
+    const audienceConfig =
+      template.audiences[config.audience] || template.audiences.developer;
+
     const content = {};
 
     for (const sectionName of audienceConfig.sections) {
       const section = this.templates.sections[sectionName];
       if (section) {
-        content[sectionName] = await this.generateSection(sectionName, feature, config);
+        content[sectionName] = await this.generateSection(
+          sectionName,
+          feature,
+          config
+        );
       }
     }
 
@@ -203,17 +573,21 @@ class DocumentationGenerator {
       types: this.generateTypesSection(feature.types || []),
       architecture: this.generateArchitectureSection(feature),
       examples: this.generateExamplesSection(feature),
-      testing: this.generateTestingSection(feature)
+      testing: this.generateTestingSection(feature),
     };
 
     // Tentar melhorar com IA se disponível
     if (config.ai && config.ai.enabled) {
-      console.log('🤖 Melhorando documentação com IA...');
+      console.log("🤖 Melhorando documentação com IA...");
       try {
-        const enhancedContent = await this.enhanceWithAI(content, feature, config);
+        const enhancedContent = await this.enhanceWithAI(
+          content,
+          feature,
+          config
+        );
         return enhancedContent || content;
       } catch (error) {
-        console.warn('⚠️ Erro na IA, usando conteúdo padrão:', error.message);
+        console.warn("⚠️ Erro na IA, usando conteúdo padrão:", error.message);
       }
     }
 
@@ -228,22 +602,22 @@ class DocumentationGenerator {
     if (!openai) return null;
 
     const prompt = this.buildPromptForFeature(feature, content);
-    
+
     try {
       const response = await openai.chat.completions.create({
-        model: config.ai.model || 'gpt-4o-mini',
+        model: config.ai.model || "gpt-4o-mini",
         messages: [
           {
-            role: 'system',
-            content: `Você é um especialista em documentação técnica. Analise a feature e seus componentes para gerar documentação clara e útil em português brasileiro.`
+            role: "system",
+            content: `Você é um especialista em documentação técnica. Analise a feature e seus componentes para gerar documentação clara e útil em português brasileiro.`,
           },
           {
-            role: 'user',
-            content: prompt
-          }
+            role: "user",
+            content: prompt,
+          },
         ],
         max_tokens: config.ai.maxTokens || 2000,
-        temperature: config.ai.temperature || 0.3
+        temperature: config.ai.temperature || 0.3,
       });
 
       const aiContent = response.choices[0]?.message?.content;
@@ -251,7 +625,7 @@ class DocumentationGenerator {
         return this.parseAIResponse(aiContent, content);
       }
     } catch (error) {
-      console.warn('⚠️ Erro na chamada da OpenAI:', error.message);
+      console.warn("⚠️ Erro na chamada da OpenAI:", error.message);
     }
 
     return null;
@@ -260,19 +634,19 @@ class DocumentationGenerator {
   /**
    * Obtém cliente OpenAI
    */
-  async getOpenAIClient(config) {
+  async getOpenAIClient(config = {}) {
     try {
-      const { OpenAI } = require('openai');
-      const apiKey = config.ai.apiKey || process.env.OPENAI_API_KEY;
-      
+      const { OpenAI } = require("openai");
+      const apiKey = config.ai?.apiKey || process.env.OPENAI_API_KEY;
+
       if (!apiKey) {
-        console.warn('⚠️ API Key da OpenAI não encontrada');
+        console.warn("⚠️ API Key da OpenAI não encontrada");
         return null;
       }
 
       return new OpenAI({ apiKey });
     } catch (error) {
-      console.warn('⚠️ OpenAI não disponível:', error.message);
+      console.warn("⚠️ OpenAI não disponível:", error.message);
       return null;
     }
   }
@@ -282,7 +656,7 @@ class DocumentationGenerator {
    */
   buildPromptForFeature(feature, content) {
     let prompt = `# Análise da Feature: ${feature.name}\n\n`;
-    
+
     prompt += `## Informações da Feature:\n`;
     prompt += `- Nome: ${feature.name}\n`;
     prompt += `- Componentes: ${feature.components?.length || 0}\n`;
@@ -290,13 +664,13 @@ class DocumentationGenerator {
 
     if (feature.components && feature.components.length > 0) {
       prompt += `## Componentes Encontrados:\n`;
-      feature.components.slice(0, 5).forEach(comp => {
+      feature.components.slice(0, 5).forEach((comp) => {
         prompt += `### ${comp.name} (${comp.type})\n`;
         prompt += `- Props: ${comp.props?.length || 0}\n`;
         prompt += `- Hooks: ${comp.hooks?.length || 0}\n`;
-        prompt += `- Complexidade: ${comp.complexity || 'baixa'}\n`;
+        prompt += `- Complexidade: ${comp.complexity || "baixa"}\n`;
         if (comp.uiElements && comp.uiElements.length > 0) {
-          prompt += `- UI Elements: ${comp.uiElements.map(el => el.type).join(', ')}\n`;
+          prompt += `- UI Elements: ${comp.uiElements.map((el) => el.type).join(", ")}\n`;
         }
         prompt += `\n`;
       });
@@ -320,15 +694,16 @@ class DocumentationGenerator {
     try {
       // Por enquanto, vamos usar a resposta da IA para melhorar a descrição
       const enhanced = { ...originalContent };
-      
+
       if (enhanced.overview && enhanced.overview.content) {
-        enhanced.overview.content.description = aiResponse.substring(0, 500) + '...';
+        enhanced.overview.content.description =
+          aiResponse.substring(0, 500) + "...";
         enhanced.overview.content.aiGenerated = true;
       }
 
       return enhanced;
     } catch (error) {
-      console.warn('⚠️ Erro ao processar resposta da IA:', error.message);
+      console.warn("⚠️ Erro ao processar resposta da IA:", error.message);
       return originalContent;
     }
   }
@@ -338,23 +713,23 @@ class DocumentationGenerator {
    */
   async generateSection(sectionName, feature, config) {
     switch (sectionName) {
-      case 'overview':
+      case "overview":
         return this.generateOverviewSection(feature);
-      
-      case 'components':
+
+      case "components":
         return this.generateComponentsSection(feature.components || []);
-      
-      case 'apis':
+
+      case "apis":
         return this.generateApiSection(feature.apis || []);
-      
-      case 'examples':
+
+      case "examples":
         return this.generateExamplesSection(feature);
-      
-      case 'testing':
+
+      case "testing":
         return this.generateTestingSection(feature);
-      
+
       default:
-        return { title: section.title, content: 'Seção em desenvolvimento' };
+        return { title: section.title, content: "Seção em desenvolvimento" };
     }
   }
 
@@ -363,14 +738,18 @@ class DocumentationGenerator {
    */
   generateOverviewSection(feature) {
     return {
-      title: 'Visão Geral',
+      title: "Visão Geral",
       content: {
-        description: feature.description || `A feature ${feature.name} fornece funcionalidades essenciais para o sistema.`,
-        purpose: feature.purpose || 'Gerenciar e organizar funcionalidades específicas do sistema.',
+        description:
+          feature.description ||
+          `A feature ${feature.name} fornece funcionalidades essenciais para o sistema.`,
+        purpose:
+          feature.purpose ||
+          "Gerenciar e organizar funcionalidades específicas do sistema.",
         architecture: this.describeArchitecture(feature),
         dependencies: feature.dependencies || [],
-        structure: this.describeStructure(feature)
-      }
+        structure: this.describeStructure(feature),
+      },
     };
   }
 
@@ -378,25 +757,26 @@ class DocumentationGenerator {
    * Gera seção de componentes
    */
   generateComponentsSection(components) {
-    const componentDocs = components.map(component => ({
+    const componentDocs = components.map((component) => ({
       name: component.name,
       type: component.type,
-      description: component.description || this.generateComponentDescription(component),
+      description:
+        component.description || this.generateComponentDescription(component),
       props: component.props || [],
       hooks: component.hooks || [],
       methods: component.methods || [],
       examples: this.generateComponentExamples(component),
       complexity: component.complexity,
-      uiElements: component.uiElements || []
+      uiElements: component.uiElements || [],
     }));
 
     return {
-      title: 'Componentes',
+      title: "Componentes",
       content: {
         overview: `Esta feature contém ${components.length} componente(s).`,
         components: componentDocs,
-        diagram: this.generateComponentDiagram(components)
-      }
+        diagram: this.generateComponentDiagram(components),
+      },
     };
   }
 
@@ -405,13 +785,13 @@ class DocumentationGenerator {
    */
   generateApiSection(apis) {
     return {
-      title: 'APIs',
+      title: "APIs",
       content: {
         endpoints: apis,
-        authentication: 'Token JWT necessário para endpoints protegidos',
-        rateLimit: 'Limite de 1000 requisições por hora',
-        examples: this.generateApiExamples(apis)
-      }
+        authentication: "Token JWT necessário para endpoints protegidos",
+        rateLimit: "Limite de 1000 requisições por hora",
+        examples: this.generateApiExamples(apis),
+      },
     };
   }
 
@@ -420,12 +800,12 @@ class DocumentationGenerator {
    */
   generateExamplesSection(feature) {
     return {
-      title: 'Exemplos de Uso',
+      title: "Exemplos de Uso",
       content: {
         basic: this.generateBasicExamples(feature),
         advanced: this.generateAdvancedExamples(feature),
-        integration: this.generateIntegrationExamples(feature)
-      }
+        integration: this.generateIntegrationExamples(feature),
+      },
     };
   }
 
@@ -434,13 +814,13 @@ class DocumentationGenerator {
    */
   generateTestingSection(feature) {
     return {
-      title: 'Testes',
+      title: "Testes",
       content: {
-        overview: 'Estratégias e exemplos de teste para esta feature',
+        overview: "Estratégias e exemplos de teste para esta feature",
         unitTests: this.generateUnitTestExamples(feature),
         integrationTests: this.generateIntegrationTestExamples(feature),
-        e2eTests: this.generateE2ETestExamples(feature)
-      }
+        e2eTests: this.generateE2ETestExamples(feature),
+      },
     };
   }
 
@@ -449,11 +829,11 @@ class DocumentationGenerator {
    */
   async renderTemplate(documentation, config) {
     switch (config.format) {
-      case 'markdown':
+      case "markdown":
         return this.renderMarkdown(documentation);
-      case 'html':
+      case "html":
         return this.renderHtml(documentation);
-      case 'json':
+      case "json":
         return JSON.stringify(documentation, null, 2);
       default:
         return this.renderMarkdown(documentation);
@@ -465,11 +845,11 @@ class DocumentationGenerator {
    */
   renderMarkdown(documentation) {
     const { metadata, content } = documentation;
-    
+
     let markdown = `# ${metadata.title}\n\n`;
     markdown += `> ${metadata.description}\n\n`;
-    markdown += `**Última atualização:** ${new Date(metadata.lastUpdated).toLocaleDateString('pt-BR')}\n\n`;
-    
+    markdown += `**Última atualização:** ${new Date(metadata.lastUpdated).toLocaleDateString("pt-BR")}\n\n`;
+
     if (metadata.components > 0) {
       markdown += `📊 **Estatísticas:**\n`;
       markdown += `- Componentes: ${metadata.components}\n`;
@@ -494,26 +874,26 @@ class DocumentationGenerator {
     let markdown = `## ${section.title}\n\n`;
 
     switch (sectionName) {
-      case 'overview':
+      case "overview":
         markdown += `${section.content.description}\n\n`;
         if (section.content.purpose) {
           markdown += `### Objetivo\n${section.content.purpose}\n\n`;
         }
         break;
 
-      case 'components':
+      case "components":
         markdown += `${section.content.overview}\n\n`;
         for (const component of section.content.components) {
           markdown += `### ${component.name}\n\n`;
           markdown += `**Tipo:** ${component.type}\n\n`;
           markdown += `${component.description}\n\n`;
-          
+
           if (component.props.length > 0) {
             markdown += `**Props:**\n\n`;
             markdown += `| Nome | Tipo | Obrigatório | Descrição |\n`;
             markdown += `|------|------|-------------|------------|\n`;
             for (const prop of component.props) {
-              markdown += `| ${prop.name} | ${prop.type} | ${prop.optional ? 'Não' : 'Sim'} | ${prop.description || '-'} |\n`;
+              markdown += `| ${prop.name} | ${prop.type} | ${prop.optional ? "Não" : "Sim"} | ${prop.description || "-"} |\n`;
             }
             markdown += `\n`;
           }
@@ -521,8 +901,9 @@ class DocumentationGenerator {
           if (component.hooks && component.hooks.length > 0) {
             markdown += `**Hooks utilizados:**\n`;
             for (const hook of component.hooks) {
-              const hookName = typeof hook === 'string' ? hook : hook.name;
-              const hookType = typeof hook === 'object' && hook.type ? ` (${hook.type})` : '';
+              const hookName = typeof hook === "string" ? hook : hook.name;
+              const hookType =
+                typeof hook === "object" && hook.type ? ` (${hook.type})` : "";
               markdown += `- \`${hookName}\`${hookType}\n`;
             }
             markdown += `\n`;
@@ -538,8 +919,8 @@ class DocumentationGenerator {
         }
         break;
 
-      case 'hooks':
-        if (typeof section.content === 'string') {
+      case "hooks":
+        if (typeof section.content === "string") {
           markdown += `${section.content}\n\n`;
         } else {
           markdown += `${section.content.overview}\n\n`;
@@ -555,8 +936,8 @@ class DocumentationGenerator {
         }
         break;
 
-      case 'services':
-        if (typeof section.content === 'string') {
+      case "services":
+        if (typeof section.content === "string") {
           markdown += `${section.content}\n\n`;
         } else {
           markdown += `${section.content.overview}\n\n`;
@@ -569,8 +950,8 @@ class DocumentationGenerator {
         }
         break;
 
-      case 'types':
-        if (typeof section.content === 'string') {
+      case "types":
+        if (typeof section.content === "string") {
           markdown += `${section.content}\n\n`;
         } else {
           markdown += `${section.content.overview}\n\n`;
@@ -583,28 +964,28 @@ class DocumentationGenerator {
         }
         break;
 
-      case 'architecture':
-        if (typeof section.content === 'string') {
+      case "architecture":
+        if (typeof section.content === "string") {
           markdown += `${section.content}\n\n`;
         } else {
           markdown += `${section.content}\n\n`;
         }
         break;
 
-      case 'examples':
+      case "examples":
         markdown += `### Exemplos Básicos\n${section.content.basic}\n\n`;
         markdown += `### Exemplos Avançados\n${section.content.advanced}\n\n`;
         markdown += `### Integração\n${section.content.integration}\n\n`;
         break;
 
-      case 'testing':
+      case "testing":
         markdown += `### Testes Unitários\n${section.content.unitTests}\n\n`;
         markdown += `### Testes de Integração\n${section.content.integrationTests}\n\n`;
         markdown += `### Testes E2E\n${section.content.e2eTests}\n\n`;
         break;
 
       default:
-        if (typeof section.content === 'string') {
+        if (typeof section.content === "string") {
           markdown += `${section.content}\n\n`;
         } else {
           markdown += `_Seção em desenvolvimento_\n\n`;
@@ -620,29 +1001,30 @@ class DocumentationGenerator {
   formatTitle(name) {
     return name
       .split(/[-_]/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   }
 
   getFileName(featureName, format) {
-    const extension = format === 'markdown' ? 'md' : format;
+    const extension = format === "markdown" ? "md" : format;
     return `${featureName}.${extension}`;
   }
 
   describeArchitecture(feature) {
     if (feature.components && feature.components.length > 0) {
-      const types = [...new Set(feature.components.map(c => c.type))];
-      return `Arquitetura baseada em componentes ${types.join(', ')}`;
+      const types = [...new Set(feature.components.map((c) => c.type))];
+      return `Arquitetura baseada em componentes ${types.join(", ")}`;
     }
-    return 'Arquitetura modular';
+    return "Arquitetura modular";
   }
 
   describeStructure(feature) {
     const structure = [];
-    if (feature.components) structure.push(`${feature.components.length} componentes`);
+    if (feature.components)
+      structure.push(`${feature.components.length} componentes`);
     if (feature.pages) structure.push(`${feature.pages.length} páginas`);
     if (feature.hooks) structure.push(`${feature.hooks.length} hooks`);
-    return structure.join(', ');
+    return structure.join(", ");
   }
 
   generateComponentDescription(component) {
@@ -653,7 +1035,7 @@ class DocumentationGenerator {
     if (component.hooks && component.hooks.length > 0) {
       desc += ` e ${component.hooks.length} hook(s)`;
     }
-    return desc + '.';
+    return desc + ".";
   }
 
   generateComponentExamples(component) {
@@ -663,14 +1045,14 @@ class DocumentationGenerator {
 
   generateComponentDiagram(components) {
     // Gera diagrama simples de componentes
-    return components.map(c => `[${c.name}]`).join(' -> ');
+    return components.map((c) => `[${c.name}]`).join(" -> ");
   }
 
   generateApiExamples(apis) {
-    return apis.map(api => ({
+    return apis.map((api) => ({
       endpoint: api.endpoint,
       method: api.method,
-      example: `curl -X ${api.method} ${api.endpoint}`
+      example: `curl -X ${api.method} ${api.endpoint}`,
     }));
   }
 
@@ -704,23 +1086,23 @@ class DocumentationGenerator {
   generateHooksSection(hooks) {
     if (!hooks || hooks.length === 0) {
       return {
-        title: 'Hooks',
-        content: 'Nenhum hook customizado encontrado nesta feature.'
+        title: "Hooks",
+        content: "Nenhum hook customizado encontrado nesta feature.",
       };
     }
 
     return {
-      title: 'Hooks Customizados',
+      title: "Hooks Customizados",
       content: {
         overview: `Esta feature implementa ${hooks.length} hook(s) customizado(s).`,
-        hooks: hooks.map(hook => ({
+        hooks: hooks.map((hook) => ({
           name: hook.name,
           description: hook.description || `Hook customizado ${hook.name}`,
           parameters: hook.parameters || [],
-          returns: hook.returns || 'unknown',
-          example: hook.example || `const result = ${hook.name}();`
-        }))
-      }
+          returns: hook.returns || "unknown",
+          example: hook.example || `const result = ${hook.name}();`,
+        })),
+      },
     };
   }
 
@@ -730,22 +1112,24 @@ class DocumentationGenerator {
   generateServicesSection(services) {
     if (!services || services.length === 0) {
       return {
-        title: 'Serviços',
-        content: 'Nenhum serviço específico encontrado nesta feature.'
+        title: "Serviços",
+        content: "Nenhum serviço específico encontrado nesta feature.",
       };
     }
 
     return {
-      title: 'Serviços',
+      title: "Serviços",
       content: {
         overview: `Esta feature utiliza ${services.length} serviço(s).`,
-        services: services.map(service => ({
+        services: services.map((service) => ({
           name: service.name,
-          description: service.description || `Serviço responsável por ${service.name.toLowerCase()}`,
+          description:
+            service.description ||
+            `Serviço responsável por ${service.name.toLowerCase()}`,
           methods: service.methods || [],
-          dependencies: service.dependencies || []
-        }))
-      }
+          dependencies: service.dependencies || [],
+        })),
+      },
     };
   }
 
@@ -755,22 +1139,22 @@ class DocumentationGenerator {
   generateTypesSection(types) {
     if (!types || types.length === 0) {
       return {
-        title: 'Tipos e Interfaces',
-        content: 'Esta feature utiliza tipos TypeScript padrão.'
+        title: "Tipos e Interfaces",
+        content: "Esta feature utiliza tipos TypeScript padrão.",
       };
     }
 
     return {
-      title: 'Tipos e Interfaces',
+      title: "Tipos e Interfaces",
       content: {
         overview: `Esta feature define ${types.length} tipo(s)/interface(s) customizada(s).`,
-        types: types.map(type => ({
+        types: types.map((type) => ({
           name: type.name,
           description: type.description || `Tipo ${type.name}`,
           properties: type.properties || [],
-          usage: type.usage || `Como usar o tipo ${type.name}`
-        }))
-      }
+          usage: type.usage || `Como usar o tipo ${type.name}`,
+        })),
+      },
     };
   }
 
@@ -783,18 +1167,18 @@ class DocumentationGenerator {
     const services = feature.services || [];
 
     let architecture = `## Estrutura da Feature\n\n`;
-    
+
     if (components.length > 0) {
       architecture += `### Componentes (${components.length})\n`;
-      architecture += `- **UI Components:** ${components.filter(c => c.type === 'react' || c.type === 'vue').length}\n`;
-      architecture += `- **Layout Components:** ${components.filter(c => c.name.toLowerCase().includes('layout')).length}\n`;
-      architecture += `- **Form Components:** ${components.filter(c => c.name.toLowerCase().includes('form') || c.name.toLowerCase().includes('modal')).length}\n\n`;
+      architecture += `- **UI Components:** ${components.filter((c) => c.type === "react" || c.type === "vue").length}\n`;
+      architecture += `- **Layout Components:** ${components.filter((c) => c.name.toLowerCase().includes("layout")).length}\n`;
+      architecture += `- **Form Components:** ${components.filter((c) => c.name.toLowerCase().includes("form") || c.name.toLowerCase().includes("modal")).length}\n\n`;
     }
 
     if (hooks.length > 0) {
       architecture += `### Hooks (${hooks.length})\n`;
-      architecture += `- **Estado:** ${hooks.filter(h => h.name.includes('State') || h.name.includes('use')).length}\n`;
-      architecture += `- **Efeitos:** ${hooks.filter(h => h.name.includes('Effect')).length}\n\n`;
+      architecture += `- **Estado:** ${hooks.filter((h) => h.name.includes("State") || h.name.includes("use")).length}\n`;
+      architecture += `- **Efeitos:** ${hooks.filter((h) => h.name.includes("Effect")).length}\n\n`;
     }
 
     architecture += `### Padrões Utilizados\n`;
@@ -803,8 +1187,8 @@ class DocumentationGenerator {
     architecture += `- **TypeScript:** Tipagem forte para maior confiabilidade\n\n`;
 
     return {
-      title: 'Arquitetura',
-      content: architecture
+      title: "Arquitetura",
+      content: architecture,
     };
   }
 
@@ -814,7 +1198,7 @@ class DocumentationGenerator {
   async saveDocumentation(documentation, outputPath) {
     const results = {
       generatedFiles: [],
-      errors: []
+      errors: [],
     };
 
     // Criar diretório se não existir
@@ -827,7 +1211,7 @@ class DocumentationGenerator {
       for (const file of documentation.files) {
         const filePath = file.path;
         const fileDir = path.dirname(filePath);
-        
+
         // Criar diretório do arquivo
         if (!fs.existsSync(fileDir)) {
           fs.mkdirSync(fileDir, { recursive: true });
@@ -836,7 +1220,7 @@ class DocumentationGenerator {
         // Salvar arquivo
         fs.writeFileSync(filePath, file.content);
         results.generatedFiles.push(filePath);
-        
+
         console.log(`✅ Arquivo gerado: ${filePath}`);
       }
     } catch (error) {

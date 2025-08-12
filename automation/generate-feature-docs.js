@@ -5,7 +5,10 @@
  * Sistema inteligente para documentação de features
  */
 
-const FeatureDocsEngine = require('./feature-docs/core/feature-docs-engine');
+// Carregar variáveis de ambiente
+require("dotenv").config();
+
+const FeatureDocsEngine = require("./feature-docs/core/feature-docs-engine");
 
 async function main() {
   const engine = new FeatureDocsEngine();
@@ -29,62 +32,62 @@ function parseArguments() {
     config: false,
     showConfig: false,
     verbose: false,
-    debug: false
+    debug: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
     switch (arg) {
-      case '--help':
-      case '-h':
+      case "--help":
+      case "-h":
         showHelp();
         process.exit(0);
         break;
 
-      case '--detect-changes':
-      case '-c':
+      case "--detect-changes":
+      case "-c":
         options.detectChanges = true;
         break;
 
-      case '--since':
+      case "--since":
         if (i + 1 < args.length) {
           options.since = args[++i];
           options.detectChanges = true;
         }
         break;
 
-      case '--features':
-      case '-f':
+      case "--features":
+      case "-f":
         if (i + 1 < args.length) {
-          options.features = args[++i].split(',');
+          options.features = args[++i].split(",");
         }
         break;
 
-      case '--all':
-      case '-a':
+      case "--all":
+      case "-a":
         options.all = true;
         break;
 
-      case '--config':
+      case "--config":
         options.config = true;
         break;
 
-      case '--show-config':
+      case "--show-config":
         options.showConfig = true;
         break;
 
-      case '--verbose':
-      case '-v':
+      case "--verbose":
+      case "-v":
         options.verbose = true;
         break;
 
-      case '--debug':
+      case "--debug":
         options.debug = true;
         break;
 
       default:
-        if (arg.startsWith('--')) {
+        if (arg.startsWith("--")) {
           console.log(`⚠️ Opção desconhecida: ${arg}`);
         }
     }
@@ -154,9 +157,9 @@ Para mais informações, consulte README-SISTEMA.md
 
 // Executar apenas se chamado diretamente
 if (require.main === module) {
-  main().catch(error => {
-    console.error('❌ Erro fatal:', error);
-    if (process.argv.includes('--debug')) {
+  main().catch((error) => {
+    console.error("❌ Erro fatal:", error);
+    if (process.argv.includes("--debug")) {
       console.error(error.stack);
     }
     process.exit(1);

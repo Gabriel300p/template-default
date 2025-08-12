@@ -3,8 +3,8 @@
  * Sistema flexível de configurações para o Feature Documentation System
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 class ConfigManager {
   constructor(customConfig = {}) {
@@ -14,49 +14,49 @@ class ConfigManager {
         includePrivate: false,
         includeTests: false,
         complexityThreshold: 10,
-        maxDepth: 5
+        maxDepth: 5,
       },
-      
+
       // Configurações de saída
       output: {
-        path: './docs/features',
-        format: 'markdown',
+        path: "./docs/features",
+        format: "markdown",
         createIndex: true,
-        groupByFeature: true
+        groupByFeature: true,
       },
-      
+
       // Configurações de templates
       templates: {
-        default: 'standard',
-        audience: 'developer',
-        language: 'pt-BR'
+        default: "standard",
+        audience: "developer",
+        language: "pt-BR",
       },
-      
+
       // Configurações Git
       git: {
         enabled: true,
-        baseBranch: 'main',
-        includeCommitInfo: true
+        baseBranch: "main",
+        includeCommitInfo: true,
       },
-      
+
       // Configurações de UI
       ui: {
         interactive: true,
         showPreview: true,
-        confirmGeneration: true
+        confirmGeneration: true,
       },
-      
+
       // Configurações OpenAI
       ai: {
-        enabled: false,
-        model: 'gpt-4o-mini',
+        enabled: true,
+        model: "gpt-4o-mini",
         maxTokens: 2000,
-        temperature: 0.3
-      }
+        temperature: 0.3,
+      },
     };
-    
+
     this.config = this.mergeConfig(this.defaultConfig, customConfig);
-    this.configPath = path.join(process.cwd(), 'feature-docs.config.json');
+    this.configPath = path.join(process.cwd(), "feature-docs.config.json");
   }
 
   /**
@@ -64,15 +64,19 @@ class ConfigManager {
    */
   mergeConfig(defaultConfig, customConfig) {
     const merged = { ...defaultConfig };
-    
+
     for (const [key, value] of Object.entries(customConfig)) {
-      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      if (
+        typeof value === "object" &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
         merged[key] = { ...merged[key], ...value };
       } else {
         merged[key] = value;
       }
     }
-    
+
     return merged;
   }
 
@@ -82,7 +86,7 @@ class ConfigManager {
   loadFromFile(configPath = this.configPath) {
     try {
       if (fs.existsSync(configPath)) {
-        const fileConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        const fileConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
         this.config = this.mergeConfig(this.defaultConfig, fileConfig);
         return true;
       }
@@ -101,7 +105,7 @@ class ConfigManager {
       if (!fs.existsSync(configDir)) {
         fs.mkdirSync(configDir, { recursive: true });
       }
-      
+
       fs.writeFileSync(configPath, JSON.stringify(this.config, null, 2));
       return true;
     } catch (error) {
@@ -114,17 +118,17 @@ class ConfigManager {
    * Obtém valor de configuração
    */
   get(path) {
-    const keys = path.split('.');
+    const keys = path.split(".");
     let value = this.config;
-    
+
     for (const key of keys) {
-      if (value && typeof value === 'object' && key in value) {
+      if (value && typeof value === "object" && key in value) {
         value = value[key];
       } else {
         return undefined;
       }
     }
-    
+
     return value;
   }
 
@@ -132,17 +136,17 @@ class ConfigManager {
    * Define valor de configuração
    */
   set(path, value) {
-    const keys = path.split('.');
+    const keys = path.split(".");
     const lastKey = keys.pop();
     let current = this.config;
-    
+
     for (const key of keys) {
-      if (!current[key] || typeof current[key] !== 'object') {
+      if (!current[key] || typeof current[key] !== "object") {
         current[key] = {};
       }
       current = current[key];
     }
-    
+
     current[lastKey] = value;
   }
 
@@ -151,43 +155,51 @@ class ConfigManager {
    */
   validate() {
     const errors = [];
-    
+
     // Validar output path
     if (!this.config.output.path) {
-      errors.push('output.path é obrigatório');
+      errors.push("output.path é obrigatório");
     }
-    
+
     // Validar formato de saída
-    const validFormats = ['markdown', 'html', 'json'];
+    const validFormats = ["markdown", "html", "json"];
     if (!validFormats.includes(this.config.output.format)) {
-      errors.push(`output.format deve ser um de: ${validFormats.join(', ')}`);
+      errors.push(`output.format deve ser um de: ${validFormats.join(", ")}`);
     }
-    
+
     // Validar threshold de complexidade
-    if (typeof this.config.analysis.complexityThreshold !== 'number' || 
-        this.config.analysis.complexityThreshold < 1) {
-      errors.push('analysis.complexityThreshold deve ser número positivo');
+    if (
+      typeof this.config.analysis.complexityThreshold !== "number" ||
+      this.config.analysis.complexityThreshold < 1
+    ) {
+      errors.push("analysis.complexityThreshold deve ser número positivo");
     }
-    
+
     // Validar configuração AI se habilitada
     if (this.config.ai.enabled) {
       if (!this.config.ai.model) {
-        errors.push('ai.model é obrigatório quando AI está habilitado');
+        errors.push("ai.model é obrigatório quando AI está habilitado");
       }
-      
-      if (typeof this.config.ai.maxTokens !== 'number' || this.config.ai.maxTokens < 100) {
-        errors.push('ai.maxTokens deve ser número >= 100');
+
+      if (
+        typeof this.config.ai.maxTokens !== "number" ||
+        this.config.ai.maxTokens < 100
+      ) {
+        errors.push("ai.maxTokens deve ser número >= 100");
       }
-      
-      if (typeof this.config.ai.temperature !== 'number' || 
-          this.config.ai.temperature < 0 || this.config.ai.temperature > 2) {
-        errors.push('ai.temperature deve estar entre 0 e 2');
+
+      if (
+        typeof this.config.ai.temperature !== "number" ||
+        this.config.ai.temperature < 0 ||
+        this.config.ai.temperature > 2
+      ) {
+        errors.push("ai.temperature deve estar entre 0 e 2");
       }
     }
-    
+
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -195,31 +207,34 @@ class ConfigManager {
    * Cria configuração interativa (versão simplificada)
    */
   async createInteractiveConfig() {
-    console.log('🔧 Configuração Interativa');
-    console.log('='.repeat(40));
-    console.log('⚠️ Pressione ENTER para usar valores padrão');
-    console.log('');
-    
+    console.log("🔧 Configuração Interativa");
+    console.log("=".repeat(40));
+    console.log("⚠️ Pressione ENTER para usar valores padrão");
+    console.log("");
+
     try {
       // Usar valores padrão para evitar problemas de input no Windows
-      console.log('📁 Caminho de saída: ./docs/features (padrão)');
-      console.log('📄 Formato: markdown (padrão)');
-      console.log('🤖 IA: habilitada (padrão) - Configure OPENAI_API_KEY para usar');
-      console.log('🔄 Git: habilitado (padrão)');
-      
+      console.log("📁 Caminho de saída: ./docs/features (padrão)");
+      console.log("📄 Formato: markdown (padrão)");
+      console.log(
+        "🤖 IA: habilitada (padrão) - Configure OPENAI_API_KEY para usar"
+      );
+      console.log("🔄 Git: habilitado (padrão)");
+
       // Configurações padrão aplicadas
-      this.set('output.path', './docs/features');
-      this.set('output.format', 'markdown');
-      this.set('ai.enabled', true);  // Habilitar por padrão
-      this.set('git.enabled', true);
-      
-      console.log('\n✅ Configuração padrão aplicada!');
-      console.log('💡 Para personalizar, edite o arquivo: feature-docs.config.json');
-      
+      this.set("output.path", "./docs/features");
+      this.set("output.format", "markdown");
+      this.set("ai.enabled", true); // Habilitar por padrão
+      this.set("git.enabled", true);
+
+      console.log("\n✅ Configuração padrão aplicada!");
+      console.log(
+        "💡 Para personalizar, edite o arquivo: feature-docs.config.json"
+      );
+
       this.saveToFile();
-      
     } catch (error) {
-      console.error('❌ Erro na configuração:', error.message);
+      console.error("❌ Erro na configuração:", error.message);
     }
   }
 
@@ -243,10 +258,13 @@ class ConfigManager {
   getSelectedTemplates() {
     // Retorna templates com informações detalhadas
     return [
-      { name: 'technical', description: 'Documentação técnica para desenvolvedores' },
-      { name: 'design', description: 'Especificações de design e UI' },
-      { name: 'business', description: 'Documentação de negócio para PMs' },
-      { name: 'overview', description: 'Visão geral da feature' }
+      {
+        name: "technical",
+        description: "Documentação técnica para desenvolvedores",
+      },
+      { name: "design", description: "Especificações de design e UI" },
+      { name: "business", description: "Documentação de negócio para PMs" },
+      { name: "overview", description: "Visão geral da feature" },
     ];
   }
 
@@ -254,13 +272,13 @@ class ConfigManager {
    * Obtém formatos de saída configurados
    */
   getOutputFormats() {
-    const format = this.config.output.format || 'markdown';
+    const format = this.config.output.format || "markdown";
     return [
-      { 
-        name: format, 
-        path: this.config.output.path || './docs/features',
-        description: `Documentação em formato ${format.toUpperCase()}`
-      }
+      {
+        name: format,
+        path: this.config.output.path || "./docs/features",
+        description: `Documentação em formato ${format.toUpperCase()}`,
+      },
     ];
   }
 
@@ -268,8 +286,8 @@ class ConfigManager {
    * Mostra configuração atual
    */
   display() {
-    console.log('⚙️ Configuração Atual:');
-    console.log('='.repeat(40));
+    console.log("⚙️ Configuração Atual:");
+    console.log("=".repeat(40));
     console.log(JSON.stringify(this.config, null, 2));
   }
 

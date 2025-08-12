@@ -3,10 +3,10 @@
  * Escaneia e analisa features do frontend
  */
 
-const fs = require('fs');
-const path = require('path');
-const ComponentAnalyzer = require('../analyzers/component-analyzer');
-const UIElementDetector = require('../analyzers/ui-element-detector');
+const fs = require("fs");
+const path = require("path");
+const ComponentAnalyzer = require("../analyzers/component-analyzer");
+const UIElementDetector = require("../analyzers/ui-element-detector");
 
 class FeatureScanner {
   constructor(config) {
@@ -21,15 +21,16 @@ class FeatureScanner {
       return [];
     }
 
-    const featureDirs = fs.readdirSync(featuresPath, { withFileTypes: true })
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name);
+    const featureDirs = fs
+      .readdirSync(featuresPath, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
 
     const features = [];
 
     for (const featureDir of featureDirs) {
       const featurePath = path.join(featuresPath, featureDir);
-      
+
       // Verificar se feature foi alterada (se análise incremental ativa)
       if (changedFiles && !this.featureHasChanges(featurePath, changedFiles)) {
         continue;
@@ -46,14 +47,16 @@ class FeatureScanner {
 
   featureHasChanges(featurePath, changedFiles) {
     // Normalizar caminhos para comparação
-    const normalizedFeaturePath = featurePath.replace(/\\/g, '/').toLowerCase();
-    
-    return changedFiles.some(file => {
-      const normalizedFile = file.replace(/\\/g, '/').toLowerCase();
+    const normalizedFeaturePath = featurePath.replace(/\\/g, "/").toLowerCase();
+
+    return changedFiles.some((file) => {
+      const normalizedFile = file.replace(/\\/g, "/").toLowerCase();
       // Verificar se o arquivo está dentro da feature (caminhos absolutos ou relativos)
-      return normalizedFile.includes(normalizedFeaturePath.split('/').pop()) ||
-             normalizedFile.includes(normalizedFeaturePath) ||
-             normalizedFeaturePath.includes(normalizedFile);
+      return (
+        normalizedFile.includes(normalizedFeaturePath.split("/").pop()) ||
+        normalizedFile.includes(normalizedFeaturePath) ||
+        normalizedFeaturePath.includes(normalizedFile)
+      );
     });
   }
 
@@ -72,8 +75,8 @@ class FeatureScanner {
       metadata: {
         totalFiles: 0,
         lastModified: null,
-        complexity: 'low'
-      }
+        complexity: "low",
+      },
     };
 
     // Escanear recursivamente
@@ -86,7 +89,7 @@ class FeatureScanner {
     return feature;
   }
 
-  async scanFeatureDirectory(dirPath, feature, relativePath = '') {
+  async scanFeatureDirectory(dirPath, feature, relativePath = "") {
     const items = fs.readdirSync(dirPath, { withFileTypes: true });
 
     for (const item of items) {
@@ -97,15 +100,15 @@ class FeatureScanner {
 
       if (item.isDirectory()) {
         // Diretorios especiais
-        if (item.name === 'components') {
+        if (item.name === "components") {
           await this.scanComponents(fullPath, feature);
-        } else if (item.name === 'hooks') {
+        } else if (item.name === "hooks") {
           await this.scanHooks(fullPath, feature);
-        } else if (item.name === 'services') {
+        } else if (item.name === "services") {
           await this.scanServices(fullPath, feature);
-        } else if (item.name === 'types') {
+        } else if (item.name === "types") {
           await this.scanTypes(fullPath, feature);
-        } else if (item.name === '__tests__' || item.name === 'tests') {
+        } else if (item.name === "__tests__" || item.name === "tests") {
           await this.scanTests(fullPath, feature);
         } else {
           // Continuar recursão para outros diretórios
@@ -118,30 +121,41 @@ class FeatureScanner {
   }
 
   async scanComponents(componentsPath, feature) {
-    const componentFiles = this.findFiles(componentsPath, ['.tsx', '.jsx', '.vue']);
-    
+    const componentFiles = this.findFiles(componentsPath, [
+      ".tsx",
+      ".jsx",
+      ".vue",
+    ]);
+
     for (const file of componentFiles) {
-      const component = await this.componentAnalyzer.analyzeComponent(file.fullPath);
+      const component = await this.componentAnalyzer.analyzeComponent(
+        file.fullPath
+      );
       if (component) {
         feature.components.push({
           ...component,
           relativePath: file.relativePath,
-          uiElements: await this.uiDetector.detectElements(file.fullPath, component)
+          uiElements: await this.uiDetector.detectElements(
+            file.fullPath,
+            component
+          ),
         });
       }
     }
   }
 
   async scanHooks(hooksPath, feature) {
-    const hookFiles = this.findFiles(hooksPath, ['.ts', '.tsx', '.js']);
-    
+    const hookFiles = this.findFiles(hooksPath, [".ts", ".tsx", ".js"]);
+
     for (const file of hookFiles) {
-      if (file.name.startsWith('use') || file.name.includes('hook')) {
-        const hookAnalysis = await this.componentAnalyzer.analyzeHook(file.fullPath);
+      if (file.name.startsWith("use") || file.name.includes("hook")) {
+        const hookAnalysis = await this.componentAnalyzer.analyzeHook(
+          file.fullPath
+        );
         if (hookAnalysis) {
           feature.hooks.push({
             ...hookAnalysis,
-            relativePath: file.relativePath
+            relativePath: file.relativePath,
           });
         }
       }
@@ -149,42 +163,51 @@ class FeatureScanner {
   }
 
   async scanServices(servicesPath, feature) {
-    const serviceFiles = this.findFiles(servicesPath, ['.ts', '.js']);
-    
+    const serviceFiles = this.findFiles(servicesPath, [".ts", ".js"]);
+
     for (const file of serviceFiles) {
-      const serviceAnalysis = await this.componentAnalyzer.analyzeService(file.fullPath);
+      const serviceAnalysis = await this.componentAnalyzer.analyzeService(
+        file.fullPath
+      );
       if (serviceAnalysis) {
         feature.services.push({
           ...serviceAnalysis,
-          relativePath: file.relativePath
+          relativePath: file.relativePath,
         });
       }
     }
   }
 
   async scanTypes(typesPath, feature) {
-    const typeFiles = this.findFiles(typesPath, ['.ts', '.d.ts']);
-    
+    const typeFiles = this.findFiles(typesPath, [".ts", ".d.ts"]);
+
     for (const file of typeFiles) {
-      const typeAnalysis = await this.componentAnalyzer.analyzeTypes(file.fullPath);
+      const typeAnalysis = await this.componentAnalyzer.analyzeTypes(
+        file.fullPath
+      );
       if (typeAnalysis) {
         feature.types.push({
           ...typeAnalysis,
-          relativePath: file.relativePath
+          relativePath: file.relativePath,
         });
       }
     }
   }
 
   async scanTests(testsPath, feature) {
-    const testFiles = this.findFiles(testsPath, ['.test.ts', '.test.tsx', '.spec.ts', '.spec.tsx']);
-    
+    const testFiles = this.findFiles(testsPath, [
+      ".test.ts",
+      ".test.tsx",
+      ".spec.ts",
+      ".spec.tsx",
+    ]);
+
     for (const file of testFiles) {
       feature.tests.push({
         name: file.name,
         path: file.fullPath,
         relativePath: file.relativePath,
-        type: this.getTestType(file.name)
+        type: this.getTestType(file.name),
       });
     }
   }
@@ -194,27 +217,30 @@ class FeatureScanner {
     const basename = path.basename(filePath, ext);
 
     // Arquivos principais da feature
-    if (basename === 'index' && ['.ts', '.tsx', '.js'].includes(ext)) {
+    if (basename === "index" && [".ts", ".tsx", ".js"].includes(ext)) {
       feature.entryPoint = { path: filePath, relativePath };
     }
 
     // Assets (imagens, estilos, etc.)
-    if (['.png', '.jpg', '.svg', '.css', '.scss', '.module.css'].includes(ext)) {
+    if (
+      [".png", ".jpg", ".svg", ".css", ".scss", ".module.css"].includes(ext)
+    ) {
       feature.assets.push({
         name: basename + ext,
         path: filePath,
         relativePath,
-        type: this.getAssetType(ext)
+        type: this.getAssetType(ext),
       });
     }
 
     // Arquivos de configuração específicos da feature
-    if (basename.includes('config') || basename.includes('constant')) {
-      const configAnalysis = await this.componentAnalyzer.analyzeConfig(filePath);
+    if (basename.includes("config") || basename.includes("constant")) {
+      const configAnalysis =
+        await this.componentAnalyzer.analyzeConfig(filePath);
       if (configAnalysis) {
         feature.config = {
           ...configAnalysis,
-          relativePath
+          relativePath,
         };
       }
     }
@@ -222,24 +248,26 @@ class FeatureScanner {
 
   findFiles(dirPath, extensions) {
     const files = [];
-    
-    const scanDir = (currentPath, relativePath = '') => {
+
+    const scanDir = (currentPath, relativePath = "") => {
       const items = fs.readdirSync(currentPath, { withFileTypes: true });
-      
+
       for (const item of items) {
         const fullPath = path.join(currentPath, item.name);
         const itemRelativePath = path.join(relativePath, item.name);
-        
-        if (item.isDirectory() && !item.name.startsWith('.')) {
+
+        if (item.isDirectory() && !item.name.startsWith(".")) {
           scanDir(fullPath, itemRelativePath);
         } else if (item.isFile()) {
           const ext = path.extname(item.name);
-          if (extensions.some(e => ext.endsWith(e) || item.name.endsWith(e))) {
+          if (
+            extensions.some((e) => ext.endsWith(e) || item.name.endsWith(e))
+          ) {
             files.push({
               name: path.basename(item.name, ext),
               fullPath,
               relativePath: itemRelativePath,
-              extension: ext
+              extension: ext,
             });
           }
         }
@@ -256,49 +284,50 @@ class FeatureScanner {
   async analyzeFeatureStructure(feature) {
     // Determinar complexidade baseada em quantidade de componentes
     if (feature.components.length > 10) {
-      feature.metadata.complexity = 'high';
+      feature.metadata.complexity = "high";
     } else if (feature.components.length > 5) {
-      feature.metadata.complexity = 'medium';
+      feature.metadata.complexity = "medium";
     }
 
     // Detectar padrões arquiteturais
     feature.metadata.patterns = [];
 
     if (feature.hooks.length > 0) {
-      feature.metadata.patterns.push('Custom Hooks');
+      feature.metadata.patterns.push("Custom Hooks");
     }
 
     if (feature.services.length > 0) {
-      feature.metadata.patterns.push('Service Layer');
+      feature.metadata.patterns.push("Service Layer");
     }
 
     if (feature.types.length > 0) {
-      feature.metadata.patterns.push('TypeScript');
+      feature.metadata.patterns.push("TypeScript");
     }
 
     if (feature.tests.length > 0) {
-      feature.metadata.patterns.push('Testing');
+      feature.metadata.patterns.push("Testing");
     }
 
     // Detectar se é uma feature CRUD
-    const crudIndicators = ['create', 'edit', 'list', 'view', 'delete'];
-    const hasMultipleCrud = feature.components.filter(c => 
-      crudIndicators.some(indicator => 
-        c.name.toLowerCase().includes(indicator)
-      )
-    ).length >= 2;
+    const crudIndicators = ["create", "edit", "list", "view", "delete"];
+    const hasMultipleCrud =
+      feature.components.filter((c) =>
+        crudIndicators.some((indicator) =>
+          c.name.toLowerCase().includes(indicator)
+        )
+      ).length >= 2;
 
     if (hasMultipleCrud) {
-      feature.metadata.patterns.push('CRUD Operations');
+      feature.metadata.patterns.push("CRUD Operations");
     }
   }
 
   async detectUIPatterns(feature) {
     // Detectar elementos UI comuns em todos os componentes
-    const allUIElements = feature.components.flatMap(c => c.uiElements || []);
-    
+    const allUIElements = feature.components.flatMap((c) => c.uiElements || []);
+
     const elementCounts = {};
-    allUIElements.forEach(element => {
+    allUIElements.forEach((element) => {
       elementCounts[element.type] = (elementCounts[element.type] || 0) + 1;
     });
 
@@ -306,44 +335,44 @@ class FeatureScanner {
     feature.metadata.uiPatterns = [];
 
     if (elementCounts.filter >= 2) {
-      feature.metadata.uiPatterns.push('Data Filtering');
+      feature.metadata.uiPatterns.push("Data Filtering");
     }
 
     if (elementCounts.table >= 1) {
-      feature.metadata.uiPatterns.push('Data Tables');
+      feature.metadata.uiPatterns.push("Data Tables");
     }
 
     if (elementCounts.form >= 2) {
-      feature.metadata.uiPatterns.push('Form Management');
+      feature.metadata.uiPatterns.push("Form Management");
     }
 
     if (elementCounts.modal || elementCounts.dialog) {
-      feature.metadata.uiPatterns.push('Modal Dialogs');
+      feature.metadata.uiPatterns.push("Modal Dialogs");
     }
 
     if (elementCounts.button >= 5) {
-      feature.metadata.uiPatterns.push('Action-Heavy Interface');
+      feature.metadata.uiPatterns.push("Action-Heavy Interface");
     }
   }
 
   getTestType(filename) {
-    if (filename.includes('.unit.')) return 'unit';
-    if (filename.includes('.integration.')) return 'integration';
-    if (filename.includes('.e2e.')) return 'e2e';
-    return 'unit'; // default
+    if (filename.includes(".unit.")) return "unit";
+    if (filename.includes(".integration.")) return "integration";
+    if (filename.includes(".e2e.")) return "e2e";
+    return "unit"; // default
   }
 
   getAssetType(extension) {
     const types = {
-      '.png': 'image',
-      '.jpg': 'image', 
-      '.jpeg': 'image',
-      '.svg': 'icon',
-      '.css': 'styles',
-      '.scss': 'styles',
-      '.module.css': 'styles'
+      ".png": "image",
+      ".jpg": "image",
+      ".jpeg": "image",
+      ".svg": "icon",
+      ".css": "styles",
+      ".scss": "styles",
+      ".module.css": "styles",
     };
-    return types[extension] || 'asset';
+    return types[extension] || "asset";
   }
 }
 
