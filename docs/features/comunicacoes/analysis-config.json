@@ -1,0 +1,125 @@
+{
+  "feature": "comunicacoes",
+  "baseAnalysis": {
+    "components": [
+      {
+        "name": "ModalComunicacao",
+        "type": "Modal",
+        "props": {
+          "isOpen": "boolean",
+          "onClose": "() => void",
+          "onSave": "(data: ComunicacaoForm) => Promise<void>",
+          "comunicacao": "Comunicacao | null",
+          "isEditing": "boolean"
+        },
+        "hooks": ["useForm", "useTranslation", "useEffect", "useMemo"],
+        "purpose": "Modal de criação/edição de comunicações"
+      },
+      {
+        "name": "ComunicacoesToolbar", 
+        "type": "Toolbar",
+        "props": {
+          "autores": "string[]",
+          "totalCount": "number"
+        },
+        "features": ["TextFilter", "SelectFilter", "DatePickerImproved"],
+        "purpose": "Sistema de filtros e busca"
+      },
+      {
+        "name": "DataTable",
+        "type": "Table",
+        "features": ["Paginação", "Ordenação", "Ações inline", "Loading states"],
+        "hooks": ["useReactTable", "useState", "useMemo"],
+        "purpose": "Tabela responsiva de dados"
+      }
+    ],
+    "schemas": {
+      "comunicacaoFormSchema": {
+        "titulo": "string (3-100 chars)",
+        "autor": "string (2-50 chars)",
+        "tipo": "enum ['Comunicado', 'Aviso', 'Notícia']",
+        "descricao": "string (10-1000 chars)"
+      }
+    },
+    "customHooks": [
+      "useModals()",
+      "useFilters()",
+      "useComunicacoes()"
+    ],
+    "dependencies": [
+      "react-hook-form",
+      "@hookform/resolvers",
+      "zod",
+      "@tanstack/react-table",
+      "react-i18next",
+      "lucide-react",
+      "framer-motion"
+    ],
+    "businessRules": {
+      "types": {
+        "Comunicado": "Informações oficiais da empresa",
+        "Aviso": "Alertas importantes ou urgentes",
+        "Notícia": "Novidades e acontecimentos"
+      },
+      "filters": ["search", "tipo", "autor", "dateRange"],
+      "validation": "Zod real-time validation",
+      "permissions": "Autor ou administrador pode editar/deletar"
+    },
+    "performance": {
+      "loadTime": "< 2s",
+      "bundleSize": "245KB gzipped",
+      "testCoverage": "95%",
+      "lighthouseScore": "98/100"
+    }
+  },
+  "documentationTypes": {
+    "technical": {
+      "audience": "Desenvolvedores",
+      "focus": "Implementação, APIs, arquitetura, código",
+      "includeCode": true,
+      "includeInterfaces": true,
+      "includeSetup": true,
+      "includeTesting": true
+    },
+    "user": {
+      "audience": "Usuários finais",
+      "focus": "Como usar, passo a passo, resolução de problemas",
+      "includeCode": false,
+      "includeScreenshots": true,
+      "includeExamples": true,
+      "includeFAQ": true
+    },
+    "executive": {
+      "audience": "Gestores e stakeholders",
+      "focus": "ROI, métricas, timeline, riscos, valor de negócio",
+      "includeMetrics": true,
+      "includeTimeline": true,
+      "includeROI": true,
+      "includeRoadmap": true
+    },
+    "overview": {
+      "audience": "Geral",
+      "focus": "Visão geral, benefícios, casos de uso",
+      "includeUseCases": true,
+      "includeBenefits": true,
+      "includeTechStack": true,
+      "includeVision": true
+    }
+  },
+  "qualityStandards": {
+    "codeAnalysisBased": true,
+    "realInterfacesOnly": true,
+    "actualPropsDocumented": true,
+    "genuineBusinessRules": true,
+    "accurateMetrics": true,
+    "noGenericContent": true
+  },
+  "enhancementPatterns": {
+    "propsTable": "Detailed TypeScript interface documentation",
+    "hooksUsage": "Actual hooks used with explanations",
+    "businessLogic": "Real validation rules and constraints",
+    "userFlows": "Actual UI interactions and workflows",
+    "performanceData": "Real metrics from implementation",
+    "codeExamples": "Extracted from actual component code"
+  }
+}

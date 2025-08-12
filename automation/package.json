@@ -1,32 +1,12 @@
 {
   "name": "automation-docs",
   "version": "1.0.0",
-  "description": "Sistema de automação de documentação inteligente",
-  "main": "scripts/analyze-code.js",
-  "bin": {
-    "analyze-code": "./scripts/analyze-code.js"
-  },
+  "description": "Sistema de documentação automática com IA",
+  "main": "generate-feature-docs.js",
   "scripts": {
-    "setup": "node scripts/setup-wizard.js",
-    "analyze": "node scripts/analyze-code.js",
-    "analyze:test": "node scripts/analyze-code.js --test",
-    "wiki:update": "node scripts/generate-wiki.js",
-    "generate-docs": "node generate-docs.js",
-    "docs": "node generate-docs-v2.js",
-    "docs:v1": "node generate-docs.js",
-    "docs:dev": "npm run docs && echo 'Documentação gerada em docs/dev/'",
-    "docs:export": "npm run docs && echo 'Pronto para export em docs/export/'",
-    "docs:config": "node generate-docs-v2.js --config",
-    "docs:preview": "node generate-docs-v2.js --show-config",
-    "docs:fast": "node generate-docs-v2.js --no-preview",
-    "features": "node generate-feature-docs.js",
-    "features:changes": "node generate-feature-docs.js --detect-changes",
-    "features:all": "node generate-feature-docs.js --all",
-    "features:config": "node generate-feature-docs.js --config",
-    "test": "node test-system.js",
-    "test:quick": "node test-quick.js",
-    "test:performance": "node test-performance.js",
-    "test:openai": "node test-openai.js"
+    "docs": "node generate-feature-docs.js",
+    "docs:all": "node generate-feature-docs.js --all",
+    "docs:changes": "node generate-feature-docs.js --detect-changes"
   },
   "dependencies": {
     "@octokit/rest": "^20.0.2",

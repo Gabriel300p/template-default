@@ -1,42 +1,50 @@
 # comunicacoes - Visão Geral
 
 ## 🎯 Propósito
-A feature "comunicacoes" foi criada para facilitar a gestão e visualização de comunicações dentro de um sistema. Ela permite que os usuários acessem, organizem e interajam com diferentes tipos de mensagens e notificações, promovendo uma comunicação mais eficiente e organizada. O objetivo principal é melhorar a experiência do usuário ao lidar com informações relevantes, garantindo que as comunicações sejam facilmente acessíveis e gerenciáveis.
+A feature **comunicacoes** foi criada para facilitar a gestão e visualização de comunicações dentro de uma aplicação. Ela permite que usuários e gestores acessem, organizem e interajam com mensagens e notificações de forma eficiente, promovendo uma comunicação mais clara e organizada entre os usuários.
 
 ## 👥 Para Quem É
-Esta funcionalidade beneficia três grupos principais:
-- **Desenvolvedores:** Que podem integrar e personalizar a feature conforme as necessidades do sistema.
-- **Usuários:** Que interagem diretamente com as comunicações, utilizando a interface para visualizar, responder e gerenciar mensagens.
-- **Gestores:** Que podem monitorar e analisar a eficácia das comunicações, ajudando na tomada de decisões estratégicas.
+Esta funcionalidade é benéfica para:
+- **Desenvolvedores**: que precisam integrar e personalizar a comunicação na aplicação.
+- **Usuários**: que desejam acessar e gerenciar suas comunicações de maneira intuitiva.
+- **Gestores**: que precisam monitorar e analisar a eficácia das comunicações dentro da plataforma.
 
 ## ⭐ Principais Benefícios
-- **Centralização da Informação:** Todas as comunicações em um único lugar, facilitando o acesso e a gestão.
-- **Interatividade:** Permite que os usuários respondam e interajam com as mensagens diretamente na interface.
-- **Personalização:** A possibilidade de customizar a visualização e organização das comunicações de acordo com as preferências do usuário.
-- **Eficiência:** Melhora a produtividade ao reduzir o tempo gasto na busca e no gerenciamento de informações.
+- **Organização**: As comunicações são apresentadas de forma estruturada, facilitando a busca e o acesso às informações.
+- **Interatividade**: Permite ações rápidas, como deletar ou responder mensagens diretamente na interface.
+- **Personalização**: Suporte a múltiplos idiomas, melhorando a acessibilidade para usuários de diferentes regiões.
+- **Eficiência**: Com componentes otimizados, a performance da aplicação é melhorada, resultando em uma experiência mais fluida.
 
 ## 🏗️ Como Funciona
-A feature "comunicacoes" é composta por vários componentes React que trabalham em conjunto:
-- **ModalComunicacao:** Exibe detalhes de uma comunicação específica em um modal.
-- **ModalDeleteConfirm:** Solicita confirmação antes de excluir uma comunicação.
-- **CommunicationSkeletons:** Fornece uma representação visual enquanto os dados estão sendo carregados.
-- **DataTable e LazyDataTable:** Apresentam as comunicações em formato de tabela, permitindo a filtragem e ordenação.
-- **ComunicacoesToolbar:** Oferece ferramentas para gerenciar as comunicações, como busca e filtros.
-
-Esses componentes se comunicam entre si para garantir que as informações sejam atualizadas em tempo real e que a experiência do usuário seja fluida.
+A feature é composta por diversos componentes React que trabalham em conjunto:
+- **ModalComunicacao**: Apresenta detalhes de uma comunicação específica em um modal.
+- **ModalDeleteConfirm**: Confirma a exclusão de uma comunicação.
+- **DataTable** e **LazyDataTable**: Exibem as comunicações em formato de tabela, permitindo rolagem e carregamento sob demanda.
+- **ComunicacoesToolbar**: Fornece ferramentas para filtrar e buscar comunicações.
+- **Skeletons**: Exibe carregamentos enquanto os dados estão sendo processados, melhorando a experiência do usuário.
 
 ## 🎨 Interface e Experiência
-Os usuários interagem com a feature através de uma interface amigável e intuitiva. A visualização das comunicações é feita em uma tabela, onde é possível ver detalhes como remetente, data e status. Os usuários podem clicar em uma comunicação para abrir o ModalComunicacao, onde podem ler e responder. A toolbar oferece opções de filtragem e busca, permitindo que os usuários encontrem rapidamente o que precisam.
+Os usuários interagem com a feature através de uma interface intuitiva que inclui:
+- Tabelas com colunas personalizáveis para visualizar comunicações.
+- Modais para ações específicas, como visualização e exclusão.
+- Um sistema de navegação que permite fácil acesso a diferentes partes da funcionalidade.
+- Um seletor de idioma que adapta a interface para diferentes usuários.
 
 ## 🔧 Para Desenvolvedores
-Para os desenvolvedores, a implementação da feature "comunicacoes" envolve o uso de componentes React que são modularizados e reutilizáveis. É importante garantir que cada componente tenha testes adequados (como os presentes em LanguageSwitchRecords.test e DataTable.test) para assegurar a qualidade do código. A integração com APIs para buscar e enviar dados de comunicações é fundamental, assim como a implementação de estados de carregamento e erro.
+Aspectos técnicos relevantes:
+- A estrutura modular permite que os desenvolvedores adicionem ou modifiquem componentes sem impactar a funcionalidade geral.
+- Testes automatizados (como **LanguageSwitchRecords.test** e **DataTable.test**) garantem que as alterações não quebrem a funcionalidade existente.
+- O uso de React permite uma atualização dinâmica da interface, melhorando a performance e a responsividade.
 
 ## 📊 Métricas de Sucesso
-Para medir a eficácia da feature, algumas métricas podem ser consideradas:
-- **Taxa de Abertura de Comunicações:** Percentual de mensagens abertas em relação ao total enviado.
-- **Tempo Médio de Resposta:** Tempo que os usuários levam para responder a comunicações.
-- **Satisfação do Usuário:** Feedback qualitativo e quantitativo através de pesquisas.
-- **Uso da Ferramenta:** Frequência de acesso à feature e uso das funcionalidades disponíveis.
+Para medir a eficácia da feature, considere:
+- Taxa de uso das comunicações pelos usuários.
+- Tempo médio gasto na visualização e interação com as comunicações.
+- Feedback dos usuários sobre a facilidade de uso e a clareza da interface.
+- Número de comunicações deletadas ou respondidas, indicando engajamento.
 
 ## 🔄 Evolução
-A feature "comunicacoes" está em constante evolução. O histórico de desenvolvimento inclui melhorias na interface, adição de novas funcionalidades, como notificações em tempo real, e otimizações de desempenho. O planejamento futuro envolve a implementação de análises mais avançadas sobre o uso das comunicações e a integração com outras ferramentas de comunicação, como e-mails e mensagens instantâneas, para criar uma experiência ainda mais coesa e eficiente.
+A feature **comunicacoes** está em constante evolução. O histórico inclui:
+- Lançamento inicial com funcionalidades básicas de visualização.
+- Adição de modais e ferramentas de filtragem com base no feedback dos usuários.
+- Planejamento futuro para integrar análises mais profundas sobre o uso das comunicações e melhorias na experiência do usuário, como notificações em tempo real e suporte a novos idiomas.
