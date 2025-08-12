@@ -130,45 +130,116 @@ class ComponentAnalyzer {
   extractProps(content) {
     const props = [];
 
-    // Props via interface/type
-    const interfaceMatch = content.match(/interface\s+\w*Props\s*{([^}]+)}/s);
-    if (interfaceMatch) {
-      const propsContent = interfaceMatch[1];
-      const propLines = propsContent.split('\n')
-        .map(line => line.trim())
-        .filter(line => line && !line.startsWith('//') && !line.startsWith('*'));
+    // Props via interface/type (melhorado para TypeScript)
+    const interfaceMatches = [
+      // interface NomeProps { ... }
+      /interface\s+(\w*Props)\s*{([^{}]*(?:{[^{}]*}[^{}]*)*)}/gs,
+      // type NomeProps = { ... }
+      /type\s+(\w*Props)\s*=\s*{([^{}]*(?:{[^{}]*}[^{}]*)*)}/gs
+    ];
 
-      propLines.forEach(line => {
-        const match = line.match(/(\w+)(\??):\s*([^;]+)/);
-        if (match) {
-          props.push({
-            name: match[1],
-            type: match[3].trim(),
-            optional: match[2] === '?',
-            description: this.extractPropDescription(content, match[1])
-          });
-        }
+    interfaceMatches.forEach(pattern => {
+      const matches = [...content.matchAll(pattern)];
+      matches.forEach(match => {
+        const propsContent = match[2];
+        this.parsePropsFromInterface(propsContent, props, content);
       });
-    }
+    });
 
-    // Props via destructuring
-    const destructuringMatch = content.match(/\{\s*([^}]+)\s*\}[\s:]*=[\s:]*props/);
-    if (destructuringMatch) {
-      const destructuredProps = destructuringMatch[1].split(',');
-      destructuredProps.forEach(prop => {
-        const cleanProp = prop.trim();
-        if (cleanProp && !props.find(p => p.name === cleanProp)) {
-          props.push({
-            name: cleanProp,
-            type: 'unknown',
-            optional: false,
-            description: ''
-          });
-        }
-      });
-    }
+    // Props via destructuring no parâmetro da função
+    const destructuringPatterns = [
+      // function Component({ prop1, prop2 }: Props)
+      /function\s+\w+\s*\(\s*{\s*([^}]+)\s*}\s*:\s*\w*Props/,
+      // const Component = ({ prop1, prop2 }: Props) =>
+      /const\s+\w+\s*=\s*\(\s*{\s*([^}]+)\s*}\s*:\s*\w*Props/,
+      // ({ prop1, prop2 }: Props) =>
+      /\(\s*{\s*([^}]+)\s*}\s*:\s*\w*Props\s*\)\s*=>/
+    ];
+
+    destructuringPatterns.forEach(pattern => {
+      const match = content.match(pattern);
+      if (match) {
+        this.parseDestructuredProps(match[1], props);
+      }
+    });
 
     return props;
+  }
+
+  parsePropsFromInterface(propsContent, props, fullContent) {
+    // Remove comentários de bloco
+    const cleanContent = propsContent.replace(/\/\*[\s\S]*?\*\//g, '');
+    
+    // Divide em linhas e processa cada propriedade
+    const lines = cleanContent.split('\n');
+    let currentProp = '';
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      
+      // Ignora linhas vazias e comentários
+      if (!line || line.startsWith('//') || line.startsWith('*')) {
+        continue;
+      }
+      
+      // Se é uma linha de propriedade completa
+      if (line.includes(':') && (line.endsWith(';') || line.endsWith(','))) {
+        currentProp = line;
+        this.parseSingleProp(currentProp, props, fullContent);
+        currentProp = '';
+      }
+      // Se é o início de uma propriedade multilinhas
+      else if (line.includes(':')) {
+        currentProp = line;
+      }
+      // Continua propriedade multilinhas
+      else if (currentProp) {
+        currentProp += ' ' + line;
+        if (line.endsWith(';') || line.endsWith(',')) {
+          this.parseSingleProp(currentProp, props, fullContent);
+          currentProp = '';
+        }
+      }
+    }
+  }
+
+  parseSingleProp(propLine, props, fullContent) {
+    // Remove ; e , do final
+    const cleanLine = propLine.replace(/[;,]\s*$/, '');
+    
+    // Pattern: propName?: type | propName: type
+    const match = cleanLine.match(/^\s*(\w+)(\??)\s*:\s*(.+)$/);
+    if (match) {
+      const [, name, optional, type] = match;
+      
+      // Evita duplicatas
+      if (!props.find(p => p.name === name)) {
+        props.push({
+          name,
+          type: type.trim(),
+          optional: optional === '?',
+          description: this.extractPropDescription(fullContent, name)
+        });
+      }
+    }
+  }
+
+  parseDestructuredProps(destructuredContent, props) {
+    const propNames = destructuredContent
+      .split(',')
+      .map(prop => prop.trim().split('=')[0].trim()) // Remove valores padrão
+      .filter(name => name && /^\w+$/.test(name)); // Apenas nomes válidos
+    
+    propNames.forEach(name => {
+      if (!props.find(p => p.name === name)) {
+        props.push({
+          name,
+          type: 'unknown',
+          optional: false,
+          description: ''
+        });
+      }
+    });
   }
 
   extractPropDescription(content, propName) {
@@ -195,24 +266,69 @@ class ComponentAnalyzer {
 
   extractHooks(content) {
     const hooks = [];
+    
+    // Padrões mais precisos para hooks
     const hookPatterns = [
-      /use\w+\(/g,
-      /React\.use\w+\(/g
+      // useState, useEffect, etc.
+      /\b(use[A-Z]\w*)\s*\(/g,
+      // React.useState, React.useEffect
+      /React\.(use[A-Z]\w*)\s*\(/g,
+      // import { useCustomHook } from '...'
+      /import\s*{[^}]*\b(use[A-Z]\w*)\b[^}]*}/g
     ];
 
-    hookPatterns.forEach(pattern => {
-      const matches = content.match(pattern);
-      if (matches) {
-        matches.forEach(match => {
-          const hookName = match.replace(/[()]/g, '');
-          if (!hooks.includes(hookName)) {
-            hooks.push(hookName);
-          }
-        });
+    hookPatterns.forEach((pattern, index) => {
+      let match;
+      while ((match = pattern.exec(content)) !== null) {
+        const hookName = index === 1 ? match[1] : match[1]; // React.useState -> useState
+        
+        // Filtrar hooks válidos e evitar duplicatas
+        if (hookName.startsWith('use') && 
+            hookName.length > 3 && 
+            !hooks.find(h => h.name === hookName)) {
+          
+          hooks.push({
+            name: hookName,
+            type: this.classifyHook(hookName),
+            usage: this.extractHookUsage(content, hookName)
+          });
+        }
       }
     });
 
+    // Reset regex lastIndex
+    hookPatterns.forEach(pattern => pattern.lastIndex = 0);
+
     return hooks;
+  }
+
+  classifyHook(hookName) {
+    const builtInHooks = [
+      'useState', 'useEffect', 'useContext', 'useReducer',
+      'useCallback', 'useMemo', 'useRef', 'useImperativeHandle',
+      'useLayoutEffect', 'useDebugValue', 'useDeferredValue',
+      'useTransition', 'useId', 'useSyncExternalStore'
+    ];
+    
+    const commonLibraryHooks = [
+      'useQuery', 'useMutation', 'useRouter', 'useNavigate',
+      'useForm', 'useFieldArray', 'useTranslation', 'useTheme'
+    ];
+    
+    if (builtInHooks.includes(hookName)) {
+      return 'built-in';
+    } else if (commonLibraryHooks.includes(hookName)) {
+      return 'library';
+    } else {
+      return 'custom';
+    }
+  }
+
+  extractHookUsage(content, hookName) {
+    // Encontrar como o hook está sendo usado
+    const usageRegex = new RegExp(`const\\s+[^=]*=\\s*${hookName}\\s*\\([^)]*\\)`, 'g');
+    const usages = content.match(usageRegex);
+    return usages ? usages.length : 1;
   }
 
   extractMethods(content) {
@@ -318,18 +434,76 @@ class ComponentAnalyzer {
 
   extractImports(content) {
     const imports = [];
-    const importPattern = /import\s+(?:(?:\{[^}]*\}|\w+|\*\s+as\s+\w+)(?:\s*,\s*(?:\{[^}]*\}|\w+))*\s+from\s+)?['"](.*?)['"];?/g;
     
-    let match;
-    while ((match = importPattern.exec(content)) !== null) {
-      imports.push({
-        source: match[1],
-        isRelative: match[1].startsWith('./') || match[1].startsWith('../'),
-        isNodeModule: !match[1].startsWith('./')
-      });
-    }
+    // Padrões de import mais abrangentes
+    const importPatterns = [
+      // import { Component } from 'react'
+      /import\s+\{([^}]+)\}\s+from\s+['"`]([^'"`]+)['"`]/g,
+      // import React from 'react'
+      /import\s+(\w+)\s+from\s+['"`]([^'"`]+)['"`]/g,
+      // import * as React from 'react'
+      /import\s+\*\s+as\s+(\w+)\s+from\s+['"`]([^'"`]+)['"`]/g,
+      // import React, { Component } from 'react'
+      /import\s+(\w+),\s*\{([^}]+)\}\s+from\s+['"`]([^'"`]+)['"`]/g,
+      // import 'styles.css'
+      /import\s+['"`]([^'"`]+)['"`]/g
+    ];
+
+    importPatterns.forEach((pattern, index) => {
+      let match;
+      while ((match = pattern.exec(content)) !== null) {
+        let source, namedImports = [], defaultImport = null, namespaceImport = null;
+        
+        switch (index) {
+          case 0: // { Component } from 'react'
+            namedImports = match[1].split(',').map(imp => imp.trim());
+            source = match[2];
+            break;
+          case 1: // React from 'react'
+            defaultImport = match[1];
+            source = match[2];
+            break;
+          case 2: // * as React from 'react'
+            namespaceImport = match[1];
+            source = match[2];
+            break;
+          case 3: // React, { Component } from 'react'
+            defaultImport = match[1];
+            namedImports = match[2].split(',').map(imp => imp.trim());
+            source = match[3];
+            break;
+          case 4: // 'styles.css'
+            source = match[1];
+            break;
+        }
+        
+        // Evitar duplicatas
+        if (!imports.find(imp => imp.source === source)) {
+          imports.push({
+            source,
+            defaultImport,
+            namedImports,
+            namespaceImport,
+            isRelative: source.startsWith('./') || source.startsWith('../'),
+            isNodeModule: !source.startsWith('./') && !source.startsWith('../'),
+            category: this.categorizeImport(source)
+          });
+        }
+      }
+      pattern.lastIndex = 0; // Reset regex
+    });
 
     return imports;
+  }
+
+  categorizeImport(source) {
+    if (source.startsWith('@shared/')) return 'shared';
+    if (source.startsWith('@/')) return 'internal';
+    if (source.startsWith('./') || source.startsWith('../')) return 'relative';
+    if (source === 'react') return 'framework';
+    if (['react-router-dom', 'react-hook-form', 'react-i18next'].includes(source)) return 'react-library';
+    if (source.includes('.css') || source.includes('.scss')) return 'styles';
+    return 'external';
   }
 
   extractExports(content) {

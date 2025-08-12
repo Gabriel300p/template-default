@@ -1,3 +1,4 @@
+// 🚀 RecordDataTable - Optimized data table component
 import { OptimizedTable } from "@shared/components/ui/OptimizedTable";
 import { Pagination } from "@shared/components/ui/pagination";
 import type {

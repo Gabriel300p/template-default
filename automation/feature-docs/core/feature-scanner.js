@@ -45,7 +45,16 @@ class FeatureScanner {
   }
 
   featureHasChanges(featurePath, changedFiles) {
-    return changedFiles.some(file => file.startsWith(featurePath));
+    // Normalizar caminhos para comparação
+    const normalizedFeaturePath = featurePath.replace(/\\/g, '/').toLowerCase();
+    
+    return changedFiles.some(file => {
+      const normalizedFile = file.replace(/\\/g, '/').toLowerCase();
+      // Verificar se o arquivo está dentro da feature (caminhos absolutos ou relativos)
+      return normalizedFile.includes(normalizedFeaturePath.split('/').pop()) ||
+             normalizedFile.includes(normalizedFeaturePath) ||
+             normalizedFeaturePath.includes(normalizedFile);
+    });
   }
 
   async analyzeFeature(featureName, featurePath) {

@@ -59,7 +59,11 @@ class FeatureDocsEngine {
    * Escaneia features disponíveis
    */
   async scanFeatures(changedFiles = null) {
-    const featuresDir = path.join(this.projectRoot, 'src', 'features');
+    // Primeiro tenta frontend/src/features, depois src/features
+    let featuresDir = path.join(this.projectRoot, 'frontend', 'src', 'features');
+    if (!require('fs').existsSync(featuresDir)) {
+      featuresDir = path.join(this.projectRoot, 'src', 'features');
+    }
     return await this.featureScanner.scanFeatures(featuresDir);
   }
 
@@ -140,14 +144,21 @@ class FeatureDocsEngine {
   async scanFeatures(changedFiles = null) {
     console.log('📂 Escaneando features...');
     
-    const featuresPath = path.join(this.projectRoot, 'src', 'features');
+    // Determinar o caminho das features
+    let featuresPath = path.join(this.projectRoot, 'frontend', 'src', 'features');
+    if (!require('fs').existsSync(featuresPath)) {
+      featuresPath = path.join(this.projectRoot, 'src', 'features');
+    }
+    
     const features = await this.featureScanner.scanFeatures(featuresPath, changedFiles);
     
     console.log(`📋 ${features.length} feature(s) encontrada(s)`);
     
     if (features.length === 0) {
-      console.log('⚠️ Nenhuma feature encontrada em src/features/');
-      console.log('💡 Certifique-se de que suas features estão organizadas em src/features/');
+      console.log('⚠️ Nenhuma feature encontrada!');
+      console.log('💡 Certifique-se de que suas features estão organizadas em:');
+      console.log('   - frontend/src/features/ (para projetos full-stack)');
+      console.log('   - src/features/ (para projetos frontend simples)');
       return [];
     }
 

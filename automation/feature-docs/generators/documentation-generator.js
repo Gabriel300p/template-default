@@ -197,7 +197,13 @@ class DocumentationGenerator {
   async generateSimpleContent(feature, config) {
     const content = {
       overview: this.generateOverviewSection(feature),
-      components: this.generateComponentsSection(feature.components || [])
+      components: this.generateComponentsSection(feature.components || []),
+      hooks: this.generateHooksSection(feature.hooks || []),
+      services: this.generateServicesSection(feature.services || []),
+      types: this.generateTypesSection(feature.types || []),
+      architecture: this.generateArchitectureSection(feature),
+      examples: this.generateExamplesSection(feature),
+      testing: this.generateTestingSection(feature)
     };
 
     // Tentar melhorar com IA se disponível
@@ -507,12 +513,22 @@ class DocumentationGenerator {
             markdown += `| Nome | Tipo | Obrigatório | Descrição |\n`;
             markdown += `|------|------|-------------|------------|\n`;
             for (const prop of component.props) {
-              markdown += `| ${prop.name} | ${prop.type} | ${prop.required ? 'Sim' : 'Não'} | ${prop.description || '-'} |\n`;
+              markdown += `| ${prop.name} | ${prop.type} | ${prop.optional ? 'Não' : 'Sim'} | ${prop.description || '-'} |\n`;
             }
             markdown += `\n`;
           }
 
-          if (component.uiElements.length > 0) {
+          if (component.hooks && component.hooks.length > 0) {
+            markdown += `**Hooks utilizados:**\n`;
+            for (const hook of component.hooks) {
+              const hookName = typeof hook === 'string' ? hook : hook.name;
+              const hookType = typeof hook === 'object' && hook.type ? ` (${hook.type})` : '';
+              markdown += `- \`${hookName}\`${hookType}\n`;
+            }
+            markdown += `\n`;
+          }
+
+          if (component.uiElements && component.uiElements.length > 0) {
             markdown += `**Elementos UI detectados:**\n`;
             for (const element of component.uiElements) {
               markdown += `- ${element.type}: ${element.confidence}% de confiança\n`;
@@ -520,6 +536,71 @@ class DocumentationGenerator {
             markdown += `\n`;
           }
         }
+        break;
+
+      case 'hooks':
+        if (typeof section.content === 'string') {
+          markdown += `${section.content}\n\n`;
+        } else {
+          markdown += `${section.content.overview}\n\n`;
+          if (section.content.hooks) {
+            for (const hook of section.content.hooks) {
+              markdown += `### ${hook.name}\n\n`;
+              markdown += `${hook.description}\n\n`;
+              if (hook.example) {
+                markdown += `**Exemplo de uso:**\n\`\`\`tsx\n${hook.example}\n\`\`\`\n\n`;
+              }
+            }
+          }
+        }
+        break;
+
+      case 'services':
+        if (typeof section.content === 'string') {
+          markdown += `${section.content}\n\n`;
+        } else {
+          markdown += `${section.content.overview}\n\n`;
+          if (section.content.services) {
+            for (const service of section.content.services) {
+              markdown += `### ${service.name}\n\n`;
+              markdown += `${service.description}\n\n`;
+            }
+          }
+        }
+        break;
+
+      case 'types':
+        if (typeof section.content === 'string') {
+          markdown += `${section.content}\n\n`;
+        } else {
+          markdown += `${section.content.overview}\n\n`;
+          if (section.content.types) {
+            for (const type of section.content.types) {
+              markdown += `### ${type.name}\n\n`;
+              markdown += `${type.description}\n\n`;
+            }
+          }
+        }
+        break;
+
+      case 'architecture':
+        if (typeof section.content === 'string') {
+          markdown += `${section.content}\n\n`;
+        } else {
+          markdown += `${section.content}\n\n`;
+        }
+        break;
+
+      case 'examples':
+        markdown += `### Exemplos Básicos\n${section.content.basic}\n\n`;
+        markdown += `### Exemplos Avançados\n${section.content.advanced}\n\n`;
+        markdown += `### Integração\n${section.content.integration}\n\n`;
+        break;
+
+      case 'testing':
+        markdown += `### Testes Unitários\n${section.content.unitTests}\n\n`;
+        markdown += `### Testes de Integração\n${section.content.integrationTests}\n\n`;
+        markdown += `### Testes E2E\n${section.content.e2eTests}\n\n`;
         break;
 
       default:
@@ -615,6 +696,116 @@ class DocumentationGenerator {
 
   generateE2ETestExamples(feature) {
     return `Cenários end-to-end para validação`;
+  }
+
+  /**
+   * Gera seção de hooks
+   */
+  generateHooksSection(hooks) {
+    if (!hooks || hooks.length === 0) {
+      return {
+        title: 'Hooks',
+        content: 'Nenhum hook customizado encontrado nesta feature.'
+      };
+    }
+
+    return {
+      title: 'Hooks Customizados',
+      content: {
+        overview: `Esta feature implementa ${hooks.length} hook(s) customizado(s).`,
+        hooks: hooks.map(hook => ({
+          name: hook.name,
+          description: hook.description || `Hook customizado ${hook.name}`,
+          parameters: hook.parameters || [],
+          returns: hook.returns || 'unknown',
+          example: hook.example || `const result = ${hook.name}();`
+        }))
+      }
+    };
+  }
+
+  /**
+   * Gera seção de serviços
+   */
+  generateServicesSection(services) {
+    if (!services || services.length === 0) {
+      return {
+        title: 'Serviços',
+        content: 'Nenhum serviço específico encontrado nesta feature.'
+      };
+    }
+
+    return {
+      title: 'Serviços',
+      content: {
+        overview: `Esta feature utiliza ${services.length} serviço(s).`,
+        services: services.map(service => ({
+          name: service.name,
+          description: service.description || `Serviço responsável por ${service.name.toLowerCase()}`,
+          methods: service.methods || [],
+          dependencies: service.dependencies || []
+        }))
+      }
+    };
+  }
+
+  /**
+   * Gera seção de tipos
+   */
+  generateTypesSection(types) {
+    if (!types || types.length === 0) {
+      return {
+        title: 'Tipos e Interfaces',
+        content: 'Esta feature utiliza tipos TypeScript padrão.'
+      };
+    }
+
+    return {
+      title: 'Tipos e Interfaces',
+      content: {
+        overview: `Esta feature define ${types.length} tipo(s)/interface(s) customizada(s).`,
+        types: types.map(type => ({
+          name: type.name,
+          description: type.description || `Tipo ${type.name}`,
+          properties: type.properties || [],
+          usage: type.usage || `Como usar o tipo ${type.name}`
+        }))
+      }
+    };
+  }
+
+  /**
+   * Gera seção de arquitetura
+   */
+  generateArchitectureSection(feature) {
+    const components = feature.components || [];
+    const hooks = feature.hooks || [];
+    const services = feature.services || [];
+
+    let architecture = `## Estrutura da Feature\n\n`;
+    
+    if (components.length > 0) {
+      architecture += `### Componentes (${components.length})\n`;
+      architecture += `- **UI Components:** ${components.filter(c => c.type === 'react' || c.type === 'vue').length}\n`;
+      architecture += `- **Layout Components:** ${components.filter(c => c.name.toLowerCase().includes('layout')).length}\n`;
+      architecture += `- **Form Components:** ${components.filter(c => c.name.toLowerCase().includes('form') || c.name.toLowerCase().includes('modal')).length}\n\n`;
+    }
+
+    if (hooks.length > 0) {
+      architecture += `### Hooks (${hooks.length})\n`;
+      architecture += `- **Estado:** ${hooks.filter(h => h.name.includes('State') || h.name.includes('use')).length}\n`;
+      architecture += `- **Efeitos:** ${hooks.filter(h => h.name.includes('Effect')).length}\n\n`;
+    }
+
+    architecture += `### Padrões Utilizados\n`;
+    architecture += `- **Componentização:** Separação clara de responsabilidades\n`;
+    architecture += `- **Hooks Pattern:** Estado e lógica encapsulados\n`;
+    architecture += `- **TypeScript:** Tipagem forte para maior confiabilidade\n\n`;
+
+    return {
+      title: 'Arquitetura',
+      content: architecture
+    };
   }
 
   /**
