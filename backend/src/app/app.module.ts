@@ -16,6 +16,7 @@ import { authConfig } from '@/shared/config/auth.config';
 import { redisConfig } from '@/shared/config/redis.config';
 
 // Modules
+import { PrismaModule } from '@/shared/database/prisma.module';
 import { AuthModule } from '@/modules/auth/auth.module';
 import { UsersModule } from '@/modules/users/users.module';
 import { ComunicacoesModule } from '@/modules/comunicacoes/comunicacoes.module';
@@ -123,6 +124,9 @@ import { AppService } from './app.service';
 
     // Health checks
     TerminusModule,
+
+    // Database
+    PrismaModule,
 
     // Feature modules
     AuthModule,

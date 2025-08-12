@@ -210,7 +210,7 @@ class DocumentationGenerator {
             content: prompt,
           },
         ],
-        max_tokens: 3000,
+        max_tokens: 4000,
         temperature: 0.3,
       });
 
@@ -245,16 +245,25 @@ class DocumentationGenerator {
   }
 
   /**
-   * Prepara dados para substituição no template
+   * Prepara dados para substituição no template - VERSÃO MELHORADA
+   * Agora faz análise real do código em vez de usar dados genéricos
    */
   prepareTemplateData(feature) {
     const components = feature.components || [];
     const hooks = feature.hooks || [];
 
+    // Análise do código real
+    const codeAnalysis = this.performRealCodeAnalysis(feature);
+    const currentDate = new Date().toLocaleDateString("pt-BR");
+
     return {
+      // Dados básicos
       feature_name: feature.name,
+      current_date: currentDate,
       components_count: components.length,
       hooks_count: hooks.length,
+
+      // Dados básicos legados (manter compatibilidade)
       complexity_level: this.calculateOverallComplexity(components),
       components_summary: components
         .map(
@@ -267,7 +276,203 @@ class DocumentationGenerator {
       ).length,
       ui_elements: this.extractUIElements(components).join(", "),
       feature_capabilities: this.inferCapabilities(feature),
+
+      // NOVOS DADOS BASEADOS EM ANÁLISE REAL
+      code_analysis: codeAnalysis.summary,
+      real_components: codeAnalysis.componentsDetail,
+      real_schemas: codeAnalysis.schemas,
+      real_hooks: codeAnalysis.hooksDetail,
+      real_dependencies: codeAnalysis.dependencies,
+      business_rules: codeAnalysis.businessRules,
+      ui_analysis: codeAnalysis.uiAnalysis,
+      real_features: codeAnalysis.realFeatures,
+      real_ui_flows: codeAnalysis.uiFlows,
+      real_validations: codeAnalysis.validations,
+      real_filters: codeAnalysis.filters,
+      implementation_analysis: codeAnalysis.implementationSummary,
+      real_complexity: codeAnalysis.complexityAnalysis,
+      implemented_features: codeAnalysis.implementedFeaturesList,
+      real_tech_stack: codeAnalysis.techStack,
+      quality_metrics: codeAnalysis.qualityMetrics,
+      dev_time_analysis: codeAnalysis.developmentTime,
+      real_implementation: codeAnalysis.implementationOverview,
+      real_functionality: codeAnalysis.functionalityDetail,
+      real_interface: codeAnalysis.interfaceDetail,
+      real_technologies: codeAnalysis.technologiesUsed,
+      real_benefits: codeAnalysis.identifiedBenefits,
+      real_use_cases: codeAnalysis.realUseCases,
     };
+  }
+
+  /**
+   * Realiza análise profunda do código real - NOVO MÉTODO
+   */
+  performRealCodeAnalysis(feature) {
+    const components = feature.components || [];
+    const analysis = {
+      summary: "",
+      componentsDetail: "",
+      schemas: "",
+      hooksDetail: "",
+      dependencies: "",
+      businessRules: "",
+      uiAnalysis: "",
+      realFeatures: "",
+      uiFlows: "",
+      validations: "",
+      filters: "",
+      implementationSummary: "",
+      complexityAnalysis: "",
+      implementedFeaturesList: "",
+      techStack: "",
+      qualityMetrics: "",
+      developmentTime: "",
+      implementationOverview: "",
+      functionalityDetail: "",
+      interfaceDetail: "",
+      technologiesUsed: "",
+      identifiedBenefits: "",
+      realUseCases: "",
+    };
+
+    // 1. ANÁLISE DE COMPONENTES REAIS
+    if (components.length > 0) {
+      analysis.componentsDetail = components
+        .map((comp) => {
+          let detail = `**${comp.name}** (${comp.type}):\n`;
+
+          // Props reais
+          if (comp.props && comp.props.length > 0) {
+            detail += `- Props: ${comp.props.map((p) => `${p.name}: ${p.type || "any"}`).join(", ")}\n`;
+          }
+
+          // Hooks reais
+          if (comp.hooks && comp.hooks.length > 0) {
+            detail += `- Hooks utilizados: ${comp.hooks.map((h) => h.name || h).join(", ")}\n`;
+          }
+
+          // Imports reais (dependências)
+          if (comp.imports && comp.imports.length > 0) {
+            const external = comp.imports.filter((imp) => {
+              const importStr =
+                typeof imp === "string" ? imp : imp.source || imp.from || "";
+              return (
+                importStr &&
+                !importStr.startsWith(".") &&
+                !importStr.startsWith("/")
+              );
+            });
+            if (external.length > 0) {
+              detail += `- Dependências: ${external.map((imp) => (typeof imp === "string" ? imp : imp.source || imp.from || "")).join(", ")}\n`;
+            }
+          }
+
+          return detail;
+        })
+        .join("\n");
+
+      // Summary
+      analysis.summary = `Feature implementa ${components.length} componente(s) React/TypeScript com arquitetura baseada em hooks e componentes funcionais.`;
+    }
+
+    // 2. ANÁLISE DE SCHEMAS/VALIDAÇÕES
+    const schemasFound = components.flatMap((c) => c.schemas || []);
+    if (schemasFound.length > 0) {
+      analysis.schemas = schemasFound
+        .map(
+          (schema) =>
+            `**${schema.name}**: ${JSON.stringify(schema.fields || schema, null, 2)}`
+        )
+        .join("\n\n");
+    }
+
+    // 3. ANÁLISE DE HOOKS
+    const allHooks = [...new Set(components.flatMap((c) => c.hooks || []))];
+    if (allHooks.length > 0) {
+      analysis.hooksDetail = allHooks
+        .map((hook) => {
+          const hookName = hook.name || hook;
+          return `- ${hookName}: ${this.describeHookPurpose(hookName)}`;
+        })
+        .join("\n");
+    }
+
+    // 4. ANÁLISE DE DEPENDÊNCIAS
+    const allDeps = [
+      ...new Set(
+        components.flatMap((c) =>
+          (c.imports || [])
+            .filter((imp) => {
+              const importStr =
+                typeof imp === "string" ? imp : imp.source || imp.from || "";
+              return (
+                importStr &&
+                !importStr.startsWith(".") &&
+                !importStr.startsWith("/")
+              );
+            })
+            .map((imp) =>
+              typeof imp === "string" ? imp : imp.source || imp.from || ""
+            )
+        )
+      ),
+    ];
+    if (allDeps.length > 0) {
+      analysis.dependencies = allDeps.map((dep) => `- ${dep}`).join("\n");
+      analysis.technologiesUsed = allDeps.join(", ");
+    }
+
+    // 5. ANÁLISE DE REGRAS DE NEGÓCIO
+    analysis.businessRules = this.extractBusinessRules(components);
+
+    // 6. ANÁLISE DE INTERFACE/UX
+    analysis.uiAnalysis = this.analyzeUserInterface(components);
+
+    // 7. FUNCIONALIDADES IMPLEMENTADAS
+    analysis.realFeatures = this.identifyImplementedFeatures(components);
+    analysis.implementedFeaturesList = analysis.realFeatures;
+
+    // 8. FLUXOS DE UI
+    analysis.uiFlows = this.extractUIFlows(components);
+
+    // 9. VALIDAÇÕES
+    analysis.validations = this.extractValidations(components);
+
+    // 10. FILTROS
+    analysis.filters = this.extractFilters(components);
+
+    // 11. ANÁLISE DE IMPLEMENTAÇÃO
+    analysis.implementationSummary = this.createImplementationSummary(
+      feature,
+      components
+    );
+    analysis.implementationOverview = analysis.implementationSummary;
+
+    // 12. COMPLEXIDADE
+    analysis.complexityAnalysis = this.analyzeRealComplexity(components);
+
+    // 13. TECH STACK
+    analysis.techStack = this.buildTechStack(components);
+
+    // 14. MÉTRICAS DE QUALIDADE
+    analysis.qualityMetrics = this.calculateQualityMetrics(components);
+
+    // 15. TEMPO DE DESENVOLVIMENTO
+    analysis.developmentTime = this.estimateDevelopmentTime(components);
+
+    // 16. DETALHES FUNCIONAIS
+    analysis.functionalityDetail = this.analyzeFunctionality(components);
+
+    // 17. DETALHES DA INTERFACE
+    analysis.interfaceDetail = this.analyzeInterfaceDetails(components);
+
+    // 18. BENEFÍCIOS IDENTIFICADOS
+    analysis.identifiedBenefits = this.identifyBenefits(components);
+
+    // 19. CASOS DE USO REAIS
+    analysis.realUseCases = this.identifyRealUseCases(components);
+
+    return analysis;
   }
 
   /**
@@ -280,6 +485,433 @@ class DocumentationGenerator {
       result = result.replace(regex, value || "");
     }
     return result;
+  }
+
+  // ============= MÉTODOS AUXILIARES DE ANÁLISE DE CÓDIGO REAL =============
+
+  describeHookPurpose(hookName) {
+    const hookDescriptions = {
+      useForm: "Gerenciamento de formulários com React Hook Form",
+      useTranslation: "Internacionalização de texto",
+      useEffect: "Efeitos colaterais e ciclo de vida",
+      useState: "Estado local do componente",
+      useMemo: "Memoização de valores computados",
+      useCallback: "Memoização de funções",
+      useContext: "Acesso a Context API",
+      useQuery: "Consultas de dados com React Query",
+      useMutation: "Mutações de dados",
+      useRouter: "Navegação e roteamento",
+      useReactTable: "Funcionalidades de tabela avançadas",
+    };
+    return hookDescriptions[hookName] || "Hook customizado da aplicação";
+  }
+
+  extractBusinessRules(components) {
+    const rules = [];
+
+    components.forEach((comp) => {
+      // Análise de validações
+      if (comp.schemas) {
+        comp.schemas.forEach((schema) => {
+          if (schema.validations) {
+            rules.push(
+              `Validação em ${comp.name}: ${JSON.stringify(schema.validations)}`
+            );
+          }
+        });
+      }
+
+      // Análise de props que indicam regras
+      if (comp.props) {
+        const ruleProps = comp.props.filter(
+          (p) =>
+            p.name.includes("required") ||
+            p.name.includes("min") ||
+            p.name.includes("max") ||
+            p.name.includes("validation")
+        );
+        if (ruleProps.length > 0) {
+          rules.push(
+            `${comp.name} tem regras: ${ruleProps.map((p) => p.name).join(", ")}`
+          );
+        }
+      }
+    });
+
+    return rules.length > 0
+      ? rules.join("\n")
+      : "Regras de negócio identificadas na validação de formulários e props de componentes.";
+  }
+
+  analyzeUserInterface(components) {
+    const uiElements = [];
+
+    components.forEach((comp) => {
+      if (comp.name.toLowerCase().includes("modal")) {
+        uiElements.push(
+          `${comp.name}: Modal/Dialog para interação com usuário`
+        );
+      }
+      if (comp.name.toLowerCase().includes("toolbar")) {
+        uiElements.push(
+          `${comp.name}: Barra de ferramentas com filtros e ações`
+        );
+      }
+      if (comp.name.toLowerCase().includes("table")) {
+        uiElements.push(`${comp.name}: Tabela de dados com paginação`);
+      }
+      if (comp.name.toLowerCase().includes("form")) {
+        uiElements.push(`${comp.name}: Formulário de entrada de dados`);
+      }
+      if (comp.name.toLowerCase().includes("button")) {
+        uiElements.push(`${comp.name}: Botão para ação do usuário`);
+      }
+    });
+
+    return uiElements.length > 0
+      ? uiElements.join("\n")
+      : "Interface com componentes React padrão.";
+  }
+
+  identifyImplementedFeatures(components) {
+    const features = [];
+
+    if (components.some((c) => c.name.toLowerCase().includes("modal"))) {
+      features.push("Sistema de modais/dialogs");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("table"))) {
+      features.push("Tabela de dados com paginação");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("toolbar"))) {
+      features.push("Filtros e busca");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("form"))) {
+      features.push("Formulários de entrada");
+    }
+    if (components.some((c) => c.hooks?.includes("useForm"))) {
+      features.push("Validação de formulários");
+    }
+
+    return features.length > 0
+      ? features.join(", ")
+      : "Funcionalidades de interface de usuário padrão";
+  }
+
+  extractUIFlows(components) {
+    const flows = [];
+
+    const hasModal = components.some((c) =>
+      c.name.toLowerCase().includes("modal")
+    );
+    const hasTable = components.some((c) =>
+      c.name.toLowerCase().includes("table")
+    );
+    const hasToolbar = components.some((c) =>
+      c.name.toLowerCase().includes("toolbar")
+    );
+
+    if (hasToolbar && hasTable) {
+      flows.push("1. Usuário usa toolbar para filtrar/buscar");
+      flows.push("2. Tabela exibe resultados filtrados");
+    }
+
+    if (hasTable && hasModal) {
+      flows.push("3. Usuário clica em ação na tabela");
+      flows.push("4. Modal abre para edição/criação");
+    }
+
+    return flows.length > 0
+      ? flows.join("\n")
+      : "Fluxos padrão de interface React";
+  }
+
+  extractValidations(components) {
+    const validations = [];
+
+    components.forEach((comp) => {
+      if (comp.hooks?.includes("useForm")) {
+        validations.push(`${comp.name}: Validação via React Hook Form`);
+      }
+
+      if (comp.schemas) {
+        comp.schemas.forEach((schema) => {
+          validations.push(
+            `Schema ${schema.name}: Validação de dados estruturada`
+          );
+        });
+      }
+
+      const validationProps = (comp.props || []).filter(
+        (p) =>
+          p.name.includes("validation") ||
+          p.name.includes("error") ||
+          p.name === "required"
+      );
+
+      if (validationProps.length > 0) {
+        validations.push(
+          `${comp.name}: Props de validação - ${validationProps.map((p) => p.name).join(", ")}`
+        );
+      }
+    });
+
+    return validations.length > 0
+      ? validations.join("\n")
+      : "Validações implementadas nos formulários";
+  }
+
+  extractFilters(components) {
+    const filters = [];
+
+    components.forEach((comp) => {
+      if (
+        comp.name.toLowerCase().includes("filter") ||
+        comp.name.toLowerCase().includes("toolbar")
+      ) {
+        const filterProps = (comp.props || []).filter(
+          (p) =>
+            p.name.includes("filter") ||
+            p.name.includes("search") ||
+            p.name.includes("sort")
+        );
+
+        if (filterProps.length > 0) {
+          filters.push(
+            `${comp.name}: ${filterProps.map((p) => p.name).join(", ")}`
+          );
+        } else {
+          filters.push(`${comp.name}: Sistema de filtros implementado`);
+        }
+      }
+    });
+
+    return filters.length > 0
+      ? filters.join("\n")
+      : "Filtros disponíveis conforme implementação";
+  }
+
+  createImplementationSummary(feature, components) {
+    const summary = [];
+    summary.push(
+      `Feature ${feature.name} implementada com ${components.length} componente(s) React/TypeScript`
+    );
+
+    const techFeatures = [];
+    if (components.some((c) => c.hooks?.includes("useForm"))) {
+      techFeatures.push("formulários controlados");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("table"))) {
+      techFeatures.push("tabelas de dados");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("modal"))) {
+      techFeatures.push("modais interativos");
+    }
+
+    if (techFeatures.length > 0) {
+      summary.push(`Inclui: ${techFeatures.join(", ")}`);
+    }
+
+    return summary.join(". ");
+  }
+
+  analyzeRealComplexity(components) {
+    const factors = [];
+
+    // Análise de complexidade baseada em evidências reais
+    const totalComponents = components.length;
+    if (totalComponents > 5) factors.push("múltiplos componentes");
+
+    const hasHooks = components.some((c) => c.hooks && c.hooks.length > 3);
+    if (hasHooks) factors.push("uso intensivo de hooks");
+
+    const hasComplexProps = components.some(
+      (c) => c.props && c.props.length > 5
+    );
+    if (hasComplexProps) factors.push("interfaces complexas");
+
+    const hasSchemas = components.some(
+      (c) => c.schemas && c.schemas.length > 0
+    );
+    if (hasSchemas) factors.push("validação estruturada");
+
+    let level = "baixa";
+    if (factors.length > 2) level = "média";
+    if (factors.length > 4) level = "alta";
+
+    return `Complexidade ${level}. Fatores: ${factors.join(", ")}`;
+  }
+
+  buildTechStack(components) {
+    const technologies = new Set();
+
+    technologies.add("React 18");
+    technologies.add("TypeScript");
+
+    components.forEach((comp) => {
+      if (comp.hooks?.includes("useForm")) technologies.add("React Hook Form");
+      if (comp.hooks?.includes("useTranslation"))
+        technologies.add("React i18next");
+      if (comp.hooks?.includes("useReactTable"))
+        technologies.add("TanStack Table");
+      if (comp.hooks?.includes("useQuery")) technologies.add("React Query");
+
+      (comp.imports || []).forEach((imp) => {
+        const importStr =
+          typeof imp === "string" ? imp : imp.source || imp.from || "";
+        if (importStr.includes("zod")) technologies.add("Zod");
+        if (importStr.includes("framer-motion"))
+          technologies.add("Framer Motion");
+        if (importStr.includes("lucide")) technologies.add("Lucide React");
+      });
+    });
+
+    return Array.from(technologies).join(", ");
+  }
+
+  calculateQualityMetrics(components) {
+    const metrics = [];
+
+    // TypeScript usage
+    if (components.every((c) => c.type === "react" || c.hasTypes)) {
+      metrics.push("100% TypeScript");
+    }
+
+    // Hooks usage (indica código moderno)
+    const hookUsage = components.filter(
+      (c) => c.hooks && c.hooks.length > 0
+    ).length;
+    const hookPercentage = Math.round((hookUsage / components.length) * 100);
+    metrics.push(`${hookPercentage}% usa hooks modernos`);
+
+    // Component modularity
+    if (components.length > 1) {
+      metrics.push("Arquitetura modular");
+    }
+
+    return metrics.join(", ");
+  }
+
+  estimateDevelopmentTime(components) {
+    // Estimativa baseada na complexidade real dos componentes
+    let totalHours = 0;
+
+    components.forEach((comp) => {
+      let compHours = 4; // Base para componente simples
+
+      if (comp.props && comp.props.length > 5) compHours += 2;
+      if (comp.hooks && comp.hooks.length > 3) compHours += 3;
+      if (comp.schemas) compHours += 2;
+      if (comp.name.toLowerCase().includes("modal")) compHours += 2;
+      if (comp.name.toLowerCase().includes("table")) compHours += 4;
+
+      totalHours += compHours;
+    });
+
+    const days = Math.ceil(totalHours / 8);
+    return `Estimativa: ${totalHours}h (${days} dias) baseado na complexidade implementada`;
+  }
+
+  analyzeFunctionality(components) {
+    const functionalities = [];
+
+    components.forEach((comp) => {
+      if (comp.name.toLowerCase().includes("modal")) {
+        functionalities.push(`${comp.name}: Criação/edição via modal`);
+      }
+      if (comp.name.toLowerCase().includes("table")) {
+        functionalities.push(`${comp.name}: Listagem e visualização de dados`);
+      }
+      if (comp.name.toLowerCase().includes("toolbar")) {
+        functionalities.push(`${comp.name}: Filtros e busca de dados`);
+      }
+      if (comp.name.toLowerCase().includes("form")) {
+        functionalities.push(`${comp.name}: Entrada e validação de dados`);
+      }
+    });
+
+    return functionalities.join("\n");
+  }
+
+  analyzeInterfaceDetails(components) {
+    const details = [];
+
+    const modals = components.filter((c) =>
+      c.name.toLowerCase().includes("modal")
+    );
+    const tables = components.filter((c) =>
+      c.name.toLowerCase().includes("table")
+    );
+    const toolbars = components.filter((c) =>
+      c.name.toLowerCase().includes("toolbar")
+    );
+
+    if (modals.length > 0) {
+      details.push(`${modals.length} modal(s) para interação`);
+    }
+    if (tables.length > 0) {
+      details.push(`${tables.length} tabela(s) de dados`);
+    }
+    if (toolbars.length > 0) {
+      details.push(`${toolbars.length} toolbar(s) de filtros`);
+    }
+
+    return details.length > 0
+      ? details.join(", ")
+      : "Interface implementada com componentes React padrão";
+  }
+
+  identifyBenefits(components) {
+    const benefits = [];
+
+    if (components.some((c) => c.hooks?.includes("useForm"))) {
+      benefits.push("Validação robusta de formulários");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("table"))) {
+      benefits.push("Organização eficiente de dados");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("filter"))) {
+      benefits.push("Busca rápida e precisa");
+    }
+    if (components.some((c) => c.name.toLowerCase().includes("modal"))) {
+      benefits.push("Interface intuitiva para edição");
+    }
+
+    return benefits.length > 0
+      ? benefits.join(", ")
+      : "Interface moderna e eficiente";
+  }
+
+  identifyRealUseCases(components) {
+    const useCases = [];
+
+    const hasModal = components.some((c) =>
+      c.name.toLowerCase().includes("modal")
+    );
+    const hasTable = components.some((c) =>
+      c.name.toLowerCase().includes("table")
+    );
+    const hasFilters = components.some(
+      (c) =>
+        c.name.toLowerCase().includes("toolbar") ||
+        c.name.toLowerCase().includes("filter")
+    );
+
+    if (hasModal && hasTable) {
+      useCases.push("Criar/editar registros via modal");
+    }
+    if (hasFilters && hasTable) {
+      useCases.push("Buscar e filtrar dados na tabela");
+    }
+    if (hasTable) {
+      useCases.push("Visualizar listagem paginada");
+    }
+    if (hasModal) {
+      useCases.push("Confirmar ações importantes");
+    }
+
+    return useCases.length > 0
+      ? useCases.join(", ")
+      : "Casos de uso padrão de CRUD";
   }
 
   calculateOverallComplexity(components) {
@@ -636,7 +1268,19 @@ class DocumentationGenerator {
    */
   async getOpenAIClient(config = {}) {
     try {
-      const { OpenAI } = require("openai");
+      // Tentar importar OpenAI de forma compatível com Node.js mais antigo
+      let OpenAI;
+      try {
+        OpenAI =
+          require("openai").default ||
+          require("openai").OpenAI ||
+          require("openai");
+      } catch (e) {
+        // Fallback para versões mais antigas
+        const openaiModule = require("openai");
+        OpenAI = openaiModule.default || openaiModule.OpenAI || openaiModule;
+      }
+
       const apiKey = config.ai?.apiKey || process.env.OPENAI_API_KEY;
 
       if (!apiKey) {
@@ -644,7 +1288,31 @@ class DocumentationGenerator {
         return null;
       }
 
-      return new OpenAI({ apiKey });
+      // Tentar criar cliente com diferentes configurações
+      try {
+        return new OpenAI({
+          apiKey,
+          // Configurações para compatibilidade
+          organization: undefined,
+          project: undefined,
+        });
+      } catch (e) {
+        console.warn(
+          "⚠️ Erro ao criar cliente OpenAI (tentativa 1):",
+          e.message
+        );
+
+        // Fallback para versões mais antigas
+        try {
+          return new OpenAI(apiKey);
+        } catch (e2) {
+          console.warn(
+            "⚠️ Erro ao criar cliente OpenAI (tentativa 2):",
+            e2.message
+          );
+          return null;
+        }
+      }
     } catch (error) {
       console.warn("⚠️ OpenAI não disponível:", error.message);
       return null;

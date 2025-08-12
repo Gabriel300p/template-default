@@ -16,7 +16,7 @@
         "purpose": "Modal de criação/edição de comunicações"
       },
       {
-        "name": "ComunicacoesToolbar", 
+        "name": "ComunicacoesToolbar",
         "type": "Toolbar",
         "props": {
           "autores": "string[]",
@@ -28,7 +28,12 @@
       {
         "name": "DataTable",
         "type": "Table",
-        "features": ["Paginação", "Ordenação", "Ações inline", "Loading states"],
+        "features": [
+          "Paginação",
+          "Ordenação",
+          "Ações inline",
+          "Loading states"
+        ],
         "hooks": ["useReactTable", "useState", "useMemo"],
         "purpose": "Tabela responsiva de dados"
       }
@@ -41,11 +46,7 @@
         "descricao": "string (10-1000 chars)"
       }
     },
-    "customHooks": [
-      "useModals()",
-      "useFilters()",
-      "useComunicacoes()"
-    ],
+    "customHooks": ["useModals()", "useFilters()", "useComunicacoes()"],
     "dependencies": [
       "react-hook-form",
       "@hookform/resolvers",

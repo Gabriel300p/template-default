@@ -1,15 +1,38 @@
-# Template Backend
+# NestJS Backend Template
 
-API robusta e escalável construída com NestJS, Prisma e PostgreSQL, seguindo princípios de Clean Architecture e Domain-Driven Design.
+Template completo e robusto para aplicações backend usando NestJS com arquitetura limpa, autenticação JWT/OAuth, sistema de usuários, comunicações e muito mais.
 
 ## 🚀 Características
 
-- **Arquitetura Limpa**: Separação clara entre camadas de domínio, aplicação, infraestrutura e apresentação
-- **Autenticação Robusta**: JWT + OAuth2 (Google, GitHub, Microsoft)
-- **Validação Rigorosa**: Schemas Zod compartilhados com frontend
+### 🏗️ Arquitetura
+- **Arquitetura Limpa** - Separação clara entre camadas (Presentation, Application, Infrastructure)
+- **Modular** - Estrutura modular bem organizada
+- **Escalável** - Preparado para crescer com sua aplicação
+- **Testável** - Estrutura que facilita testes unitários e de integração
+
+### 🔐 Autenticação & Autorização
+- **JWT Authentication** - Tokens seguros com refresh tokens
+- **OAuth2 Integration** - Google, GitHub, Microsoft
+- **Role-Based Access Control (RBAC)** - Sistema completo de roles e permissões
+- **Session Management** - Controle de sessões ativas
+- **Password Security** - Hash seguro com bcrypt e validação robusta
+
+### 👥 Gestão de Usuários
+- **CRUD Completo** - Criação, leitura, atualização e exclusão
+- **Perfis de Usuário** - Gestão completa de perfis
+- **Sistema de Roles** - Atribuição e gestão de papéis
+- **Suspensão/Ativação** - Controle de status de usuários
+- **Verificação de Email** - Sistema de verificação
+
+### 📧 Sistema de Comunicações
+- **Email Service** - Envio de emails com templates
+- **Notificações** - Sistema completo de notificações in-app
+- **Templates** - Sistema de templates para comunicações
+- **Múltiplos Canais** - Email, SMS, Push (extensível)
+
+### 🛠️ Recursos Técnicos
 - **Observabilidade**: Logs estruturados, métricas e health checks
 - **Segurança**: Rate limiting, CORS, helmet, validação de entrada
-- **Testes**: Cobertura de 80%+ com testes unitários, integração e E2E
 - **Documentação**: OpenAPI/Swagger automático
 - **Containerização**: Docker pronto para produção
 

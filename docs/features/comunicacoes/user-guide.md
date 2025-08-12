@@ -1,76 +1,85 @@
-# Como Usar: comunicações
+# comunicacoes - Guia do Usuário
 
-## 🎯 O que esta funcionalidade faz
-A funcionalidade "comunicações" permite que você gerencie e organize todas as suas interações e mensagens dentro do sistema. Com ela, você pode enviar, receber e visualizar comunicações de forma eficiente, garantindo que nenhuma informação importante seja perdida.
+> **Para Usuários Finais** | Última atualização: 12/08/2025
 
-## 📋 Passo a Passo
+## 📢 O que é comunicacoes?
 
-1. **Acessar a funcionalidade**: Navegue até a seção de "comunicações" no menu principal do seu aplicativo.
-  
-2. **Visualizar Comunicações**: Ao abrir a funcionalidade, você verá uma tabela com todas as comunicações registradas. Cada linha representa uma comunicação.
+A funcionalidade "comunicacoes" permite que os usuários interajam com um sistema de gerenciamento de comunicações, onde podem visualizar, filtrar e editar registros de comunicação através de uma interface intuitiva.
 
-3. **Filtrar Comunicações**: Utilize a barra de filtro no topo da tabela para buscar mensagens específicas. Você pode filtrar por data, remetente ou assunto.
+## 🚀 Como Acessar
 
-4. **Criar Nova Comunicação**:
-   - Clique no botão "Nova Comunicação".
-   - Um modal será aberto com um formulário.
-   - Preencha os campos obrigatórios, como "Destinatário", "Assunto" e "Mensagem".
-   - Clique em "Enviar" para finalizar.
+Para acessar a funcionalidade de comunicações, navegue até a seção de comunicações no menu principal da aplicação. Clique na opção correspondente para abrir a interface de gerenciamento.
 
-5. **Editar ou Excluir Comunicações**:
-   - Na tabela, encontre a comunicação que deseja editar ou excluir.
-   - Clique no ícone de "ação" (geralmente um lápis para editar ou uma lixeira para excluir).
-   - Siga as instruções na tela para confirmar a ação.
+## 📋 Visão Geral da Tela
 
-6. **Carregar Mais Comunicações**: Se houver muitas comunicações, você pode clicar em "Carregar mais" na parte inferior da tabela para visualizar mensagens adicionais.
+### **Elementos da Interface**
 
-## ✅ Exemplos Práticos
+| Elemento                | Descrição                                       |
+|-------------------------|-------------------------------------------------|
+| Tabela de Dados         | Exibe os registros de comunicações com paginação. |
+| ComunicacoesToolbar      | Barra de ferramentas com opções de filtro e ações. |
+| ModalComunicacao        | Modal para edição ou criação de registros de comunicação. |
+| ModalDeleteConfirm      | Modal de confirmação para exclusão de registros. |
 
-- **Enviar uma Mensagem**: Você deseja informar sua equipe sobre uma reunião. Acesse "comunicações", clique em "Nova Comunicação", preencha os detalhes e envie.
-  
-- **Buscar uma Mensagem Antiga**: Você precisa encontrar uma mensagem enviada há uma semana. Use o filtro para buscar por data e localize rapidamente a comunicação desejada.
+## ➕ Como Criar ou Editar uma Comunicação
 
-- **Atualizar uma Mensagem**: Se você cometeu um erro em uma mensagem enviada, localize-a na tabela, clique para editar e faça as correções necessárias.
+### **Passo a Passo**
 
-## 🎨 Interface
+1. Na tabela de dados, localize o registro que deseja editar ou clique em um botão para criar um novo registro.
+2. Clique na ação correspondente (por exemplo, "Editar" ou "Adicionar").
+3. O **ModalComunicacao** será aberto, permitindo que você insira ou modifique as informações necessárias.
+4. Após preencher os campos, clique em "Salvar" para confirmar as alterações ou "Cancelar" para fechar o modal sem salvar.
 
-- **Tabela de Comunicações**: Mostra todas as comunicações com colunas para data, remetente, assunto e ações.
-  
-- **Botão "Nova Comunicação"**: Um botão destacado que abre um modal para criar uma nova mensagem.
+### **✅ Exemplo Prático**
 
-- **Modal de Formulário**: Uma janela que aparece para você preencher os detalhes da nova comunicação.
+- Para editar uma comunicação existente, clique no botão "Editar" ao lado do registro desejado na tabela. O modal abrirá com os campos preenchidos. Após realizar as alterações, clique em "Salvar" para aplicar as mudanças.
 
-- **Alertas**: Mensagens que aparecem para confirmar ações, como o envio de uma comunicação ou a exclusão de uma mensagem.
+## 🗑️ Como Excluir uma Comunicação
 
-- **Loading**: Um indicador que aparece enquanto as comunicações estão sendo carregadas.
+1. Na tabela de dados, localize o registro que deseja excluir.
+2. Clique no botão de ação correspondente (por exemplo, "Excluir").
+3. O **ModalDeleteConfirm** será exibido, solicitando a confirmação da exclusão.
+4. Clique em "Confirmar" para excluir o registro ou "Cancelar" para abortar a ação.
 
-- **Tabela Filtrável**: Permite que você aplique filtros para encontrar comunicações específicas de maneira rápida.
+## 🔍 Como Buscar e Filtrar
 
-## ❓ Perguntas Frequentes
+A barra de ferramentas **ComunicacoesToolbar** permite que você busque e filtre os registros de comunicação de forma eficiente.
 
-- **Como posso recuperar uma comunicação excluída?**
-  Infelizmente, uma vez excluída, a comunicação não pode ser recuperada. Sempre verifique antes de excluir.
+### **Filtros Disponíveis**
 
-- **Posso enviar mensagens para múltiplos destinatários?**
-  Sim, você pode adicionar vários destinatários no campo "Destinatário" ao criar uma nova comunicação.
+- **Filtro por Data**: Permite filtrar as comunicações por um intervalo de datas específico.
+- **Filtro por Status**: Permite selecionar comunicações com base no status (por exemplo, "Ativo", "Inativo").
+- **Busca por Texto**: Campo de busca para localizar comunicações através de palavras-chave.
 
-- **O que fazer se não consigo ver minhas comunicações?**
-  Verifique sua conexão com a internet e tente recarregar a página. Se o problema persistir, entre em contato com o suporte.
+## 📊 Entendendo a Tabela de Dados
 
-## ⚠️ Dicas Importantes
+### **Colunas Disponíveis**
 
-- **Use os Filtros**: Aproveite os filtros para gerenciar suas comunicações de forma mais eficiente, especialmente se você tiver um grande volume de mensagens.
+| Coluna        | Descrição                                      |
+|---------------|------------------------------------------------|
+| ID            | Identificador único da comunicação.            |
+| Data          | Data em que a comunicação foi registrada.     |
+| Status        | Status atual da comunicação.                   |
+| Ações         | Botões para editar ou excluir a comunicação.   |
 
-- **Revise Antes de Enviar**: Sempre revise suas mensagens antes de enviá-las para evitar erros de digitação ou informações incorretas.
+## 💡 Dicas e Boas Práticas
 
-- **Mantenha a Organização**: Utilize as opções de edição para manter suas comunicações organizadas e atualizadas.
+- Utilize os filtros disponíveis para refinar sua busca e encontrar rapidamente as comunicações desejadas.
+- Sempre confirme as alterações no modal antes de fechar, para evitar perda de dados.
+- Verifique se todos os campos obrigatórios estão preenchidos antes de salvar um novo registro.
 
-## 🆘 Resolução de Problemas
+## ❓ Perguntas Frequentes (FAQ)
 
-- **Comunicações não carregam**: Se a tabela de comunicações não carregar, tente atualizar a página. Se o problema continuar, verifique sua conexão com a internet.
+- **Como posso reverter uma exclusão?**
+  - Não há funcionalidade de desfazer a exclusão. Uma vez confirmada, a comunicação é permanentemente removida.
 
-- **Erro ao enviar mensagem**: Se você receber um erro ao tentar enviar uma comunicação, verifique se todos os campos obrigatórios estão preenchidos corretamente.
+- **O que fazer se não conseguir encontrar uma comunicação?**
+  - Verifique se os filtros estão aplicados corretamente ou se a busca está utilizando as palavras-chave corretas.
 
-- **Modal não aparece**: Se o modal para criar uma nova comunicação não abrir, tente desativar bloqueadores de pop-up no seu navegador ou reinicie o aplicativo. 
+## 🆘 Problemas e Soluções
 
-Seguindo este guia, você estará apto a utilizar a funcionalidade de comunicações de forma eficaz e produtiva!
+- **Problema: O modal não abre ao clicar em editar.**
+  - Solução: Verifique se há bloqueadores de pop-up no seu navegador ou se a aplicação está atualizada.
+
+- **Problema: Não consigo excluir uma comunicação.**
+  - Solução: Certifique-se de que você tem as permissões necessárias para realizar a exclusão.
