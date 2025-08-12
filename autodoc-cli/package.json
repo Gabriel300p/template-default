@@ -1,0 +1,70 @@
+{
+  "name": "autodoc-cli",
+  "version": "1.0.0",
+  "description": "Sistema inteligente de documentação automática com análise de AST e IA",
+  "main": "src/cli.js",
+  "bin": {
+    "autodoc": "bin/autodoc.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "dev": "node src/cli.js",
+    "test": "jest",
+    "build": "echo 'Building autodoc-cli...'",
+    "global-install": "npm install -g .",
+    "global-uninstall": "npm uninstall -g autodoc-cli"
+  },
+  "keywords": [
+    "documentation",
+    "automation",
+    "ast",
+    "ai",
+    "openai",
+    "cli",
+    "typescript",
+    "javascript",
+    "python",
+    "code-analysis",
+    "docs-as-code"
+  ],
+  "author": {
+    "name": "Gabriel",
+    "email": "contato@example.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gabriel300p/autodoc-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Gabriel300p/autodoc-cli/issues"
+  },
+  "homepage": "https://github.com/Gabriel300p/autodoc-cli#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "inquirer": "^8.2.6",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "dotenv": "^16.0.0",
+    "openai": "^4.104.0",
+    "fs-extra": "^11.0.0",
+    "glob": "^10.0.0",
+    "yaml": "^2.3.0",
+    "tree-sitter": "^0.21.0",
+    "tree-sitter-javascript": "^0.21.0",
+    "tree-sitter-typescript": "^0.21.0",
+    "tree-sitter-python": "^0.21.0"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "preferGlobal": true,
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,118 @@
+# Exemplo de configuração completa do AutoDoc CLI
+# Copie este arquivo como .autodoc.yml no root do seu projeto
+
+# ===== CONFIGURAÇÕES DO PROJETO =====
+project:
+  name: "Meu Projeto Incrível"
+  language: "typescript"      # auto, typescript, javascript, python
+  sourceDir: "./src"          # Diretório do código-fonte
+  outputDir: "./docs"         # Onde salvar a documentação
+
+# ===== CONFIGURAÇÕES DE GERAÇÃO =====
+generation:
+  template: "standard"        # standard, simple, api, components
+  format: "markdown"          # markdown, html (futuro: pdf)
+  includePrivate: false       # Incluir funções/métodos privados
+  includeTests: false         # Incluir arquivos de teste
+  createIndex: true           # Criar índice geral
+  groupByFeature: true        # Agrupar por feature/módulo
+
+# ===== CONFIGURAÇÕES DE ANÁLISE =====
+analysis:
+  complexityThreshold: 10     # Limite para alertar sobre complexidade
+  maxDepth: 5                 # Profundidade máxima de análise
+  followImports: true         # Seguir imports para análise
+  extractComments: true       # Extrair comentários JSDoc/docstrings
+
+# ===== CONFIGURAÇÕES DE IA =====
+ai:
+  enabled: true               # Habilitar geração com IA
+  model: "gpt-4o-mini"       # gpt-4o-mini, gpt-4o, gpt-4-turbo
+  maxTokens: 2000            # Limite de tokens por requisição
+  temperature: 0.3           # Criatividade (0.0 = mais preciso, 1.0 = mais criativo)
+  apiKey: null               # Deixar null para usar OPENAI_API_KEY do .env
+
+# ===== CONFIGURAÇÕES GIT =====
+git:
+  enabled: true              # Habilitar integração Git
+  baseBranch: "main"         # Branch base para comparações
+  includeCommitInfo: true    # Incluir info de commits na documentação
+
+# ===== EXCLUSÕES =====
+exclude:
+  - "node_modules"           # Sempre excluir
+  - ".git"
+  - "dist"
+  - "build"
+  - "coverage"
+  - ".next"
+  - ".nuxt"
+  - "__pycache__"
+  - "*.min.js"              # Arquivos minificados
+  - "*.test.*"              # Arquivos de teste (se includeTests: false)
+  - "*.spec.*"
+
+# ===== CONFIGURAÇÕES AVANÇADAS =====
+advanced:
+  # Cache de análises para melhor performance
+  cache:
+    enabled: true
+    ttl: 3600                # Tempo de vida em segundos
+    
+  # Configurações específicas por tipo de arquivo
+  fileTypes:
+    typescript:
+      extractInterfaces: true
+      extractTypes: true
+      followTypeImports: true
+    
+    react:
+      extractProps: true
+      extractHooks: true
+      extractLifecycleMethods: true
+    
+    python:
+      extractDocstrings: true
+      extractDecorators: true
+      followClassHierarchy: true
+
+# ===== TEMPLATES PERSONALIZADOS =====
+templates:
+  # Seções a incluir em cada template
+  sections:
+    overview: true            # Visão geral do projeto
+    architecture: true        # Diagrama de arquitetura
+    components: true          # Lista de componentes
+    api: true                # Documentação de API
+    examples: true           # Exemplos de uso
+    testing: false           # Guia de testes
+    deployment: false        # Guia de deploy
+
+  # Customizações de formato
+  formatting:
+    useEmojis: true          # 🎯 Emojis nos títulos
+    codeHighlighting: true   # Syntax highlighting
+    includeTableOfContents: true
+    includeTimestamp: true
+    includeGeneratorInfo: true
+
+# ===== CONFIGURAÇÕES DE OUTPUT =====
+output:
+  # Múltiplos formatos (futuro)
+  formats:
+    - markdown
+    # - html
+    # - pdf
+  
+  # Organização de arquivos
+  structure:
+    singleFile: false        # true = tudo em um README.md
+    separateComponents: true  # Arquivo separado para componentes
+    separateAPI: true        # Arquivo separado para API
+    
+  # Nomenclatura de arquivos
+  fileNames:
+    readme: "README.md"
+    components: "COMPONENTS.md"
+    api: "API.md"
+    architecture: "ARCHITECTURE.md"
