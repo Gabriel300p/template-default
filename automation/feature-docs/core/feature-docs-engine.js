@@ -8,7 +8,7 @@
 const path = require("path");
 const GitAnalyzer = require("./git-analyzer");
 const FeatureScanner = require("./feature-scanner");
-const InteractiveSelector = require("./interactive-selector");
+const InteractiveSelector = require("./interactive-selector-new");
 const DocumentationGenerator = require("../generators/documentation-generator");
 const ConfigManager = require("../config/config-manager");
 
@@ -116,14 +116,9 @@ class FeatureDocsEngine {
         changedFiles
       );
 
-      // 5. Seleção de tipos de documentação (se interativo)
+      // 5. Seleção de tipos de documentação (sempre interativo)
       let selectedTemplates = ["overview"]; // padrão
-      if (
-        !options.all &&
-        !options.features &&
-        !options.detectChanges &&
-        !options.since
-      ) {
+      if (process.stdin.isTTY) {
         selectedTemplates = await this.selector.selectDocumentationTypes();
       }
 
