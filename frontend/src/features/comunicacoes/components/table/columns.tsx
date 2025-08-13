@@ -1,4 +1,4 @@
-import i18n from "@/i18n/init";
+import i18n from "@/app/i18n/init";
 import { PencilSimpleLineIcon, XCircleIcon } from "@shared/components/icons";
 import { Button } from "@shared/components/ui/button";
 import TableSort from "@shared/components/ui/table-sort";

@@ -5,7 +5,7 @@
     "exactOptionalPropertyTypes": false
   },
   "routeFileIgnorePrefix": "-",
-  "routesDirectory": "./src/routes",
+  "routesDirectory": "./src/app/routes",
   "generatedRouteTree": "./src/routeTree.gen.ts",
   "routeFileIgnorePattern": "\\.(test|spec)\\.(ts|tsx)$"
 }

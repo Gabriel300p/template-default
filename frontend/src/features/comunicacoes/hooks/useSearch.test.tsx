@@ -3,7 +3,7 @@
  */
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { mockComunicacoes } from "../../../test/utils/test-utils";
+import { mockComunicacoes } from "@/test/utils/test-utils";
 import { useSearch } from "./useSearch";
 
 describe("useSearch", () => {

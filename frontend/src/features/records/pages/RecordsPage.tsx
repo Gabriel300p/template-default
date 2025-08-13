@@ -13,9 +13,9 @@ import {
   RecordModal,
   RecordsToolbar,
 } from "../components/_index";
-import { RecordTableSkeleton } from "../components/skeletons/_index";
-import { useRecordFilters, useRecordModals, useRecords } from "../hooks/_index";
-import type { BaseRecord, RecordForm } from "../schemas/record.schemas";
+import { RecordTableSkeleton } from "@features/records/components/skeletons/_index";
+import { useRecordFilters, useRecordModals, useRecords } from "@features/records/hooks/_index";
+import type { BaseRecord, RecordForm } from "@features/records/schemas/record.schemas";
 
 export default function RecordsPage() {
   const { t } = useTranslation("records");

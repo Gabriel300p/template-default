@@ -1,12 +1,11 @@
-import { RouteSkeleton } from "@/shared/components/skeletons/_index";
-import { RecordsPage } from "@features/records";
+import { RouteSkeleton } from "@shared/components/skeletons/_index";
 import { MainLayout } from "@shared/components/layout/MainLayout";
 import { useLoadingConfig } from "@shared/hooks/useLoadingConfig";
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 
-// 🚀 Lazy loading do componente (usado apenas se configurado)
-const LazyLoadedRecordsPage = lazy(() =>
+// 🚀 Lazy loading da página de records
+const LazyRecordsPage = lazy(() =>
   import("@features/records").then((module) => ({
     default: module.RecordsPage,
   })),
@@ -16,29 +15,29 @@ const LazyLoadedRecordsPage = lazy(() =>
 function RecordsPageLoader() {
   const config = useLoadingConfig();
 
-  // Opção 1: Lazy loading com RouteSkeleton
+  // Lazy loading com RouteSkeleton
   if (config.useLazyLoading && config.useRouteSkeleton) {
     return (
       <Suspense fallback={<RouteSkeleton />}>
-        <LazyLoadedRecordsPage />
+        <LazyRecordsPage />
       </Suspense>
     );
   }
 
-  // Opção 2: Lazy loading sem skeleton (fallback transparente)
+  // Lazy loading sem skeleton (fallback transparente)
   if (config.useLazyLoading && !config.useRouteSkeleton) {
     return (
       <Suspense fallback={<div />}>
-        <LazyLoadedRecordsPage />
+        <LazyRecordsPage />
       </Suspense>
     );
   }
 
-  // Opção 3: Loading direto sem lazy loading
+  // Loading direto sem lazy loading (importação estática)
+  const RecordsPage = lazy(() => import("@features/records").then(m => ({ default: m.RecordsPage })));
   return <RecordsPage />;
 }
 
-// 📍 Definição da rota com lazy loading e layout
 export const Route = createFileRoute("/records")({
   component: () => (
     <MainLayout>

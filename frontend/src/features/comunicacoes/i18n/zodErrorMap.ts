@@ -1,4 +1,4 @@
-import i18n from "@/i18n/init";
+import i18n from "@/app/i18n/init";
 import type { ZodErrorMap, ZodTypeAny } from "zod";
 
 // Localized error map (wrapped cast to satisfy evolving zod types)

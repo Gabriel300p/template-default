@@ -2,7 +2,7 @@
 // Only exports frequently used components for clean imports
 
 // 🍞 Toast System
-export { ToastProvider } from "./ToastProvider";
+export { ToastProvider } from "../../../../app/providers/ToastProvider";
 
 // Core App Components
 export {

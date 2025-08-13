@@ -244,4 +244,4 @@ class GitAnalyzer {
   }
 }
 
-module.exports = { GitAnalyzer };
+module.exports = GitAnalyzer;

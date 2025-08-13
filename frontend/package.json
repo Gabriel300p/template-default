@@ -17,7 +17,9 @@
     "type-check": "tsc --noEmit",
     "routes:generate": "npx @tanstack/router-cli generate",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "create-feature": "node scripts/create-feature.js",
+    "check-all": "npm run type-check && npm run lint && npm run test:run"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

@@ -6,7 +6,7 @@ import { ErrorBoundary } from "@shared/components/errors/ErrorBoundary";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, type RenderOptions } from "@testing-library/react";
 import type { ReactElement } from "react";
-import { createTestQueryClient } from "../utils/test-utils";
+import { createTestQueryClient } from "@/test/utils/test-utils";
 
 /**
  * Configurações customizadas para renderização de testes

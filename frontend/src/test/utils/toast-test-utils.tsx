@@ -2,7 +2,7 @@
  * 🧪 Test Component for Toast System
  * React components for testing toast functionality
  */
-import { ToastProvider } from "@shared/components/ui/toast/ToastProvider";
+import { ToastProvider } from "@/app/providers/ToastProvider";
 import type { ReactElement } from "react";
 
 // Wrapper component that provides toast context for tests

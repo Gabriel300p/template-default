@@ -1,7 +1,7 @@
-import Logo from "@/assets/logo.svg";
+import Logo from "@shared/assets/logo.svg";
 import { LogOut } from "lucide-react";
-import { LanguageSwitcher } from "../i18n/LanguageSwitcher";
-import { Button } from "../ui/button";
+import { LanguageSwitcher } from "@shared/components/i18n/LanguageSwitcher";
+import { Button } from "@shared/components/ui/button";
 
 export function TopBar() {
   const handleLogout = () => {

@@ -1,4 +1,4 @@
-import Logo from "@/assets/logo-vertical.svg";
+import Logo from "@shared/assets/logo-vertical.svg";
 import { buttonVariants } from "@shared/components/ui/button-variants";
 import { Input } from "@shared/components/ui/input";
 import { Eye, EyeOff, Lock, User } from "lucide-react";

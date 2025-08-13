@@ -1,7 +1,7 @@
 /**
  * 🧪 Integration test: switching language updates table headers (records namespace)
  */
-import { setLocale } from "@/i18n/init";
+import { setLocale } from "@/app/i18n/init";
 import { mockComunicacoes } from "@/test/utils/test-utils";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { act } from "react";

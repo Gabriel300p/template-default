@@ -934,4 +934,4 @@ class ComponentAnalyzer {
   }
 }
 
-module.exports = { ComponentAnalyzer };
+module.exports = ComponentAnalyzer;

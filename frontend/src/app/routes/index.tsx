@@ -1,4 +1,4 @@
-import { AnimatedPageExample } from "@/shared/animations/examples";
+import { AnimationSystemDemo } from "@shared/components/animations/AnimationSystemDemo";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
@@ -10,7 +10,7 @@ function IndexComponent() {
   const isDemoMode = process.env.NODE_ENV === "development";
 
   if (isDemoMode) {
-    return <AnimatedPageExample />;
+    return <AnimationSystemDemo />;
   }
 
   return <Navigate to="/login" />;

@@ -4,7 +4,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mockComunicacoes } from "../../../../test/utils/test-utils";
+import { mockComunicacoes } from "@/test/utils/test-utils";
 import { DataTable } from "./DataTable";
 import { createColumns } from "./columns";
 

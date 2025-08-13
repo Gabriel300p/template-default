@@ -1,43 +1,240 @@
-# 🎓 Centro Educacional Alfa
+# 🚀 Frontend Template - React + TanStack Router
 
-Sistema de gestão educacional moderno e escalável, desenvolvido com as melhores práticas de frontend.
+Template moderno e otimizado para desenvolvimento frontend com React, TanStack Router e TypeScript.
 
-## 🚀 Tecnologias
+## ⚡ Features Principais
 
-- **React 19** - Biblioteca para interfaces de usuário
-- **TypeScript** - Tipagem estática
-- **Vite** - Build tool e dev server
-- **TanStack Query** - Gerenciamento de estado server
-- **Zustand** - Gerenciamento de estado client
-- **React Hook Form + Zod** - Formulários e validação
-- **Tailwind CSS** - Estilização
-- **Shadcn/ui** - Componentes base
-- **Framer Motion** - Animações
-- **Vitest + Testing Library** - Testes
+- **⚛️ React 19** - Última versão com Concurrent Features
+- **🛣️ TanStack Router** - Roteamento type-safe com lazy loading
+- **📝 TypeScript** - Type safety completo
+- **🎨 Tailwind CSS** - Styling moderno e responsivo
+- **🧪 Vitest** - Testes rápidos e modernos
+- **📊 TanStack Query** - Gerenciamento de estado servidor
+- **🎭 Framer Motion** - Animações fluidas
+- **🌍 i18next** - Internacionalização
+- **🔧 ESLint + Prettier** - Code quality
 
-## 📁 Estrutura do Projeto
+## 🏗️ Arquitetura
 
+### Estrutura de Pastas
 ```
 src/
-├── app/                    # Configuração da aplicação
-│   ├── providers/         # Providers globais (React Query, etc)
-│   └── store/            # Stores Zustand
-├── shared/               # Recursos compartilhados
-│   ├── api/              # Cliente API e configurações
-│   ├── components/       # Componentes reutilizáveis
-│   ├── constants/        # Constantes da aplicação
-│   ├── hooks/           # Hooks customizados
-│   ├── schemas/         # Schemas Zod para validação
-│   └── types/           # Tipos TypeScript globais
-├── features/            # Features organizadas por domínio
-│   ├── auth/           # Autenticação
-│   └── comunicacoes/   # Módulo de comunicações
-└── components/         # Componentes UI base (legado)
+├── app/                 # Configuração da aplicação
+│   ├── routes/         # Definições de rotas
+│   ├── providers/      # Context providers
+│   └── store/         # Estado global
+├── features/           # Features isoladas
+│   ├── _template/     # Template para novas features
+│   ├── auth/          # Autenticação
+│   ├── comunicacoes/  # Feature exemplo
+│   └── records/       # Feature exemplo
+├── shared/             # Recursos compartilhados
+│   ├── components/    # Componentes UI
+│   ├── hooks/         # Custom hooks
+│   ├── lib/          # Utilitários
+│   └── types/        # Tipos globais
+└── test/              # Configuração de testes
 ```
 
-## 🛠️ Scripts Disponíveis
+### Padrões de Roteamento
 
+#### Estrutura Simplificada
+- ✅ **Rotas centralizadas** em `src/app/routes/`
+- ✅ **Lazy loading automático** com Suspense
+- ✅ **Type safety completo** com TanStack Router
+- ✅ **Code splitting otimizado** por rota
+
+#### Como Adicionar Nova Rota
+```tsx
+// 1. Criar arquivo em src/app/routes/nova-rota.tsx
+export const Route = createFileRoute("/nova-rota")({
+  component: () => (
+    <MainLayout>
+      <Suspense fallback={<RouteSkeleton />}>
+        <NovaRotaPage />
+      </Suspense>
+    </MainLayout>
+  ),
+});
+
+// 2. Executar
+npm run routes:generate
+```
+
+## 🎯 Como Criar Nova Feature
+
+### Usando o Template Automático
 ```bash
+# Criar nova feature baseada no template
+npm run create-feature minha-feature
+
+# Isso criará:
+# - src/features/minha-feature/
+# - Todos os arquivos base (page, hooks, services, etc.)
+# - Com nomes e imports já configurados
+```
+
+### Estrutura de Feature
+Cada feature segue o padrão:
+```
+features/minha-feature/
+├── index.ts           # Exports públicos
+├── pages/             # Componentes de página
+├── components/        # Componentes específicos
+├── hooks/             # Custom hooks
+├── services/          # API calls
+├── schemas/           # Validações Zod
+└── types/             # TypeScript types
+```
+
+## � Scripts Disponíveis
+
+| Script | Descrição |
+|--------|-----------|
+| `npm run dev` | Servidor de desenvolvimento |
+| `npm run build` | Build de produção |
+| `npm run build:analyze` | Build com análise de bundle |
+| `npm run test` | Testes em watch mode |
+| `npm run test:coverage` | Testes com coverage |
+| `npm run type-check` | Verificação TypeScript |
+| `npm run lint` | Linting com ESLint |
+| `npm run create-feature` | Criar nova feature |
+| `npm run check-all` | Verificar tudo (types + lint + tests) |
+
+## 📊 Performance
+
+### Code Splitting Otimizado
+- **Route-level splitting**: Cada página é lazy-loaded
+- **Vendor chunks**: Bibliotecas separadas por categoria
+- **Bundle size**: ~140KB gzipped (otimizado)
+
+### Loading States
+- **RouteSkeleton**: Para transições entre páginas
+- **ComponentSkeletons**: Para componentes específicos
+- **Error Boundaries**: Tratamento robusto de erros
+
+## 🧪 Testes
+
+### Estrutura de Testes
+```
+test/
+├── setup.ts           # Configuração global
+├── helpers/           # Helpers de teste
+├── fixtures/          # Dados mock
+└── utils/             # Utilitários de teste
+```
+
+### Executar Testes
+```bash
+# Todos os testes
+npm run test
+
+# Com coverage
+npm run test:coverage
+
+# UI interativa
+npm run test:ui
+```
+
+## 🎨 Styling
+
+### Tailwind CSS
+- **Design system consistente**
+- **Dark mode support**
+- **Responsive design**
+- **Custom components** em `src/shared/components/ui/`
+
+### Componentes UI
+```tsx
+import { Button } from "@shared/components/ui/button";
+import { Card } from "@shared/components/ui/card";
+import { Input } from "@shared/components/ui/input";
+```
+
+## 🌍 Internacionalização
+
+### Configuração
+- **i18next** configurado
+- **Lazy loading** de traduções
+- **Type safety** para chaves de tradução
+
+### Uso
+```tsx
+import { useTranslation } from 'react-i18next';
+
+function Component() {
+  const { t } = useTranslation('feature-name');
+  return <p>{t('message.key')}</p>;
+}
+```
+
+## 🔧 Configuração de Desenvolvimento
+
+### Aliases Configurados
+```typescript
+"@/*"        -> "./src/*"
+"@app/*"     -> "./src/app/*"
+"@shared/*"  -> "./src/shared/*"
+"@features/*" -> "./src/features/*"
+```
+
+### Hot Reload
+- **Vite HMR** para desenvolvimento rápido
+- **React Fast Refresh** preserva estado
+- **TypeScript checking** em background
+
+## 📈 Otimizações Implementadas
+
+### Bundle Optimization
+- **Tree shaking** agressivo
+- **Dead code elimination**
+- **Vendor chunk splitting**
+- **Asset optimization**
+
+### Runtime Performance
+- **React 19 optimizations**
+- **Lazy loading** estratégico
+- **Memoization** onde necessário
+- **Virtual scrolling** para listas grandes
+
+## 🚦 Próximos Passos
+
+Para usar este template em um novo projeto:
+
+1. **Clonar e adaptar**:
+   ```bash
+   git clone <template-repo>
+   cd novo-projeto
+   npm install
+   ```
+
+2. **Personalizar**:
+   - Atualizar `package.json`
+   - Configurar variáveis de ambiente
+   - Adaptar tema e branding
+
+3. **Primeira feature**:
+   ```bash
+   npm run create-feature primeira-feature
+   npm run dev
+   ```
+
+4. **Deploy**:
+   ```bash
+   npm run build
+   npm run preview
+   ```
+
+---
+
+## 📚 Recursos Adicionais
+
+- [TanStack Router Docs](https://tanstack.com/router)
+- [TanStack Query Docs](https://tanstack.com/query) 
+- [Tailwind CSS Docs](https://tailwindcss.com)
+- [Vitest Docs](https://vitest.dev)
+
+**Template criado para máxima produtividade e qualidade de código! 🎉**
 # Desenvolvimento
 pnpm dev              # Inicia servidor de desenvolvimento
 pnpm build            # Build para produção

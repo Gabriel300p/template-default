@@ -1,12 +1,10 @@
-import { ThemeProvider } from "@/app/providers/ThemeProvider";
-import "@/i18n/init"; // i18n initialization side-effect
-import {
-  ErrorBoundary,
-  ToastProvider,
-} from "@/shared/components/ui/toast/_index";
-import { FiltersProvider } from "@/shared/providers/FiltersProvider";
+import "@/app/i18n/init"; // i18n initialization side-effect
+import { ErrorBoundary } from "@/shared/components/errors/ErrorBoundary";
 import type { PropsWithChildren } from "react";
+import { FiltersProvider } from "./FiltersProvider";
 import { QueryProvider } from "./QueryProvider";
+import { ThemeProvider } from "./ThemeProvider";
+import { ToastProvider } from "./ToastProvider";
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (

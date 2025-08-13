@@ -1,7 +1,7 @@
-import { setLocale, SUPPORTED_LOCALES } from "@/i18n/init";
+import { setLocale, SUPPORTED_LOCALES } from "@/app/i18n/init";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "../ui/button";
+import { Button } from "@shared/components/ui/button";
 
 interface LanguageOption {
   code: string;

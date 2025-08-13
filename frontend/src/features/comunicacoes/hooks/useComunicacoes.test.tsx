@@ -7,8 +7,8 @@ import type { ReactNode } from "react";
 import { act } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 // Usa ToastProvider real (warnings minimizados usando act nas mutações)
-import { ToastProvider } from "@/shared/components/ui/toast/ToastProvider";
-import { setQueryClient } from "../../../shared/lib/react-query";
+import { ToastProvider } from "@/app/providers/ToastProvider";
+import { setQueryClient } from "@shared/lib/react-query";
 import {
   createTestQueryClient,
   mockComunicacao,

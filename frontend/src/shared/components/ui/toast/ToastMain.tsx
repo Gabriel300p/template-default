@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Button } from "../button";
+import { Button } from "@shared/components/ui/button";
 import type { ToastData } from "./toast";
 import { getIconClasses, getToastClasses, TOAST_CONFIG } from "./toast";
 
