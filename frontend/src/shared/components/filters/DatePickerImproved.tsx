@@ -200,7 +200,7 @@ export function DatePickerImproved({
             variant="outline"
             size="sm"
             className={cn(
-              "h-10 justify-start gap-1.5 border-dashed text-left text-sm font-normal",
+              "font-norma h-10 justify-start gap-1.5 border border-slate-200 text-left text-sm",
               !hasValue && "text-muted-foreground",
               className,
             )}

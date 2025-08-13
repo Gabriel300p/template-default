@@ -15,19 +15,9 @@ interface ComunicacoesToolbarProps {
   totalCount?: number;
 }
 
-export function ComunicacoesToolbar({
-  autores,
-  totalCount,
-}: ComunicacoesToolbarProps) {
-  const {
-    filters,
-    hasActiveFilters,
-    resetFilters,
-    setSearch,
-    setTipo,
-    setAutor,
-    setDateRange,
-  } = useFilters();
+export function ComunicacoesToolbar({ autores }: ComunicacoesToolbarProps) {
+  const { filters, hasActiveFilters, resetFilters, updateFilters } =
+    useFilters();
   const { t } = useTranslation("records");
 
   // 🎯 Tipo options with icons
@@ -42,11 +32,6 @@ export function ComunicacoesToolbar({
         label: t("form.types.aviso"),
         value: "Aviso",
         icon: <FilterIcon className="h-4 w-4 text-yellow-500" />,
-      },
-      {
-        label: t("form.types.noticia"),
-        value: "Notícia",
-        icon: <FilterIcon className="h-4 w-4 text-green-500" />,
       },
     ],
     [t],
@@ -66,56 +51,61 @@ export function ComunicacoesToolbar({
   return (
     <div className="space-y-4">
       {/* Search bar */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
         <TextFilter
           value={filters.search}
-          onChange={setSearch}
+          onChange={(search) => updateFilters({ search })}
           placeholder={t("filters.searchPlaceholder")}
-          className="max-w-sm"
+          className="w-full max-w-sm"
         />
 
-        {totalCount && (
-          <div className="text-muted-foreground text-sm">
-            {t("filters.count", { count: totalCount })}
-          </div>
-        )}
-      </div>
-
-      {/* Filter toolbar */}
-      <FilterToolbar hasActiveFilters={hasActiveFilters} onReset={resetFilters}>
-        {/* Tipo filter */}
-        <Filter
-          title={t("filters.type")}
-          options={tipoOptions}
-          icon={<TagIcon className="h-4 w-4" />}
-          value={filters.tipo}
-          onChange={(values: (string | boolean)[]) =>
-            setTipo(values as string[])
-          }
-        />
-
-        {/* Autor filter */}
-        {autorOptions.length > 0 && (
+        {/* Filter toolbar */}
+        <FilterToolbar
+          hasActiveFilters={hasActiveFilters}
+          onReset={resetFilters}
+        >
+          {/* Tipo filter */}
           <Filter
-            title={t("filters.author")}
-            options={autorOptions}
-            icon={<UserIcon className="h-4 w-4" />}
-            value={filters.autor ? [filters.autor] : []}
-            onChange={(values: (string | boolean)[]) =>
-              setAutor((values[0] as string) || "")
-            }
-            placeholder={t("filters.authorPlaceholder")}
+            title={t("filters.type")}
+            options={tipoOptions}
+            icon={<TagIcon className="h-4 w-4" />}
+            value={filters.tipo || []}
+            onChange={(values: (string | boolean)[]) => {
+              updateFilters({ tipo: values as string[] });
+            }}
           />
-        )}
 
-        {/* Date range filter */}
-        <DatePickerImproved
-          title={t("filters.createdAt")}
-          value={filters.dateRange}
-          onChange={setDateRange}
-          icon={<CalendarIcon className="h-4 w-4" />}
-        />
-      </FilterToolbar>
+          {/* Autor filter */}
+          {autorOptions.length > 0 && (
+            <Filter
+              title={t("filters.author")}
+              options={autorOptions}
+              icon={<UserIcon className="h-4 w-4" />}
+              value={filters.autor || []}
+              onChange={(values: (string | boolean)[]) => {
+                updateFilters({ autor: values as string[] });
+              }}
+              placeholder={t("filters.authorPlaceholder")}
+            />
+          )}
+
+          {/* Date range filter */}
+          <DatePickerImproved
+            title={t("filters.createdAt")}
+            value={{
+              startDate: filters.startDate || null,
+              endDate: filters.endDate || null,
+            }}
+            onChange={(dateRange) =>
+              updateFilters({
+                startDate: dateRange.startDate,
+                endDate: dateRange.endDate,
+              })
+            }
+            icon={<CalendarIcon className="h-4 w-4" />}
+          />
+        </FilterToolbar>
+      </div>
     </div>
   );
 }
