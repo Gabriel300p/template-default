@@ -9,6 +9,8 @@ import {
   profileUpdateSchema,
   resetPasswordResponseSchema,
   resetPasswordSchema,
+  verifyMfaResponseSchema,
+  verifyMfaSchema,
 } from "./models/auth.models.js";
 import { AuthService } from "./services/auth.service.js";
 
@@ -115,5 +117,36 @@ export async function authFeature(app: FastifyInstance) {
       },
     },
     handler: authController.confirmEmail.bind(authController),
+  });
+
+  // POST /auth/verify-mfa - Verify MFA code (requires auth)
+  app.post("/auth/verify-mfa", {
+    schema: {
+      tags: ["Auth"],
+      summary: "Verify MFA code",
+      description: "Verifica código MFA de 8 dígitos alfanumérico",
+      security: [{ bearerAuth: [] }],
+      body: zodToJsonSchema(verifyMfaSchema),
+      response: {
+        200: zodToJsonSchema(verifyMfaResponseSchema),
+        401: {
+          type: "object",
+          properties: {
+            error: { type: "string" },
+            message: { type: "string" },
+          },
+        },
+        422: {
+          type: "object",
+          properties: {
+            error: { type: "string" },
+            message: { type: "string" },
+            details: { type: "array", items: { type: "object" } },
+          },
+        },
+      },
+    },
+    preHandler: [requireAuth],
+    handler: authController.verifyMfa.bind(authController),
   });
 }

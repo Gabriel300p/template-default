@@ -21,8 +21,7 @@ model User {
   avatar_url          String?
   display_name        String?
   mfa_enabled         Boolean           @default(true)
-  mfa_code            String?           @db.VarChar(8)
-  mfa_expires         DateTime?
+  mfa_last_verified   DateTime?
   email_verified      DateTime?
   last_login          DateTime?
   is_suspended        Boolean           @default(false)
@@ -30,6 +29,7 @@ model User {
   updated_at          DateTime          @updatedAt
   staff_entries       BarbershopStaff[]
   owned_barbershops   Barbershop[]      @relation("BarbershopOwner")
+  mfa_sessions        MfaSession[]
 
   @@index([email])
   @@index([role])
@@ -119,4 +119,25 @@ enum BarbershopStatus {
   INACTIVE
   BLOCKED
   PENDING_VERIFICATION
+}
+
+// MFA Sessions table for temporary codes
+model MfaSession {
+  id                    String    @id @default(cuid())
+  user_id               String
+  code                  String    @db.VarChar(8)
+  expires_at            DateTime
+  used_at               DateTime?
+  created_at            DateTime  @default(now())
+  
+  // Configurable settings (in minutes)
+  session_duration_days Int       @default(14) // How long MFA verification is valid
+  code_expiry_minutes   Int       @default(10) // How long each code is valid
+  
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@index([user_id])
+  @@index([expires_at])
+  @@index([used_at])
+  @@map("mfa_sessions")
 }

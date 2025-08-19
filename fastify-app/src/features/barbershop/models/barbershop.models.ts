@@ -3,7 +3,7 @@ import { z } from "zod";
 // Validation schemas for barbershop creation and management
 export const ownerInputSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8).optional(),
+  password: z.string().min(10).optional(),
   cpf: z.string().optional(),
   phone: z.string().optional(),
   isforeigner: z.boolean().optional(),

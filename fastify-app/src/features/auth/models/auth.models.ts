@@ -49,15 +49,14 @@ export const registerSchema = z
 export const loginSchema = z
   .object({
     credential: credentialSchema, // email or CPF
-    password: z.string().min(1),
+    password: z.string().min(10),
   })
   .strict();
 
 // MFA verification schema
 export const verifyMfaSchema = z
   .object({
-    tempToken: z.string().min(1),
-    mfaCode: mfaCodeSchema,
+    code: mfaCodeSchema,
   })
   .strict();
 // Response schemas
@@ -84,12 +83,13 @@ export const loginResponseSchema = z.object({
 
 export const verifyMfaResponseSchema = z.object({
   success: z.boolean(),
-  token: z.string(),
+  message: z.string(),
   user: z.object({
     id: z.string(),
     email: z.string(),
     role: z.string(),
     displayName: z.string().optional(),
+    mfaVerified: z.boolean(),
   }),
 });
 

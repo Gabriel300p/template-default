@@ -59,6 +59,16 @@ export class AuthService {
       throw new NotFoundError("User not found");
     }
 
+    // Check if MFA is required (first login or 14+ days since last verification)
+    const mfaRequired = await this.checkMfaRequired(user);
+    
+    if (mfaRequired) {
+      // Generate and send MFA code
+      await this.generateMfaCode(user.id);
+      
+      throw new UnauthorizedError("MFA verification required");
+    }
+
     // Get display name from barbershop or staff
     let displayName: string | undefined;
     if (user.owned_barbershops && user.owned_barbershops.length > 0) {
@@ -164,6 +174,58 @@ export class AuthService {
 
     // Validate response using Zod
     return profileUpdateResponseSchema.parse(response);
+  }
+
+  // Check if MFA is required (first login or 14+ days since last verification)
+  private async checkMfaRequired(user: any): Promise<boolean> {
+    if (!user.mfa_enabled) return false;
+    
+    // First login case
+    if (!user.mfa_last_verified) return true;
+    
+    // Check if 14+ days have passed since last verification
+    const daysSinceLastMfa = Math.floor(
+      (new Date().getTime() - user.mfa_last_verified.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    
+    return daysSinceLastMfa >= 14;
+  }
+
+  // Generate and send MFA code
+  private async generateMfaCode(userId: string): Promise<void> {
+    // Generate 8-digit alphanumeric code
+    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    const expiryMinutes = 10;
+    
+    // Clean up any existing unused MFA sessions for this user
+    await this.prisma.mfaSession.deleteMany({
+      where: {
+        user_id: userId,
+        used_at: null,
+      },
+    });
+    
+    // Create new MFA session
+    await this.prisma.mfaSession.create({
+      data: {
+        user_id: userId,
+        code,
+        expires_at: new Date(Date.now() + expiryMinutes * 60 * 1000),
+        code_expiry_minutes: expiryMinutes,
+        session_duration_days: 14,
+      },
+    });
+
+    // Get user email for sending
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { email: true },
+    });
+
+    if (user) {
+      // Send MFA code via email (using email as userName for now)
+      await emailService.sendMfaCode(user.email, user.email, code);
+    }
   }
 
   async resetPassword(
@@ -314,33 +376,14 @@ export class AuthService {
       // TODO: Verify password with Supabase Auth
       // For now, assume password is valid
 
-      // Check if MFA is enabled
+      // Check if MFA is enabled - new architecture uses MfaSession table
       if (user.mfa_enabled) {
         // Generate and send MFA code
-        const mfaData = mfaService.generateMfaCode();
-
-        // Save MFA code to database
-        await this.prisma.user.update({
-          where: { id: user.id },
-          data: {
-            mfa_code: mfaData.code,
-            mfa_expires: mfaData.expires,
-          },
-        });
-
-        // Send MFA email using Supabase emails
-        await emailService.sendMfaCode(
-          user.email,
-          displayName || "Usuário",
-          mfaData.code
-        );
-
-        // Generate temporary token
-        const tempToken = mfaService.generateTempToken(user.id);
+        await this.generateMfaCode(user.id);
 
         const response = {
           mfaRequired: true,
-          tempToken,
+          message: "Código MFA enviado para seu email",
         };
 
         return loginResponseSchema.parse(response);
@@ -373,45 +416,62 @@ export class AuthService {
     const validatedData = verifyMfaSchema.parse(mfaData);
 
     try {
-      // Verify temporary token
-      const tokenData = mfaService.verifyTempToken(validatedData.tempToken);
-      if (!tokenData) {
-        throw new UnauthorizedError("Token temporário inválido ou expirado");
-      }
-
-      // Find user and verify MFA code
-      const user = await this.prisma.user.findUnique({
-        where: { id: tokenData.userId },
+      // Find active MFA session for this code
+      const mfaSession = await this.prisma.mfaSession.findFirst({
+        where: {
+          code: validatedData.code,
+          used_at: null, // Not used yet
+          expires_at: {
+            gte: new Date(), // Not expired
+          },
+        },
         include: {
-          owned_barbershops: {
-            select: { name: true },
-            take: 1,
+          user: {
+            include: {
+              owned_barbershops: {
+                select: { name: true },
+                take: 1,
+              },
+            },
           },
         },
       });
 
-      if (!user) {
-        throw new NotFoundError("Usuário não encontrado");
-      }
-
-      // Check MFA code and expiration
-      if (
-        !user.mfa_code ||
-        user.mfa_code !== validatedData.mfaCode ||
-        !user.mfa_expires ||
-        user.mfa_expires < new Date()
-      ) {
+      if (!mfaSession) {
         throw new UnauthorizedError("Código MFA inválido ou expirado");
       }
 
-      // Clear MFA code
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          mfa_code: null,
-          mfa_expires: null,
-          last_login: new Date(),
-        },
+      const user = mfaSession.user;
+
+      // Mark MFA session as used and update user
+      await this.prisma.$transaction(async (tx) => {
+        // Mark session as used
+        await tx.mfaSession.update({
+          where: { id: mfaSession.id },
+          data: {
+            used_at: new Date(),
+          },
+        });
+
+        // Update user's last MFA verification and login
+        await tx.user.update({
+          where: { id: user.id },
+          data: {
+            mfa_last_verified: new Date(),
+            last_login: new Date(),
+          },
+        });
+
+        // Clean up expired and used MFA sessions for this user
+        await tx.mfaSession.deleteMany({
+          where: {
+            user_id: user.id,
+            OR: [
+              { used_at: { not: null } }, // Used sessions
+              { expires_at: { lt: new Date() } }, // Expired sessions
+            ],
+          },
+        });
       });
 
       // Get display name from barbershop if available
@@ -420,15 +480,15 @@ export class AuthService {
         displayName = user.owned_barbershops[0].name;
       }
 
-      // TODO: Generate actual JWT token with Supabase
       const response = {
         success: true,
-        token: "jwt_token_here",
+        message: "MFA verificado com sucesso",
         user: {
           id: user.id,
           email: user.email,
           role: user.role,
           displayName,
+          mfaVerified: true,
         },
       };
 

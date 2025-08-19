@@ -4,6 +4,7 @@ import {
   confirmEmailSchema,
   profileUpdateSchema,
   resetPasswordSchema,
+  verifyMfaSchema,
 } from "../models/auth.models.js";
 import { AuthService } from "../services/auth.service.js";
 
@@ -41,6 +42,16 @@ export class AuthController {
   async confirmEmail(request: FastifyRequest, reply: FastifyReply) {
     const validatedData = confirmEmailSchema.parse(request.body);
     const result = await this.authService.confirmEmail(validatedData);
+
+    return reply.send(result);
+  }
+
+  async verifyMfa(request: FastifyRequest, reply: FastifyReply) {
+    if (!request.currentUser)
+      throw new UnauthorizedError("Authentication required");
+
+    const validatedData = verifyMfaSchema.parse(request.body);
+    const result = await this.authService.verifyMfa(validatedData);
 
     return reply.send(result);
   }
