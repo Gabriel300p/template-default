@@ -41,90 +41,88 @@ enum BarbershopStatus {
 }
 
 model User {
-  id                String     @id // equals auth.users.id (Supabase auth.users.id)
-  email             String     @unique
-  role              UserRole   @default(PENDING)
-  status            UserStatus @default(ACTIVE)
-  mustResetPassword Boolean    @default(false)
+  id                  String     @id // equals auth.users.id (Supabase auth.users.id)
+  email               String     @unique
+  role                UserRole   @default(PENDING)
+  status              UserStatus @default(ACTIVE)
+  must_reset_password Boolean    @default(false)
 
-  // Personal / identity fields
-  firstName   String? // now optional per product decision
-  lastName    String?
-  displayName String? // Cached combined name
-  phone       String?
-  cpf         String? @unique
-  avatarUrl   String?
-  bio         String?
+  cpf        String? @unique
+  avatar_url String?
 
-  // Auth related mirrors (optional convenience caching)
-  emailVerified DateTime?
-  lastLogin     DateTime?
-  isSuspended   Boolean   @default(false)
+  email_verified DateTime?
+  last_login     DateTime?
+  is_suspended   Boolean   @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   // Relations
-  ownedBarbershops Barbershop[]      @relation("BarbershopOwner")
-  staffEntries     BarbershopStaff[]
+  owned_barbershops Barbershop[]      @relation("BarbershopOwner")
+  staff_entries     BarbershopStaff[]
 
   @@index([email])
   @@index([role])
   @@index([status])
   @@index([cpf])
-  @@index([createdAt])
+  @@index([created_at])
   @@map("users")
 }
 
 model Barbershop {
-  id              String           @id @default(cuid())
-  name            String
-  description     String?
-  email           String?
-  phone           String?
-  website         String?
-  logoUrl         String?
-  coverUrl        String?
-  links           String[]
-  appointmentLink String?
-  status          BarbershopStatus @default(ACTIVE)
-  ownerUserId     String
+  id               String           @id @default(cuid())
+  first_name       String
+  last_name        String?
+  display_name     String? // Cached combined name
+  description      String?
+  phone            String?
+  website          String?
+  logo_url         String?
+  cover_url        String?
+  links            String[]
+  appointment_link String?
+  status           BarbershopStatus @default(ACTIVE)
+  owner_user_id    String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  owner User              @relation("BarbershopOwner", fields: [ownerUserId], references: [id])
+  owner User              @relation("BarbershopOwner", fields: [owner_user_id], references: [id])
   staff BarbershopStaff[]
 
-  @@index([ownerUserId])
+  @@index([owner_user_id])
   @@index([status])
-  @@index([createdAt])
+  @@index([created_at])
   @@map("barbershops")
 }
 
 model BarbershopStaff {
-  id             String      @id @default(cuid())
-  barbershopId   String
-  userId         String
-  roleInShop     UserRole // Typically BARBER; could support MANAGER later
-  status         StaffStatus @default(ACTIVE)
-  invitedAt      DateTime?   @default(now())
-  hireDate       DateTime?
-  terminatedDate DateTime?
-  isAvailable    Boolean     @default(true)
-  commissionRate Decimal?    @db.Decimal(5, 2)
-  salary         Decimal?    @db.Decimal(10, 2)
-  internalNotes  String?
+  id              String      @id @default(cuid())
+  barbershop_id   String
+  user_id         String
+  first_name      String // now optional per product decision
+  last_name       String?
+  display_name    String? // Cached combined name
+  phone           String?
+  role_in_shop    UserRole // Typically BARBER; could support MANAGER later
+  status          StaffStatus @default(ACTIVE)
+  invited_at      DateTime?   @default(now())
+  hire_date       DateTime?
+  terminated_date DateTime?
+  is_available    Boolean     @default(true)
+  commission_rate Decimal?    @db.Decimal(5, 2)
+  salary          Decimal?    @db.Decimal(10, 2)
+  internal_notes  String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  barbershop Barbershop @relation(fields: [barbershopId], references: [id])
-  user       User       @relation(fields: [userId], references: [id])
+  barbershop Barbershop @relation(fields: [barbershop_id], references: [id])
+  user       User       @relation(fields: [user_id], references: [id])
 
-  @@unique([barbershopId, userId])
-  @@index([userId])
+  @@unique([barbershop_id, user_id])
+  @@index([user_id])
   @@index([status])
-  @@index([createdAt])
+  @@index([created_at])
   @@map("barbershop_staff")
 }

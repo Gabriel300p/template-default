@@ -69,18 +69,23 @@ export class BarbershopService {
             id: createdAuth!.id,
             email: createdAuth!.email,
             role: "BARBERSHOP_OWNER",
-            mustResetPassword: !validatedRequest.owner.password,
+            must_reset_password: !validatedRequest.owner.password,
           },
         });
 
         const shop = await tx.barbershop.create({
           data: {
-            name: validatedRequest.barbershop.name,
+            first_name: validatedRequest.barbershop.first_name,
+            last_name: validatedRequest.barbershop.last_name,
+            display_name: validatedRequest.barbershop.display_name,
             description: validatedRequest.barbershop.description,
             phone: validatedRequest.barbershop.phone,
             website: validatedRequest.barbershop.website,
+            logo_url: validatedRequest.barbershop.logo_url,
+            cover_url: validatedRequest.barbershop.cover_url,
+            appointment_link: validatedRequest.barbershop.appointment_link,
             links: [],
-            ownerUserId: user.id,
+            owner_user_id: user.id,
           },
         });
 
@@ -128,8 +133,6 @@ export class BarbershopService {
           select: {
             id: true,
             email: true,
-            firstName: true,
-            lastName: true,
           },
         },
       },
@@ -139,7 +142,7 @@ export class BarbershopService {
 
     // Check access permissions
     if (
-      barbershop.ownerUserId !== validatedUserId &&
+      barbershop.owner_user_id !== validatedUserId &&
       validatedRole !== "SUPER_ADMIN"
     ) {
       throw new NotFoundError("Barbershop not found"); // Don't reveal existence
@@ -147,14 +150,19 @@ export class BarbershopService {
 
     const response = {
       id: barbershop.id,
-      name: barbershop.name,
+      first_name: barbershop.first_name,
+      last_name: barbershop.last_name,
+      display_name: barbershop.display_name,
       description: barbershop.description,
       phone: barbershop.phone,
       website: barbershop.website,
+      logo_url: barbershop.logo_url,
+      cover_url: barbershop.cover_url,
+      appointment_link: barbershop.appointment_link,
       status: barbershop.status,
       owner: barbershop.owner,
-      createdAt: barbershop.createdAt.toISOString(),
-      updatedAt: barbershop.updatedAt.toISOString(),
+      created_at: barbershop.created_at.toISOString(),
+      updated_at: barbershop.updated_at.toISOString(),
     };
 
     // Validate response using Zod

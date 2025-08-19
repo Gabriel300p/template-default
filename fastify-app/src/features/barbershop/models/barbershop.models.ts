@@ -7,10 +7,15 @@ export const ownerInputSchema = z.object({
 });
 
 export const barbershopInputSchema = z.object({
-  name: z.string().min(2),
+  first_name: z.string().min(2),
+  last_name: z.string().optional(),
+  display_name: z.string().optional(),
   description: z.string().optional(),
   phone: z.string().optional(),
   website: z.string().url().optional(),
+  logo_url: z.string().url().optional(),
+  cover_url: z.string().url().optional(),
+  appointment_link: z.string().url().optional(),
 });
 
 export const barbershopCreateSchema = z.object({
@@ -27,19 +32,22 @@ export const barbershopCreateResponseSchema = z.object({
 
 export const barbershopDetailsResponseSchema = z.object({
   id: z.string(),
-  name: z.string(),
+  first_name: z.string(),
+  last_name: z.string().optional(),
+  display_name: z.string().optional(),
   description: z.string().optional(),
   phone: z.string().optional(),
   website: z.string().optional(),
+  logo_url: z.string().optional(),
+  cover_url: z.string().optional(),
+  appointment_link: z.string().optional(),
   status: z.string(),
   owner: z.object({
     id: z.string(),
     email: z.string(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
   }),
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
 });
 
 // Types inferred from Zod schemas

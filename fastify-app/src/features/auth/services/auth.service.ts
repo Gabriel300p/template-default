@@ -40,8 +40,8 @@ export class AuthService {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
-        ownedBarbershops: {
-          select: { id: true, name: true, status: true },
+        owned_barbershops: {
+          select: { id: true, first_name: true, status: true },
         },
       },
     });
@@ -56,18 +56,22 @@ export class AuthService {
         email: user.email,
         role: user.role,
         status: user.status,
-        mustResetPassword: user.mustResetPassword,
-        firstName: user.firstName || undefined,
-        lastName: user.lastName || undefined,
-        displayName: user.displayName || undefined,
+        mustResetPassword: user.must_reset_password,
+        firstName: user.first_name || undefined,
+        lastName: user.last_name || undefined,
+        displayName: user.display_name || undefined,
         phone: user.phone || undefined,
-        avatarUrl: user.avatarUrl || undefined,
+        avatarUrl: user.avatar_url || undefined,
       },
     };
 
     // Add role-specific data
-    if (user.role === "BARBERSHOP_OWNER" && user.ownedBarbershops.length > 0) {
-      response.ownedBarbershops = user.ownedBarbershops;
+    if (user.role === "BARBERSHOP_OWNER" && user.owned_barbershops.length > 0) {
+      response.ownedBarbershops = user.owned_barbershops.map((shop: any) => ({
+        id: shop.id,
+        name: shop.first_name, // Using first_name as the display name
+        status: shop.status,
+      }));
     }
 
     return response;
@@ -93,16 +97,16 @@ export class AuthService {
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: {
-        firstName: validatedData.firstName,
-        lastName: validatedData.lastName,
-        displayName: validatedData.displayName,
+        first_name: validatedData.firstName,
+        last_name: validatedData.lastName,
+        display_name: validatedData.displayName,
         phone: validatedData.phone,
-        avatarUrl: validatedData.avatarUrl,
-        updatedAt: new Date(),
+        avatar_url: validatedData.avatarUrl,
+        updated_at: new Date(),
       },
       include: {
-        ownedBarbershops: {
-          select: { id: true, name: true, status: true },
+        owned_barbershops: {
+          select: { id: true, first_name: true, status: true },
         },
       },
     });
@@ -113,17 +117,21 @@ export class AuthService {
         email: updatedUser.email,
         role: updatedUser.role,
         status: updatedUser.status,
-        mustResetPassword: updatedUser.mustResetPassword,
-        firstName: updatedUser.firstName || undefined,
-        lastName: updatedUser.lastName || undefined,
-        displayName: updatedUser.displayName || undefined,
+        mustResetPassword: updatedUser.must_reset_password,
+        firstName: updatedUser.first_name || undefined,
+        lastName: updatedUser.last_name || undefined,
+        displayName: updatedUser.display_name || undefined,
         phone: updatedUser.phone || undefined,
-        avatarUrl: updatedUser.avatarUrl || undefined,
+        avatarUrl: updatedUser.avatar_url || undefined,
       },
       ownedBarbershops:
         updatedUser.role === "BARBERSHOP_OWNER" &&
-        updatedUser.ownedBarbershops.length > 0
-          ? updatedUser.ownedBarbershops
+        updatedUser.owned_barbershops.length > 0
+          ? updatedUser.owned_barbershops.map((shop: any) => ({
+              id: shop.id,
+              name: shop.first_name,
+              status: shop.status,
+            }))
           : undefined,
     };
 

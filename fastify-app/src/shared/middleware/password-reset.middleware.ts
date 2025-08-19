@@ -24,10 +24,10 @@ export default fp(async (app: FastifyInstance) => {
       const prisma = request.server.prisma as any;
       const user = await prisma.user.findUnique({
         where: { id: request.currentUser.id },
-        select: { mustResetPassword: true },
+        select: { must_reset_password: true },
       });
 
-      if (user?.mustResetPassword) {
+      if (user?.must_reset_password) {
         throw new PasswordResetRequiredError(
           "Password reset required before accessing this resource"
         );
