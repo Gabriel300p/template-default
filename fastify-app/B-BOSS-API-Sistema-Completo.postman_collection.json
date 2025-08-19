@@ -1,0 +1,613 @@
+{
+  "info": {
+    "name": "B-BOSS API - Sistema Completo",
+    "description": "API completa do sistema B-BOSS com autenticação, MFA, registro e gestão de barbearias",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3002",
+      "type": "string"
+    },
+    {
+      "key": "supabase_url",
+      "value": "https://seu-projeto.supabase.co",
+      "type": "string"
+    },
+    {
+      "key": "supabase_anon_key",
+      "value": "sua-anon-key-aqui",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "temp_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "test_email",
+      "value": "proprietario@teste.com",
+      "type": "string"
+    },
+    {
+      "key": "test_password",
+      "value": "MinhaSenh@123456",
+      "type": "string"
+    },
+    {
+      "key": "test_cpf",
+      "value": "123.456.789-10",
+      "type": "string"
+    },
+    {
+      "key": "barbershop_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "📋 0. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Health check status', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏪 1. Criar Barbearia + Proprietário",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"owner\": {\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\",\n    \"cpf\": \"{{test_cpf}}\",\n    \"phone\": \"+55 (11) 9 9999-9999\",\n    \"isforeigner\": false\n  },\n  \"barbershop\": {\n    \"name\": \"Barbearia Elite\",\n    \"description\": \"A melhor barbearia da região\",\n    \"phone\": \"+55 (11) 3333-4444\",\n    \"website\": \"https://barbearia-elite.com.br\",\n    \"appointmentLink\": \"https://agendamento.elite.com.br\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/barbershop",
+          "host": ["{{base_url}}"],
+          "path": ["barbershop"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('barbershop_id', response.barbershopId);",
+              "    pm.collectionVariables.set('user_id', response.ownerUserId);",
+              "    ",
+              "    // Se senha foi gerada, salvar",
+              "    if (response.generatedPassword) {",
+              "        pm.collectionVariables.set('test_password', response.generatedPassword);",
+              "    }",
+              "}",
+              "",
+              "pm.test('Barbearia criada com sucesso', function () {",
+              "    pm.response.to.have.status(201);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 2. Login Supabase (Manual)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "apikey",
+            "value": "{{supabase_anon_key}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{supabase_url}}/auth/v1/token?grant_type=password",
+          "host": ["{{supabase_url}}"],
+          "path": ["auth", "v1", "token"],
+          "query": [
+            {
+              "key": "grant_type",
+              "value": "password"
+            }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.collectionVariables.set('jwt_token', response.access_token);",
+              "}",
+              "",
+              "pm.test('Login realizado com sucesso', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 3. Ver Perfil do Usuário",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/auth/profile",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "profile"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Perfil obtido com sucesso', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Perfil contém dados esperados', function () {",
+              "    const response = pm.response.json();",
+              "    pm.expect(response.user).to.have.property('id');",
+              "    pm.expect(response.user).to.have.property('email');",
+              "    pm.expect(response.user).to.have.property('role');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏪 4. Ver Detalhes da Barbearia",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/barbershop/{{barbershop_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["barbershop", "{{barbershop_id}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Detalhes da barbearia obtidos', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 5. Registro de Usuário B-BOSS",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"cpf\": \"987.654.321-99\",\n  \"email\": \"usuario@teste.com\",\n  \"phone\": \"+55 (11) 9 8888-7777\",\n  \"password\": \"MinhaSenh@123456\",\n  \"confirmPassword\": \"MinhaSenh@123456\",\n  \"isforeigner\": false,\n  \"registrationContext\": \"user\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "register"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Registro realizado com sucesso', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "if (pm.response.code === 201) {",
+              "    const response = pm.response.json();",
+              "    pm.test('Resposta contém userId', function () {",
+              "        pm.expect(response).to.have.property('userId');",
+              "        pm.expect(response.success).to.be.true;",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔑 6. Login B-BOSS (Email)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"credential\": \"{{test_email}}\",\n  \"password\": \"{{test_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login processado', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    ",
+              "    if (response.mfaRequired) {",
+              "        pm.collectionVariables.set('temp_token', response.tempToken);",
+              "        pm.test('MFA requerido - token temporário salvo', function () {",
+              "            pm.expect(response.tempToken).to.not.be.empty;",
+              "        });",
+              "    } else {",
+              "        pm.collectionVariables.set('jwt_token', response.token);",
+              "        pm.test('Login direto - token JWT salvo', function () {",
+              "            pm.expect(response.token).to.not.be.empty;",
+              "        });",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔑 7. Login B-BOSS (CPF)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"credential\": \"{{test_cpf}}\",\n  \"password\": \"{{test_password}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "login"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login por CPF processado', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    ",
+              "    if (response.mfaRequired) {",
+              "        pm.collectionVariables.set('temp_token', response.tempToken);",
+              "        pm.test('MFA requerido - token temporário salvo', function () {",
+              "            pm.expect(response.tempToken).to.not.be.empty;",
+              "        });",
+              "    }",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 8. Verificar Código MFA",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tempToken\": \"{{temp_token}}\",\n  \"mfaCode\": \"CODIGO123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/verify-mfa",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "verify-mfa"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    if (response.success && response.token) {",
+              "        pm.collectionVariables.set('jwt_token', response.token);",
+              "        pm.test('MFA verificado - JWT token salvo', function () {",
+              "            pm.expect(response.token).to.not.be.empty;",
+              "        });",
+              "    }",
+              "}",
+              "",
+              "pm.test('Verificação MFA processada', function () {",
+              "    // Pode retornar 200 (sucesso) ou 401 (código inválido)",
+              "    pm.expect([200, 401]).to.include(pm.response.code);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔄 9. Solicitar Reset de Senha",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{test_email}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/reset-password",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "reset-password"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Reset de senha solicitado', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.test('Resposta de sucesso', function () {",
+              "        pm.expect(response.success).to.be.true;",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "✉️ 10. Confirmar Email",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"token\": \"confirmation-token-here\",\n  \"email\": \"{{test_email}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/confirm-email",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "confirm-email"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Confirmação de email processada', function () {",
+              "    // Pode retornar 200 (sucesso) ou 400 (token inválido)",
+              "    pm.expect([200, 400]).to.include(pm.response.code);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "✏️ 11. Atualizar Perfil",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwt_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"displayName\": \"Proprietário Elite\",\n  \"phone\": \"+55 (11) 9 7777-8888\",\n  \"avatarUrl\": \"https://example.com/avatar.jpg\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/profile",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "profile"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Perfil atualizado com sucesso', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "if (pm.response.code === 200) {",
+              "    const response = pm.response.json();",
+              "    pm.test('Dados atualizados refletidos', function () {",
+              "        pm.expect(response.user.displayName).to.equal('Proprietário Elite');",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 12. Registro Estrangeiro (Passaporte)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"passport\": \"AB 123 456\",\n  \"email\": \"estrangeiro@teste.com\",\n  \"phone\": \"+55 (11) 9 6666-5555\",\n  \"password\": \"MinhaSenh@123456\",\n  \"confirmPassword\": \"MinhaSenh@123456\",\n  \"isforeigner\": true,\n  \"registrationContext\": \"user\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": ["{{base_url}}"],
+          "path": ["auth", "register"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Registro de estrangeiro processado', function () {",
+              "    // Pode retornar 201 (sucesso) ou 400 (já existe)",
+              "    pm.expect([201, 400]).to.include(pm.response.code);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Script de pré-requisito global",
+          "console.log('🚀 Executando request para:', pm.request.url.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Script de teste global",
+          "console.log('✅ Response status:', pm.response.status, pm.response.code);",
+          "",
+          "// Log da resposta se houver erro",
+          "if (pm.response.code >= 400) {",
+          "    console.log('❌ Error response:', pm.response.text());",
+          "}"
+        ]
+      }
+    }
+  ]
+}

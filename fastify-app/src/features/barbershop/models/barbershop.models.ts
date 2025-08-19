@@ -7,9 +7,7 @@ export const ownerInputSchema = z.object({
 });
 
 export const barbershopInputSchema = z.object({
-  first_name: z.string().min(2),
-  last_name: z.string().optional(),
-  display_name: z.string().optional(),
+  name: z.string().min(2),
   description: z.string().optional(),
   phone: z.string().optional(),
   website: z.string().url().optional(),
@@ -32,9 +30,7 @@ export const barbershopCreateResponseSchema = z.object({
 
 export const barbershopDetailsResponseSchema = z.object({
   id: z.string(),
-  first_name: z.string(),
-  last_name: z.string().optional(),
-  display_name: z.string().optional(),
+  name: z.string(),
   description: z.string().optional(),
   phone: z.string().optional(),
   website: z.string().optional(),

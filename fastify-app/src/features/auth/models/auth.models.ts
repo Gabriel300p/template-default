@@ -1,15 +1,102 @@
 import { z } from "zod";
+import {
+  cpfSchema,
+  credentialSchema,
+  emailSchema,
+  fullNameSchema,
+  mfaCodeSchema,
+  passportSchema,
+  phoneSchema,
+  strongPasswordSchema,
+} from "../../../shared/schemas/validation.schemas.js";
 
-// Zod schemas for auth operations
+// B-BOSS Registration schema (basic auth data only)
+export const registerSchema = z
+  .object({
+    cpf: cpfSchema.optional(),
+    passport: passportSchema.optional(),
+    isforeigner: z.boolean().default(false),
+    email: emailSchema,
+    phone: phoneSchema,
+    password: strongPasswordSchema,
+    confirmPassword: z.string(),
+    // Context para definir role
+    registrationContext: z
+      .enum(["barbershop_owner", "staff", "user"])
+      .default("user"),
+  })
+  .strict()
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Senhas não coincidem",
+    path: ["confirmPassword"],
+  })
+  .refine(
+    (data) => {
+      if (data.isforeigner) {
+        return !!data.passport && !data.cpf;
+      } else {
+        return !!data.cpf && !data.passport;
+      }
+    },
+    {
+      message:
+        "Estrangeiros devem fornecer passaporte. Brasileiros devem fornecer CPF.",
+      path: ["cpf", "passport"],
+    }
+  );
+
+// B-BOSS Login schema
+export const loginSchema = z
+  .object({
+    credential: credentialSchema, // email or CPF
+    password: z.string().min(1),
+  })
+  .strict();
+
+// MFA verification schema
+export const verifyMfaSchema = z
+  .object({
+    tempToken: z.string().min(1),
+    mfaCode: mfaCodeSchema,
+  })
+  .strict();
+// Response schemas
+export const registerResponseSchema = z.object({
+  message: z.string(),
+  success: z.boolean(),
+  userId: z.string(),
+});
+
+export const loginResponseSchema = z.object({
+  mfaRequired: z.boolean(),
+  tempToken: z.string().optional(), // if MFA required
+  token: z.string().optional(), // if MFA not required
+  user: z
+    .object({
+      id: z.string(),
+      email: z.string(),
+      role: z.string(),
+      // Nome vem do barbershop/staff, não do user
+      displayName: z.string().optional(),
+    })
+    .optional(),
+});
+
+export const verifyMfaResponseSchema = z.object({
+  success: z.boolean(),
+  token: z.string(),
+  user: z.object({
+    id: z.string(),
+    email: z.string(),
+    role: z.string(),
+    displayName: z.string().optional(),
+  }),
+});
+
 export const profileUpdateSchema = z
   .object({
-    firstName: z.string().min(1).max(50).optional(),
-    lastName: z.string().min(1).max(50).optional(),
     displayName: z.string().min(1).max(100).optional(),
-    phone: z
-      .string()
-      .regex(/^\+?[1-9]\d{1,14}$/)
-      .optional(), // E.164 format
+    phone: phoneSchema.optional(),
     avatarUrl: z.string().url().optional(),
   })
   .strict(); // Prevent extra fields
@@ -34,11 +121,12 @@ export const profileUpdateResponseSchema = z.object({
     role: z.string(),
     status: z.string(),
     mustResetPassword: z.boolean(),
-    firstName: z.string().optional(),
-    lastName: z.string().optional(),
     displayName: z.string().optional(),
     phone: z.string().optional(),
     avatarUrl: z.string().optional(),
+    cpf: z.string().optional(),
+    passport: z.string().optional(),
+    isforeigner: z.boolean(),
   }),
   ownedBarbershops: z
     .array(
@@ -62,6 +150,12 @@ export const confirmEmailResponseSchema = z.object({
 });
 
 // Types inferred from Zod schemas
+export type RegisterRequest = z.infer<typeof registerSchema>;
+export type RegisterResponse = z.infer<typeof registerResponseSchema>;
+export type LoginRequest = z.infer<typeof loginSchema>;
+export type LoginResponse = z.infer<typeof loginResponseSchema>;
+export type VerifyMfaRequest = z.infer<typeof verifyMfaSchema>;
+export type VerifyMfaResponse = z.infer<typeof verifyMfaResponseSchema>;
 export type ProfileUpdateRequest = z.infer<typeof profileUpdateSchema>;
 export type ProfileUpdateResponse = z.infer<typeof profileUpdateResponseSchema>;
 export type ResetPasswordRequest = z.infer<typeof resetPasswordSchema>;
@@ -76,11 +170,12 @@ export interface UserProfile {
   role: string;
   status: string;
   mustResetPassword: boolean;
-  firstName?: string;
-  lastName?: string;
   displayName?: string;
   phone?: string;
   avatarUrl?: string;
+  cpf?: string;
+  passport?: string;
+  isforeigner: boolean;
 }
 
 export interface BarbershopSummary {

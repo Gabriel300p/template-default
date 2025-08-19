@@ -47,8 +47,18 @@ model User {
   status              UserStatus @default(ACTIVE)
   must_reset_password Boolean    @default(false)
 
-  cpf        String? @unique
-  avatar_url String?
+  // B-BOSS specific fields (authentication only)
+  cpf          String? @unique @db.VarChar(14) // 000.000.000-00
+  passport     String? @unique @db.VarChar(20) // AA 000 000
+  is_foreigner Boolean @default(false)
+  phone        String? @db.VarChar(20) // +55 (11) 9 9999-9999
+  avatar_url   String?
+  display_name String? // Custom display name override
+
+  // MFA fields
+  mfa_enabled Boolean   @default(true)
+  mfa_code    String?   @db.VarChar(8)
+  mfa_expires DateTime?
 
   email_verified DateTime?
   last_login     DateTime?
@@ -65,15 +75,14 @@ model User {
   @@index([role])
   @@index([status])
   @@index([cpf])
+  @@index([passport])
   @@index([created_at])
   @@map("users")
 }
 
 model Barbershop {
   id               String           @id @default(cuid())
-  first_name       String
-  last_name        String?
-  display_name     String? // Cached combined name
+  name             String
   description      String?
   phone            String?
   website          String?

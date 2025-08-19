@@ -75,9 +75,7 @@ export class BarbershopService {
 
         const shop = await tx.barbershop.create({
           data: {
-            first_name: validatedRequest.barbershop.first_name,
-            last_name: validatedRequest.barbershop.last_name,
-            display_name: validatedRequest.barbershop.display_name,
+            name: validatedRequest.barbershop.name,
             description: validatedRequest.barbershop.description,
             phone: validatedRequest.barbershop.phone,
             website: validatedRequest.barbershop.website,
@@ -150,9 +148,7 @@ export class BarbershopService {
 
     const response = {
       id: barbershop.id,
-      first_name: barbershop.first_name,
-      last_name: barbershop.last_name,
-      display_name: barbershop.display_name,
+      name: barbershop.name,
       description: barbershop.description,
       phone: barbershop.phone,
       website: barbershop.website,
