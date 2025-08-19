@@ -378,9 +378,7 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
-        "exec": [
-          "console.log('🚀 Executando:', pm.request.url.toString());"
-        ]
+        "exec": ["console.log('🚀 Executando:', pm.request.url.toString());"]
       }
     },
     {

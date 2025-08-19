@@ -13,20 +13,20 @@ model User {
   email               String            @unique
   role                UserRole          @default(PENDING)
   status              UserStatus        @default(ACTIVE)
-  must_reset_password Boolean           @default(false)
   cpf                 String?           @unique @db.VarChar(14)
-  passport            String?           @unique @db.VarChar(20)
-  is_foreigner        Boolean           @default(false)
-  phone               String?           @db.VarChar(20)
   avatar_url          String?
-  display_name        String?
-  mfa_enabled         Boolean           @default(true)
-  mfa_last_verified   DateTime?
-  email_verified      DateTime?
-  last_login          DateTime?
-  is_suspended        Boolean           @default(false)
   created_at          DateTime          @default(now())
+  email_verified      DateTime?
+  is_suspended        Boolean           @default(false)
+  last_login          DateTime?
+  must_reset_password Boolean           @default(false)
   updated_at          DateTime          @updatedAt
+  display_name        String?
+  is_foreigner        Boolean           @default(false)
+  mfa_enabled         Boolean           @default(true)
+  passport            String?           @unique @db.VarChar(20)
+  phone               String?           @db.VarChar(20)
+  mfa_last_verified   DateTime?
   staff_entries       BarbershopStaff[]
   owned_barbershops   Barbershop[]      @relation("BarbershopOwner")
   mfa_sessions        MfaSession[]
@@ -42,18 +42,18 @@ model User {
 
 model Barbershop {
   id               String            @id @default(cuid())
-  name             String
   description      String?
   phone            String?
   website          String?
-  logo_url         String?
-  cover_url        String?
   links            String[]
-  appointment_link String?
   status           BarbershopStatus  @default(ACTIVE)
-  owner_user_id    String
+  appointment_link String?
+  cover_url        String?
   created_at       DateTime          @default(now())
+  logo_url         String?
+  owner_user_id    String
   updated_at       DateTime          @updatedAt
+  name             String
   staff            BarbershopStaff[]
   owner            User              @relation("BarbershopOwner", fields: [owner_user_id], references: [id])
 
@@ -65,23 +65,23 @@ model Barbershop {
 
 model BarbershopStaff {
   id              String      @id @default(cuid())
-  barbershop_id   String
-  user_id         String
-  first_name      String
-  last_name       String?
-  display_name    String?
-  phone           String?
-  role_in_shop    UserRole
   status          StaffStatus @default(ACTIVE)
-  invited_at      DateTime?   @default(now())
-  hire_date       DateTime?
-  terminated_date DateTime?
-  is_available    Boolean     @default(true)
-  commission_rate Decimal?    @db.Decimal(5, 2)
   salary          Decimal?    @db.Decimal(10, 2)
-  internal_notes  String?
+  phone           String?
+  barbershop_id   String
+  commission_rate Decimal?    @db.Decimal(5, 2)
   created_at      DateTime    @default(now())
+  display_name    String?
+  first_name      String
+  hire_date       DateTime?
+  internal_notes  String?
+  invited_at      DateTime?   @default(now())
+  is_available    Boolean     @default(true)
+  last_name       String?
+  role_in_shop    UserRole
+  terminated_date DateTime?
   updated_at      DateTime    @updatedAt
+  user_id         String
   barbershop      Barbershop  @relation(fields: [barbershop_id], references: [id])
   user            User        @relation(fields: [user_id], references: [id])
 
@@ -90,6 +90,23 @@ model BarbershopStaff {
   @@index([status])
   @@index([created_at])
   @@map("barbershop_staff")
+}
+
+model MfaSession {
+  id                    String    @id @default(cuid())
+  user_id               String
+  code                  String    @db.VarChar(8)
+  expires_at            DateTime
+  used_at               DateTime?
+  created_at            DateTime  @default(now())
+  session_duration_days Int       @default(14)
+  code_expiry_minutes   Int       @default(10)
+  user                  User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@index([used_at])
+  @@map("mfa_sessions")
 }
 
 enum UserRole {
@@ -119,25 +136,4 @@ enum BarbershopStatus {
   INACTIVE
   BLOCKED
   PENDING_VERIFICATION
-}
-
-// MFA Sessions table for temporary codes
-model MfaSession {
-  id                    String    @id @default(cuid())
-  user_id               String
-  code                  String    @db.VarChar(8)
-  expires_at            DateTime
-  used_at               DateTime?
-  created_at            DateTime  @default(now())
-  
-  // Configurable settings (in minutes)
-  session_duration_days Int       @default(14) // How long MFA verification is valid
-  code_expiry_minutes   Int       @default(10) // How long each code is valid
-  
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  
-  @@index([user_id])
-  @@index([expires_at])
-  @@index([used_at])
-  @@map("mfa_sessions")
 }

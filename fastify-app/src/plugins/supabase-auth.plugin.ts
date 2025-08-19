@@ -14,12 +14,24 @@ export default fp(async (app) => {
 
   app.addHook("preHandler", async (req) => {
     const auth = req.headers.authorization;
-    if (!auth || !auth.startsWith("Bearer ")) return;
+    console.log("🔑 Supabase Plugin Debug:");
+    console.log("  - Auth header:", auth ? "Present" : "Missing");
+
+    if (!auth || !auth.startsWith("Bearer ")) {
+      console.log("  - No Bearer token found");
+      return;
+    }
+
     const token = auth.substring(7);
+    console.log("  - Token extracted:", token.substring(0, 50) + "...");
+
     let decoded: any;
     try {
       decoded = jwt.verify(token, env.SUPABASE_JWT_SECRET);
-    } catch {
+      console.log("  - Token verified successfully");
+      console.log("  - User ID from token:", decoded.sub);
+    } catch (error: any) {
+      console.log("  - Token verification failed:", error.message);
       return; // ignore invalid for public routes
     }
     const userId = decoded.sub as string;

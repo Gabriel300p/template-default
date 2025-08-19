@@ -61,11 +61,11 @@ export class AuthService {
 
     // Check if MFA is required (first login or 14+ days since last verification)
     const mfaRequired = await this.checkMfaRequired(user);
-    
+
     if (mfaRequired) {
       // Generate and send MFA code
       await this.generateMfaCode(user.id);
-      
+
       throw new UnauthorizedError("MFA verification required");
     }
 
@@ -179,15 +179,16 @@ export class AuthService {
   // Check if MFA is required (first login or 14+ days since last verification)
   private async checkMfaRequired(user: any): Promise<boolean> {
     if (!user.mfa_enabled) return false;
-    
+
     // First login case
     if (!user.mfa_last_verified) return true;
-    
+
     // Check if 14+ days have passed since last verification
     const daysSinceLastMfa = Math.floor(
-      (new Date().getTime() - user.mfa_last_verified.getTime()) / (1000 * 60 * 60 * 24)
+      (new Date().getTime() - user.mfa_last_verified.getTime()) /
+        (1000 * 60 * 60 * 24)
     );
-    
+
     return daysSinceLastMfa >= 14;
   }
 
@@ -196,7 +197,7 @@ export class AuthService {
     // Generate 8-digit alphanumeric code
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
     const expiryMinutes = 10;
-    
+
     // Clean up any existing unused MFA sessions for this user
     await this.prisma.mfaSession.deleteMany({
       where: {
@@ -204,7 +205,7 @@ export class AuthService {
         used_at: null,
       },
     });
-    
+
     // Create new MFA session
     await this.prisma.mfaSession.create({
       data: {

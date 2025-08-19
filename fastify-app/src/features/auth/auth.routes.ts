@@ -16,6 +16,14 @@ import { AuthService } from "./services/auth.service.js";
 
 // Auth middleware using currentUser from supabase plugin
 async function requireAuth(request: any, reply: any) {
+  // Debug logs para identificar problema
+  console.log("🔍 Auth Debug:");
+  console.log(
+    "  - Authorization header:",
+    request.headers.authorization ? "Present" : "Missing"
+  );
+  console.log("  - Current user:", request.currentUser);
+
   if (!request.currentUser) {
     throw new UnauthorizedError("Authentication required");
   }
