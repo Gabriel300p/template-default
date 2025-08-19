@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 import {
   ConflictError,
@@ -19,21 +20,8 @@ import {
   type BarbershopDetailsResponse,
 } from "../models/barbershop.models.js";
 
-// Interface for Prisma Client (avoiding direct import issues)
-interface PrismaClientLike {
-  user: {
-    findFirst: (args: any) => Promise<any>;
-    create: (args: any) => Promise<any>;
-  };
-  barbershop: {
-    create: (args: any) => Promise<any>;
-    findUnique: (args: any) => Promise<any>;
-  };
-  $transaction: <T>(fn: (tx: any) => Promise<T>) => Promise<T>;
-}
-
 export class BarbershopService {
-  constructor(private prisma: PrismaClientLike) {}
+  constructor(private prisma: PrismaClient) {}
 
   async createBarbershopWithOwner(
     request: BarbershopCreateRequest
@@ -41,11 +29,16 @@ export class BarbershopService {
     // Validate input using Zod
     const validatedRequest = barbershopCreateSchema.parse(request);
 
-    // Check existing email
-    const existing = await this.prisma.user.findFirst({
+    // Check if email is already registered
+    const existingUser = await this.prisma.user.findUnique({
       where: { email: validatedRequest.owner.email },
     });
-    if (existing) throw new ConflictError("Email already in use");
+
+    if (existingUser) {
+      throw new Error(
+        `Email ${validatedRequest.owner.email} is already registered`
+      );
+    }
 
     const password = validatedRequest.owner.password || generatePassword(12);
     let createdAuth: { id: string; email: string } | null = null;
@@ -70,6 +63,9 @@ export class BarbershopService {
             email: createdAuth!.email,
             role: "BARBERSHOP_OWNER",
             must_reset_password: !validatedRequest.owner.password,
+            cpf: validatedRequest.owner.cpf,
+            phone: validatedRequest.owner.phone,
+            is_foreigner: validatedRequest.owner.isforeigner || false,
           },
         });
 
@@ -106,7 +102,8 @@ export class BarbershopService {
         if (createdAuth) await deleteSupabaseUser(createdAuth.id);
       } catch {}
 
-      throw new InternalError("Barbershop creation failed");
+      console.error("Barbershop creation error details:", e);
+      throw new InternalError(`Barbershop creation failed: ${e.message}`);
     }
   }
 

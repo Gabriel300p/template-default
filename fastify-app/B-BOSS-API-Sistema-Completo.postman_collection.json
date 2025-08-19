@@ -95,7 +95,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"owner\": {\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\",\n    \"cpf\": \"{{test_cpf}}\",\n    \"phone\": \"+55 (11) 9 9999-9999\",\n    \"isforeigner\": false\n  },\n  \"barbershop\": {\n    \"name\": \"Barbearia Elite\",\n    \"description\": \"A melhor barbearia da região\",\n    \"phone\": \"+55 (11) 3333-4444\",\n    \"website\": \"https://barbearia-elite.com.br\",\n    \"appointmentLink\": \"https://agendamento.elite.com.br\"\n  }\n}"
+          "raw": "{\n  \"owner\": {\n    \"email\": \"{{test_email}}\",\n    \"password\": \"{{test_password}}\",\n    \"cpf\": \"{{test_cpf}}\",\n    \"phone\": \"+55 (11) 9 9999-9999\",\n    \"isforeigner\": false\n  },\n  \"barbershop\": {\n    \"name\": \"Barbearia Elite\",\n    \"description\": \"A melhor barbearia da região\",\n    \"phone\": \"+55 (11) 3333-4444\",\n    \"website\": \"https://barbearia-elite.com.br\",\n    \"appointment_link\": \"https://agendamento.elite.com.br\"\n  }\n}"
         },
         "url": {
           "raw": "{{base_url}}/barbershop",

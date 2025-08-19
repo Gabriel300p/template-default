@@ -4,6 +4,9 @@ import { z } from "zod";
 export const ownerInputSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).optional(),
+  cpf: z.string().optional(),
+  phone: z.string().optional(),
+  isforeigner: z.boolean().optional(),
 });
 
 export const barbershopInputSchema = z.object({

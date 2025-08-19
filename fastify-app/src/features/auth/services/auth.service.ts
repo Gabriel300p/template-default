@@ -1,3 +1,4 @@
+import { PrismaClient, UserRole } from "@prisma/client";
 import {
   ExternalServiceError,
   NotFoundError,
@@ -41,16 +42,8 @@ import {
 } from "../models/auth.models.js";
 import { mfaService } from "./mfa.service.js";
 
-// Interface for Prisma Client (avoiding direct import issues)
-interface PrismaClientLike {
-  user: {
-    findUnique: (args: any) => Promise<any>;
-    update: (args: any) => Promise<any>;
-  };
-}
-
 export class AuthService {
-  constructor(private prisma: PrismaClientLike) {}
+  constructor(private prisma: PrismaClient) {}
 
   async getProfile(userId: string): Promise<AuthProfileResponse> {
     const user = await this.prisma.user.findUnique({
@@ -234,16 +227,16 @@ export class AuthService {
       });
 
       // Determine role based on context
-      let role: string;
+      let role: UserRole;
       switch (validatedData.registrationContext) {
         case "barbershop_owner":
-          role = "BARBERSHOP_OWNER";
+          role = UserRole.BARBERSHOP_OWNER;
           break;
         case "staff":
-          role = "STAFF";
+          role = UserRole.BARBER; // Staff são barbeiros
           break;
         default:
-          role = "USER";
+          role = UserRole.CLIENT; // Usuários comuns são clientes
       }
 
       // Create user profile in our database

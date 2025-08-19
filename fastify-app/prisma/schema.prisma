@@ -1,6 +1,3 @@
-// MVT schema focused on barbershop owner + staff onboarding
-// Supabase auth.users supplies identity; this schema stores domain context
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,6 +6,90 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                  String            @id
+  email               String            @unique
+  role                UserRole          @default(PENDING)
+  status              UserStatus        @default(ACTIVE)
+  must_reset_password Boolean           @default(false)
+  cpf                 String?           @unique @db.VarChar(14)
+  passport            String?           @unique @db.VarChar(20)
+  is_foreigner        Boolean           @default(false)
+  phone               String?           @db.VarChar(20)
+  avatar_url          String?
+  display_name        String?
+  mfa_enabled         Boolean           @default(true)
+  mfa_code            String?           @db.VarChar(8)
+  mfa_expires         DateTime?
+  email_verified      DateTime?
+  last_login          DateTime?
+  is_suspended        Boolean           @default(false)
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
+  staff_entries       BarbershopStaff[]
+  owned_barbershops   Barbershop[]      @relation("BarbershopOwner")
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([cpf])
+  @@index([passport])
+  @@index([created_at])
+  @@map("users")
+}
+
+model Barbershop {
+  id               String            @id @default(cuid())
+  name             String
+  description      String?
+  phone            String?
+  website          String?
+  logo_url         String?
+  cover_url        String?
+  links            String[]
+  appointment_link String?
+  status           BarbershopStatus  @default(ACTIVE)
+  owner_user_id    String
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  staff            BarbershopStaff[]
+  owner            User              @relation("BarbershopOwner", fields: [owner_user_id], references: [id])
+
+  @@index([owner_user_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("barbershops")
+}
+
+model BarbershopStaff {
+  id              String      @id @default(cuid())
+  barbershop_id   String
+  user_id         String
+  first_name      String
+  last_name       String?
+  display_name    String?
+  phone           String?
+  role_in_shop    UserRole
+  status          StaffStatus @default(ACTIVE)
+  invited_at      DateTime?   @default(now())
+  hire_date       DateTime?
+  terminated_date DateTime?
+  is_available    Boolean     @default(true)
+  commission_rate Decimal?    @db.Decimal(5, 2)
+  salary          Decimal?    @db.Decimal(10, 2)
+  internal_notes  String?
+  created_at      DateTime    @default(now())
+  updated_at      DateTime    @updatedAt
+  barbershop      Barbershop  @relation(fields: [barbershop_id], references: [id])
+  user            User        @relation(fields: [user_id], references: [id])
+
+  @@unique([barbershop_id, user_id])
+  @@index([user_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("barbershop_staff")
 }
 
 enum UserRole {
@@ -38,100 +119,4 @@ enum BarbershopStatus {
   INACTIVE
   BLOCKED
   PENDING_VERIFICATION
-}
-
-model User {
-  id                  String     @id // equals auth.users.id (Supabase auth.users.id)
-  email               String     @unique
-  role                UserRole   @default(PENDING)
-  status              UserStatus @default(ACTIVE)
-  must_reset_password Boolean    @default(false)
-
-  // B-BOSS specific fields (authentication only)
-  cpf          String? @unique @db.VarChar(14) // 000.000.000-00
-  passport     String? @unique @db.VarChar(20) // AA 000 000
-  is_foreigner Boolean @default(false)
-  phone        String? @db.VarChar(20) // +55 (11) 9 9999-9999
-  avatar_url   String?
-  display_name String? // Custom display name override
-
-  // MFA fields
-  mfa_enabled Boolean   @default(true)
-  mfa_code    String?   @db.VarChar(8)
-  mfa_expires DateTime?
-
-  email_verified DateTime?
-  last_login     DateTime?
-  is_suspended   Boolean   @default(false)
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  owned_barbershops Barbershop[]      @relation("BarbershopOwner")
-  staff_entries     BarbershopStaff[]
-
-  @@index([email])
-  @@index([role])
-  @@index([status])
-  @@index([cpf])
-  @@index([passport])
-  @@index([created_at])
-  @@map("users")
-}
-
-model Barbershop {
-  id               String           @id @default(cuid())
-  name             String
-  description      String?
-  phone            String?
-  website          String?
-  logo_url         String?
-  cover_url        String?
-  links            String[]
-  appointment_link String?
-  status           BarbershopStatus @default(ACTIVE)
-  owner_user_id    String
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  owner User              @relation("BarbershopOwner", fields: [owner_user_id], references: [id])
-  staff BarbershopStaff[]
-
-  @@index([owner_user_id])
-  @@index([status])
-  @@index([created_at])
-  @@map("barbershops")
-}
-
-model BarbershopStaff {
-  id              String      @id @default(cuid())
-  barbershop_id   String
-  user_id         String
-  first_name      String // now optional per product decision
-  last_name       String?
-  display_name    String? // Cached combined name
-  phone           String?
-  role_in_shop    UserRole // Typically BARBER; could support MANAGER later
-  status          StaffStatus @default(ACTIVE)
-  invited_at      DateTime?   @default(now())
-  hire_date       DateTime?
-  terminated_date DateTime?
-  is_available    Boolean     @default(true)
-  commission_rate Decimal?    @db.Decimal(5, 2)
-  salary          Decimal?    @db.Decimal(10, 2)
-  internal_notes  String?
-
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  barbershop Barbershop @relation(fields: [barbershop_id], references: [id])
-  user       User       @relation(fields: [user_id], references: [id])
-
-  @@unique([barbershop_id, user_id])
-  @@index([user_id])
-  @@index([status])
-  @@index([created_at])
-  @@map("barbershop_staff")
 }

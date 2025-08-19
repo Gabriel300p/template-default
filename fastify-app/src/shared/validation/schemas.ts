@@ -17,6 +17,7 @@ export const barbershopSchema = z.object({
   description: z.string().optional(),
   phone: phoneSchema,
   website: urlSchema,
+  appointment_link: z.string().url().optional(),
 });
 
 export const onboardingBodySchema = z.object({
