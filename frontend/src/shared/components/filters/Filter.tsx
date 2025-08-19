@@ -6,6 +6,7 @@ import {
   CommandEmpty,
   CommandGroup,
   CommandInput,
+  CommandItem,
   CommandList,
   CommandSeparator,
 } from "@shared/components/ui/command";
@@ -78,7 +79,8 @@ export function Filter<TData, TValue>({
         >
           <Button
             variant="outline"
-            className="hover:bg-accent/50 gap-1.5 border border-slate-200 px-3 py-2 text-sm transition-colors"
+            size="sm"
+            className="hover:bg-accent/50 h-10 gap-1.5 border border-slate-200 text-sm transition-colors"
           >
             {icon}
             {title}
@@ -133,9 +135,7 @@ export function Filter<TData, TValue>({
                 }
               />
               <CommandList>
-                {options.length === 0 && (
-                  <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
-                )}
+                <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
                 <CommandGroup>
                   {options.map((option, index) => {
                     const isSelected = selectedValues.has(option.value);
@@ -149,12 +149,9 @@ export function Filter<TData, TValue>({
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05, duration: 0.2 }}
                       >
-                        <div
-                          className="hover:bg-accent/80 flex cursor-pointer items-center gap-2 rounded-sm p-1.5 transition-colors"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-
+                        <CommandItem
+                          className="hover:bg-accent/80 flex cursor-pointer items-center gap-2 transition-colors"
+                          onSelect={() => {
                             if (isBooleanFilter) {
                               if (externalOnChange) {
                                 externalOnChange([option.value]);
@@ -185,12 +182,16 @@ export function Filter<TData, TValue>({
                             }
                           }}
                         >
-                          <Checkbox checked={isSelected} />
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            transition={{ duration: 0.1 }}
+                          >
+                            <Checkbox checked={isSelected} />
+                          </motion.div>
                           <div className="flex items-center gap-1.5">
                             {option.icon}
-                            <span className="text-sm font-normal text-slate-600">
-                              {option.label}
-                            </span>
+                            <span>{option.label}</span>
                           </div>
                           {count > 0 && (
                             <motion.span
@@ -202,7 +203,7 @@ export function Filter<TData, TValue>({
                               {count}
                             </motion.span>
                           )}
-                        </div>
+                        </CommandItem>
                       </motion.div>
                     );
                   })}
@@ -216,18 +217,18 @@ export function Filter<TData, TValue>({
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 }}
                       >
-                        <div
-                          onClick={() => {
+                        <CommandItem
+                          onSelect={() => {
                             if (externalOnChange) {
                               externalOnChange([]);
                             } else {
                               column?.setFilterValue(undefined);
                             }
                           }}
-                          className="cursor-pointer justify-center rounded-sm p-2 text-center text-sm font-normal text-red-600 transition-colors hover:bg-red-50"
+                          className="justify-center text-center text-red-600 transition-colors hover:bg-red-50"
                         >
                           Limpar filtro
-                        </div>
+                        </CommandItem>
                       </motion.div>
                     </CommandGroup>
                   </>

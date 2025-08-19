@@ -1,0 +1,922 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ================================
+// AUTHENTICATION & AUTHORIZATION
+// ================================
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  username String? @unique
+
+  // B-Boss specific fields
+  name     String // Obrigatório para B-Boss
+  lastname String // Obrigatório para B-Boss
+  cpf      String? @unique
+
+  // Profile fields
+  avatar String?
+  bio    String?
+  phone  String?
+  status UserStatus @default(ACTIVE)
+
+  // Authentication
+  password      String?
+  emailVerified DateTime?
+  isActive      Boolean   @default(true)
+  isSuspended   Boolean   @default(false)
+
+  // OAuth providers
+  providers UserProvider[]
+
+  // Timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lastLogin DateTime?
+
+  // Relations
+  roles          UserRole[]
+  sessions       Session[]
+  refreshTokens  RefreshToken[]
+  communications Communication[]
+  notifications  Notification[]
+
+  // B-Boss Club specific relations
+  barbershop_owned Barbershop?      @relation("BarbershopOwner")
+  barbershop_staff BarbershopStaff?
+  client_profile   Client?
+
+  // Audit
+  createdBy String?
+  updatedBy String?
+
+  @@index([email])
+  @@index([cpf])
+  @@map("users")
+}
+
+model Role {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  description String?
+  isSystem    Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  description String?
+  resource    String
+  action      String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  roles RolePermission[]
+
+  @@unique([resource, action])
+  @@map("permissions")
+}
+
+model UserRole {
+  id     String @id @default(cuid())
+  userId String
+  roleId String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  createdBy String?
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String
+  permissionId String
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  createdBy String?
+
+  // Relations
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ================================
+// SESSION MANAGEMENT
+// ================================
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  isActive  Boolean  @default(true)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// ================================
+// OAUTH PROVIDERS
+// ================================
+
+model UserProvider {
+  id         String  @id @default(cuid())
+  userId     String
+  provider   String // google, github, microsoft, etc.
+  providerId String
+  email      String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@unique([userId, provider])
+  @@map("user_providers")
+}
+
+// ================================
+// COMMUNICATIONS
+// ================================
+
+enum CommunicationType {
+  EMAIL
+  SMS
+  PUSH_NOTIFICATION
+  IN_APP_NOTIFICATION
+  WEBHOOK
+}
+
+enum CommunicationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum CommunicationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Communication {
+  id       String @id @default(cuid())
+  type     String // EMAIL, SMS, PUSH_NOTIFICATION, IN_APP_NOTIFICATION, WEBHOOK
+  status   String @default("PENDING") // PENDING, SENT, DELIVERED, FAILED, CANCELLED
+  priority String @default("NORMAL") // LOW, NORMAL, HIGH, URGENT
+
+  // Recipients
+  userId String?
+  email  String?
+  phone  String?
+
+  // Content
+  subject  String?
+  content  String
+  metadata Json?
+
+  // Delivery
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  failedAt     DateTime?
+  errorMessage String?
+  retryCount   Int       @default(0)
+  maxRetries   Int       @default(3)
+
+  // Scheduling
+  scheduledAt DateTime?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Audit
+  createdBy String?
+
+  @@map("communications")
+}
+
+// ================================
+// AUDIT & LOGGING
+// ================================
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  PASSWORD_CHANGE
+  EMAIL_VERIFICATION
+  ROLE_ASSIGNMENT
+  PERMISSION_GRANT
+  ACCOUNT_SUSPENSION
+  ACCOUNT_ACTIVATION
+}
+
+model AuditLog {
+  id         String      @id @default(cuid())
+  action     AuditAction
+  resource   String
+  resourceId String?
+
+  // User context
+  userId    String?
+  userEmail String?
+  ipAddress String?
+  userAgent String?
+
+  // Changes
+  oldValues Json?
+  newValues Json?
+  metadata  Json?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+
+  @@map("audit_logs")
+}
+
+// ================================
+// SYSTEM CONFIGURATION
+// ================================
+
+model SystemConfig {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String @default("string") // string, number, boolean, json
+
+  // Metadata
+  description String?
+  category    String?
+  isPublic    Boolean @default(false)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Audit
+  createdBy String?
+  updatedBy String?
+
+  @@map("system_configs")
+}
+
+// ================================
+// FILE UPLOADS
+// ================================
+
+model FileUpload {
+  id           String  @id @default(cuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+  url          String?
+
+  // Metadata
+  metadata Json?
+
+  // Relations
+  userId String?
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("file_uploads")
+}
+
+// ================================
+// B-BOSS CLUB SPECIFIC ENTITIES
+// ================================
+
+enum BarbershopStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  PENDING_VERIFICATION
+}
+
+enum BarberStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  BLOCKED
+  TERMINATED
+}
+
+// ============================================================================
+// ENUMS - TIPOS DE DADOS ESPECÍFICOS B-BOSS
+// ============================================================================
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  PENDING_VERIFICATION
+}
+
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  PENDING_VERIFICATION
+}
+
+enum BarbershopStaffStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE // Para férias/folgas
+  VACATION // Diferenciação entre folga e férias
+  BLOCKED
+  TERMINATED // Para funcionários demitidos
+}
+
+enum ServiceStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum AttendanceStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  READ
+  FAILED
+}
+
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+/// Tabela de empresas/organizações
+model Company {
+  id         String        @id @default(cuid())
+  name       String
+  cnpj       String?       @unique
+  email      String?
+  phone      String?
+  address    String?
+  city       String?
+  state      String?
+  zip_code   String?
+  status     CompanyStatus @default(ACTIVE)
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+
+  // Relacionamentos
+  clients Client[]
+
+  @@index([cnpj])
+  @@index([status])
+  @@map("companies")
+}
+
+/// Tabela de clientes do sistema
+model Client {
+  id          String     @id @default(cuid())
+  user_id     String     @unique
+  company_id  String? // MELHORADO: Relacionamento via Client, não User
+  birth_date  DateTime?
+  status      UserStatus @default(ACTIVE)
+  gender      String?
+  preferences Json?
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+
+  // Relacionamentos
+  user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  company      Company?      @relation(fields: [company_id], references: [id])
+  attendances  Attendance[]
+  appointments Appointment[]
+  reviews      Review[]
+
+  @@index([user_id])
+  @@index([company_id])
+  @@map("clients")
+}
+
+// ============================================================================
+// ESTRUTURA DE BARBEARIAS
+// ============================================================================
+
+/// Tabela principal de barbearias
+model Barbershop {
+  id               String           @id @default(cuid())
+  name             String
+  description      String?
+  email            String?
+  logo_url         String?
+  cover_url        String?
+  website          String?
+  phone            String?
+  links            String[] // Array of links for PostgreSQL
+  appointment_link String?
+  status           BarbershopStatus @default(ACTIVE)
+  created_at       DateTime         @default(now())
+  updated_at       DateTime         @updatedAt
+
+  // Owner relationship (1:1)
+  owner_id String @unique
+  owner    User   @relation("BarbershopOwner", fields: [owner_id], references: [id], onDelete: Cascade)
+
+  // Relacionamentos
+  barbershop_units       BarbershopUnit[]
+  working_hour_templates WorkingHourTemplate[]
+  services               Service[]
+
+  @@index([status])
+  @@map("barbershops")
+}
+
+/// Tabela de unidades/filiais das barbearias
+model BarbershopUnit {
+  id           String           @id @default(cuid())
+  name         String
+  description  String?
+  logo_url     String?
+  cover_url    String?
+  phone        String?
+  email        String?
+  address      String
+  city         String
+  state        String
+  neighborhood String?
+  zip_code     String
+  latitude     Float?
+  longitude    Float?
+  is_open      Boolean          @default(true)
+  status       BarbershopStatus @default(ACTIVE)
+  created_at   DateTime         @default(now())
+  updated_at   DateTime         @updatedAt
+
+  // Relacionamentos
+  barbershop                    Barbershop                  @relation(fields: [barbershop_id], references: [id])
+  barbershop_id                 String
+  staff                         BarbershopStaff[]
+  services                      BarbershopUnitService[]
+  attendances                   Attendance[]
+  appointments                  Appointment[]
+  specific_working_hours        SpecificWorkingHour[]
+  reviews                       Review[]
+  barbershop_unit_working_hours BarbershopUnitWorkingHour[]
+
+  @@index([barbershop_id])
+  @@index([status])
+  @@index([city, state])
+  @@map("barbershop_units")
+}
+
+/// Tabela de funcionários das barbearias
+model BarbershopStaff {
+  id                 String                @id @default(cuid())
+  barbershop_unit_id String
+  user_id            String?               @unique
+  name               String
+  description        String?
+  phone              String?
+  email              String?               @unique
+  profile_image_url  String?
+  is_available       Boolean               @default(true)
+  commission_rate    Decimal?              @db.Decimal(5, 2)
+  salary             Decimal?              @db.Decimal(10, 2)
+  hire_date          DateTime?
+  terminated_date    DateTime?
+  status             BarbershopStaffStatus @default(ACTIVE)
+  created_at         DateTime              @default(now())
+  updated_at         DateTime              @updatedAt
+
+  // Relacionamentos
+  barbershop_unit                BarbershopUnit               @relation(fields: [barbershop_unit_id], references: [id])
+  user                           User?                        @relation(fields: [user_id], references: [id])
+  barbershop_staff_working_hours BarbershopStaffWorkingHour[]
+  appointments                   Appointment[]
+  attendances                    Attendance[]
+  reviews                        Review[] // NOVO: Relacionamento com reviews
+
+  @@index([barbershop_unit_id])
+  @@index([user_id])
+  @@index([status])
+  @@map("barbershop_staff")
+}
+
+// ============================================================================
+// SISTEMA DE SERVIÇOS
+// ============================================================================
+
+/// Tabela global de serviços por barbearia
+model Service {
+  id            String        @id @default(cuid())
+  barbershop_id String
+  name          String
+  description   String?
+  category      String?
+  base_price    Decimal?      @db.Decimal(10, 2)
+  duration      Int?
+  status        ServiceStatus @default(ACTIVE)
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+
+  // Relacionamentos
+  barbershop               Barbershop              @relation(fields: [barbershop_id], references: [id])
+  barbershop_unit_services BarbershopUnitService[]
+  appointment_services     AppointmentService[]
+
+  @@index([barbershop_id])
+  @@index([category])
+  @@index([status])
+  @@map("services")
+}
+
+/// Tabela de serviços específicos por unidade
+model BarbershopUnitService {
+  id                 String        @id @default(cuid())
+  barbershop_unit_id String
+  service_id         String
+  price              Decimal       @db.Decimal(10, 2)
+  duration_minutes   Int
+  is_available       Boolean       @default(true)
+  description        String?
+  status             ServiceStatus @default(ACTIVE)
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+
+  // Relacionamentos
+  barbershop_unit      BarbershopUnit       @relation(fields: [barbershop_unit_id], references: [id])
+  service              Service              @relation(fields: [service_id], references: [id])
+  appointment_services AppointmentService[]
+
+  @@unique([barbershop_unit_id, service_id])
+  @@index([barbershop_unit_id])
+  @@index([service_id])
+  @@index([status])
+  @@map("barbershop_unit_services")
+}
+
+// ============================================================================
+// SISTEMA DE HORÁRIOS DE FUNCIONAMENTO
+// ============================================================================
+
+/// Templates de horários para barbearias
+model WorkingHourTemplate {
+  id            String   @id @default(cuid())
+  barbershop_id String
+  name          String
+  description   String?
+  is_default    Boolean  @default(false)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  // Relacionamentos
+  barbershop                     Barbershop                   @relation(fields: [barbershop_id], references: [id])
+  working_hour_template_days     WorkingHourTemplateDay[]
+  barbershop_staff_working_hours BarbershopStaffWorkingHour[]
+  barbershop_unit_working_hours  BarbershopUnitWorkingHour[]
+
+  @@index([barbershop_id])
+  @@index([is_default])
+  @@map("working_hour_templates")
+}
+
+/// Dias da semana para templates de horários
+model WorkingHourTemplateDay {
+  id                       String   @id @default(cuid())
+  working_hour_template_id String
+  day_of_week              WeekDay
+  is_working_day           Boolean  @default(true)
+  start_time               String?
+  end_time                 String?
+  break_start_time         String?
+  break_end_time           String?
+  created_at               DateTime @default(now())
+  updated_at               DateTime @updatedAt
+
+  // Relacionamentos
+  working_hour_template WorkingHourTemplate @relation(fields: [working_hour_template_id], references: [id])
+
+  @@unique([working_hour_template_id, day_of_week])
+  @@index([working_hour_template_id])
+  @@map("working_hour_template_days")
+}
+
+/// Horários específicos por unidade (baseados em templates)
+model BarbershopUnitWorkingHour {
+  id                       String   @id @default(cuid())
+  barbershop_unit_id       String
+  working_hour_template_id String?
+  day_of_week              WeekDay
+  is_working_day           Boolean  @default(true)
+  start_time               String?
+  end_time                 String?
+  break_start_time         String?
+  break_end_time           String?
+  created_at               DateTime @default(now())
+  updated_at               DateTime @updatedAt
+
+  // Relacionamentos
+  barbershop_unit       BarbershopUnit       @relation(fields: [barbershop_unit_id], references: [id])
+  working_hour_template WorkingHourTemplate? @relation(fields: [working_hour_template_id], references: [id])
+
+  @@unique([barbershop_unit_id, day_of_week])
+  @@index([barbershop_unit_id])
+  @@index([working_hour_template_id])
+  @@map("barbershop_unit_working_hours")
+}
+
+/// Horários específicos para datas particulares
+model SpecificWorkingHour {
+  id                 String   @id @default(cuid())
+  barbershop_unit_id String
+  date               DateTime @db.Date
+  is_working_day     Boolean  @default(false)
+  start_time         String?
+  end_time           String?
+  break_start_time   String?
+  break_end_time     String?
+  notes              String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  // Relacionamentos
+  barbershop_unit BarbershopUnit @relation(fields: [barbershop_unit_id], references: [id])
+
+  @@unique([barbershop_unit_id, date])
+  @@index([barbershop_unit_id])
+  @@index([date])
+  @@map("specific_working_hours")
+}
+
+/// Horários de trabalho específicos por funcionário
+model BarbershopStaffWorkingHour {
+  id                       String   @id @default(cuid())
+  barbershop_staff_id      String
+  working_hour_template_id String?
+  day_of_week              WeekDay
+  start_time               String?
+  end_time                 String?
+  break_start_time         String?
+  break_end_time           String?
+  is_active                Boolean  @default(true)
+  created_at               DateTime @default(now())
+  updated_at               DateTime @updatedAt
+
+  // Relacionamentos
+  barbershop_staff      BarbershopStaff      @relation(fields: [barbershop_staff_id], references: [id])
+  working_hour_template WorkingHourTemplate? @relation(fields: [working_hour_template_id], references: [id])
+
+  @@unique([barbershop_staff_id, day_of_week])
+  @@index([barbershop_staff_id])
+  @@index([working_hour_template_id])
+  @@map("barbershop_staff_working_hours")
+}
+
+// ============================================================================
+// SISTEMA DE APPOINTMENTS (AGENDAMENTOS)
+// ============================================================================
+
+/// Tabela principal de agendamentos
+model Appointment {
+  id                  String            @id @default(cuid())
+  client_id           String
+  barbershop_unit_id  String
+  barbershop_staff_id String?
+  appointment_date    DateTime
+  estimated_duration  Int
+  total_price         Decimal           @db.Decimal(10, 2)
+  status              AppointmentStatus @default(SCHEDULED)
+  notes               String?
+  internal_notes      String?
+  cancellation_reason String?
+  cancelled_at        DateTime?
+  confirmed_at        DateTime?
+  started_at          DateTime?
+  completed_at        DateTime?
+  created_at          DateTime          @default(now())
+  updated_at          DateTime          @updatedAt
+
+  // Relacionamentos
+  client               Client               @relation(fields: [client_id], references: [id])
+  barbershop_unit      BarbershopUnit       @relation(fields: [barbershop_unit_id], references: [id])
+  barbershop_staff     BarbershopStaff?     @relation(fields: [barbershop_staff_id], references: [id])
+  appointment_services AppointmentService[]
+
+  @@index([client_id])
+  @@index([barbershop_unit_id])
+  @@index([barbershop_staff_id])
+  @@index([appointment_date])
+  @@index([status])
+  @@map("appointments")
+}
+
+/// Tabela de serviços incluídos em cada agendamento
+model AppointmentService {
+  id                         String   @id @default(cuid())
+  appointment_id             String
+  service_id                 String
+  barbershop_unit_service_id String
+  price                      Decimal  @db.Decimal(10, 2)
+  duration_minutes           Int
+  order                      Int      @default(1)
+  created_at                 DateTime @default(now())
+
+  // Relacionamentos
+  appointment             Appointment           @relation(fields: [appointment_id], references: [id], onDelete: Cascade)
+  service                 Service               @relation(fields: [service_id], references: [id])
+  barbershop_unit_service BarbershopUnitService @relation(fields: [barbershop_unit_service_id], references: [id])
+
+  @@index([appointment_id])
+  @@index([service_id])
+  @@index([barbershop_unit_service_id])
+  @@map("appointment_services")
+}
+
+// ============================================================================
+// SISTEMA DE ATENDIMENTO (VOUCHERS/QR CODES)
+// ============================================================================
+
+/// Sistema de vouchers/QR codes para atendimento
+model Attendance {
+  id                  String           @id @default(cuid())
+  client_id           String
+  barbershop_unit_id  String
+  barbershop_staff_id String?
+  voucher_code        String           @unique
+  qr_code_url         String?
+  service_details     Json? // IMPORTANTE: Dados dos serviços realizados
+  total_amount        Decimal?         @db.Decimal(10, 2)
+  status              AttendanceStatus @default(PENDING)
+  notes               String?
+  attended_at         DateTime?
+  expires_at          DateTime?
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
+
+  // Relacionamentos
+  client           Client           @relation(fields: [client_id], references: [id])
+  barbershop_unit  BarbershopUnit   @relation(fields: [barbershop_unit_id], references: [id])
+  barbershop_staff BarbershopStaff? @relation(fields: [barbershop_staff_id], references: [id])
+  reviews          Review[] // NOVO: Reviews podem vir de Attendance
+
+  @@index([client_id])
+  @@index([barbershop_unit_id])
+  @@index([barbershop_staff_id])
+  @@index([voucher_code])
+  @@index([status])
+  @@index([expires_at])
+  @@map("attendances")
+}
+
+// ============================================================================
+// SISTEMA DE AVALIAÇÕES - MELHORADO
+// ============================================================================
+
+/// Tabela de avaliações/reviews - SISTEMA MELHORADO
+model Review {
+  id                  String   @id @default(cuid())
+  client_id           String
+  barbershop_unit_id  String
+  barbershop_staff_id String?
+  attendance_id       String?
+  rating              Int
+  comment             String?
+  services_performed  Json? // NOVO: Serviços que foram realizados
+  is_public           Boolean  @default(true)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  // Relacionamentos - CORRIGIDOS E MELHORADOS
+  client           Client           @relation(fields: [client_id], references: [id])
+  barbershop_unit  BarbershopUnit   @relation(fields: [barbershop_unit_id], references: [id])
+  barbershop_staff BarbershopStaff? @relation(fields: [barbershop_staff_id], references: [id]) // CORRIGIDO
+  attendance       Attendance?      @relation(fields: [attendance_id], references: [id]) // NOVO
+
+  @@index([client_id])
+  @@index([barbershop_unit_id])
+  @@index([barbershop_staff_id]) // NOVO: Índice para performance
+  @@index([attendance_id]) // NOVO: Índice para performance
+  @@index([rating])
+  @@index([is_public])
+  @@map("reviews")
+}
+
+// ============================================================================
+// SISTEMA DE NOTIFICAÇÕES
+// ============================================================================
+
+/// Tabela de notificações
+model Notification {
+  id         String             @id @default(cuid())
+  user_id    String
+  title      String
+  message    String
+  type       String
+  data       Json?
+  status     NotificationStatus @default(PENDING)
+  sent_at    DateTime?
+  read_at    DateTime?
+  created_at DateTime           @default(now())
+  updated_at DateTime           @updatedAt
+
+  // Relacionamentos
+  user User @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([status])
+  @@index([created_at])
+  @@map("notifications")
+}

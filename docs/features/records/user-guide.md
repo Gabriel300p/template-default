@@ -1,79 +1,84 @@
 # records - Guia do Usuário
 
-> **Para Usuários Finais** | Última atualização: 12/08/2025
+> **Para Usuários Finais** | Última atualização: 15/08/2025
 
 ## 📢 O que é records?
 
-Records é uma funcionalidade que permite aos usuários gerenciar dados de forma eficiente através de uma interface que inclui tabelas, filtros e modais para edição e criação de registros.
+O sistema de records permite que os usuários visualizem, filtrem e gerenciem dados de forma eficiente através de uma interface que inclui tabelas de dados e modais para edição e criação de registros.
 
 ## 🚀 Como Acessar
 
-Para acessar a funcionalidade de records, navegue até o menu principal da aplicação e selecione a opção "Records". A tela de gerenciamento de registros será exibida.
+Para acessar a funcionalidade de records, navegue até a seção de gerenciamento de dados no menu principal da aplicação. Clique na opção "Records" para abrir a interface.
 
 ## 📋 Visão Geral da Tela
 
 ### **Elementos da Interface**
 
-| Elemento            | Descrição                                      |
-|---------------------|------------------------------------------------|
-| RecordsToolbar      | Barra de ferramentas com opções de filtro e ações |
-| RecordDataTable     | Tabela que exibe os registros com paginação    |
-| RecordModal         | Modal para edição ou criação de registros      |
-| RecordDeleteModal    | Modal de confirmação para exclusão de registros |
+| Elemento                | Descrição                                      |
+|-------------------------|------------------------------------------------|
+| RecordsToolbar          | Barra de ferramentas com opções de filtro e ações. |
+| RecordDataTable         | Tabela que exibe os registros com paginação.  |
+| RecordModal             | Modal para edição ou criação de registros.     |
+| RecordDeleteModal       | Modal de confirmação para exclusão de registros.|
 
 ## ➕ Como Criar ou Editar um Registro
 
 ### **Passo a Passo**
 
-1. Na **RecordsToolbar**, clique no botão "Adicionar" para criar um novo registro ou selecione um registro existente na **RecordDataTable** e clique no botão "Editar".
-2. O **RecordModal** será aberto.
-3. Preencha os campos obrigatórios no modal. As validações implementadas garantem que todos os campos obrigatórios sejam preenchidos antes de permitir a submissão.
-4. Clique no botão "Salvar" para confirmar as alterações ou "Cancelar" para fechar o modal sem salvar.
+1. Na **RecordDataTable**, localize o registro que deseja editar ou clique em um espaço vazio para criar um novo registro.
+2. Clique no botão correspondente à ação desejada (por exemplo, "Editar" ou "Adicionar").
+3. O **RecordModal** será exibido.
+4. Preencha os campos obrigatórios no modal.
+5. Clique no botão "Salvar" para confirmar as alterações.
 
 ### **✅ Exemplo Prático**
 
-Ao clicar em "Adicionar", um **RecordModal** é exibido com os campos "Nome" e "Descrição". Se você tentar salvar sem preencher o campo "Nome", uma mensagem de erro será exibida, indicando que este campo é obrigatório.
+Se você deseja editar um registro de cliente:
+- Clique no botão "Editar" ao lado do registro desejado.
+- No **RecordModal**, altere o nome do cliente e o e-mail.
+- Clique em "Salvar" para aplicar as mudanças.
 
-## 🗑️ Como Excluir um Registro
+## 🗑️ Como Deletar um Registro
 
-1. Na **RecordDataTable**, selecione o registro que deseja excluir.
-2. Clique no botão "Excluir".
-3. O **RecordDeleteModal** será exibido, solicitando confirmação da exclusão.
-4. Clique em "Confirmar" para excluir o registro ou "Cancelar" para retornar à tabela.
+1. Na **RecordDataTable**, localize o registro que deseja excluir.
+2. Clique no botão "Deletar" ao lado do registro.
+3. O **RecordDeleteModal** será exibido, pedindo confirmação.
+4. Clique em "Confirmar" para excluir o registro.
 
 ## 🔍 Como Buscar e Filtrar
 
-A funcionalidade de busca e filtro permite que os usuários encontrem registros específicos de forma rápida.
+A barra de ferramentas **RecordsToolbar** permite que você busque e filtre os registros exibidos na tabela.
 
 ### **Filtros Disponíveis**
 
-- **Nome**: Permite filtrar registros pelo nome.
-- **Data de Criação**: Permite filtrar registros com base na data em que foram criados.
+- **Nome**: Filtra registros pelo nome do cliente.
+- **Data de Criação**: Filtra registros pela data em que foram criados.
+- **Status**: Filtra registros com base no status (ativo/inativo).
 
 ## 📊 Entendendo a Tabela de Dados
 
 ### **Colunas Disponíveis**
 
-| Coluna           | Descrição                              |
-|------------------|----------------------------------------|
-| Nome             | Nome do registro                       |
-| Descrição        | Descrição do registro                  |
-| Data de Criação  | Data em que o registro foi criado     |
+| Coluna               | Descrição                                      |
+|----------------------|------------------------------------------------|
+| Nome                 | Nome do registro.                             |
+| Data de Criação      | Data em que o registro foi criado.           |
+| Status               | Status atual do registro (ativo/inativo).    |
 
 ## 💡 Dicas e Boas Práticas
 
-- Sempre preencha todos os campos obrigatórios ao criar ou editar um registro para evitar erros de validação.
-- Utilize os filtros disponíveis para facilitar a busca por registros específicos, especialmente em listas longas.
+- Sempre preencha todos os campos obrigatórios no **RecordModal** para evitar erros de validação.
+- Utilize os filtros disponíveis na **RecordsToolbar** para facilitar a busca de registros específicos.
 
 ## ❓ Perguntas Frequentes (FAQ)
 
-**P: O que acontece se eu tentar salvar um registro sem preencher os campos obrigatórios?**  
-R: Uma mensagem de erro será exibida, informando que os campos obrigatórios devem ser preenchidos.
+**1. O que acontece se eu tentar salvar um registro sem preencher todos os campos obrigatórios?**
+- O sistema exibirá uma mensagem de erro indicando quais campos precisam ser preenchidos.
 
-**P: Posso desfazer a exclusão de um registro?**  
-R: Não, uma vez que um registro é excluído, não há opção de desfazer essa ação.
+**2. Posso desfazer a exclusão de um registro?**
+- Não, uma vez que um registro é excluído, não pode ser recuperado.
 
 ## 🆘 Problemas e Soluções
 
-**Problema:** Não consigo encontrar um registro específico na tabela.  
-**Solução:** Utilize os filtros disponíveis na **RecordsToolbar** para restringir a busca e facilitar a localização do registro desejado.
+**Problema:** Não consigo ver todos os registros na tabela.
+- **Solução:** Verifique se há filtros aplicados na **RecordsToolbar** que possam estar limitando a visualização dos registros. Remova os filtros para ver todos os dados.

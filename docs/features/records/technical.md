@@ -1,14 +1,14 @@
 # records - Documentação Técnica
 
-> **Para Desenvolvedores** | Última atualização: 12/08/2025
+> **Para Desenvolvedores** | Última atualização: 15/08/2025
 
 ## 📋 Visão Geral Técnica
 
-A feature "records" implementa uma interface de gerenciamento de registros, permitindo a criação, edição e exclusão de registros através de uma série de componentes React/TypeScript. A arquitetura é baseada em hooks e componentes funcionais, proporcionando uma experiência de usuário responsiva e interativa.
+A feature "records" implementa uma série de componentes React/TypeScript que permitem a manipulação de registros, incluindo visualização, edição e exclusão. A arquitetura é baseada em hooks e componentes funcionais, proporcionando uma experiência de usuário fluida e responsiva.
 
 ### **Localização:**
 ```
-src/features/records/
+/src/features/records
 ```
 
 ## 🏗️ Arquitetura de Componentes
@@ -46,7 +46,7 @@ useMemo;
 useForm;
 ```
 
-### **RecordSkeletons** - Skeletons para carregamento de registros
+### **RecordSkeletons** - Esqueleto de carregamento para registros
 ```typescript
 // Dependências
 @shared/components/ui/skeleton;
@@ -66,11 +66,11 @@ interface RecordColumnsProps {
 @shared/components/ui/button;
 date-fns;
 date-fns/locale;
-@/i18n/init;
+@/app/i18n/init;
 @shared/components/ui/table-sort;
 ```
 
-### **RecordDataTable** - Tabela de dados dos registros
+### **RecordDataTable** - Tabela de dados de registros
 ```typescript
 // Hooks REALMENTE Utilizados
 useState;
@@ -78,7 +78,7 @@ useMemo;
 useReactTable;
 ```
 
-### **RecordsToolbar** - Barra de ferramentas para filtragem e contagem de registros
+### **RecordsToolbar** - Toolbar para filtragem e contagem de registros
 ```typescript
 // Props Interface REAL
 interface RecordsToolbarProps {
@@ -94,12 +94,11 @@ useMemo;
 
 ## 🔧 Schemas de Validação
 
-Não foram identificados schemas de validação Zod específicos no código analisado.
+Não foram identificados schemas de validação Zod no código fornecido.
 
 ## 🎯 Hooks Customizados
 
 ### **useRecordFilters** - Hook customizado para gerenciamento de filtros de registros.
-Este hook é utilizado no componente `RecordsToolbar` para gerenciar a lógica de filtragem dos registros.
 
 ## 📦 Dependências Principais
 
@@ -117,7 +116,7 @@ Este hook é utilizado no componente `RecordsToolbar` para gerenciar a lógica d
 - framer-motion
 - date-fns
 - date-fns/locale
-- @/i18n/init
+- @/app/i18n/init
 - @shared/components/ui/table-sort
 - @shared/components/ui/OptimizedTable
 - @shared/components/ui/pagination
@@ -127,25 +126,24 @@ Este hook é utilizado no componente `RecordsToolbar` para gerenciar a lógica d
 
 ## 🚀 Como Implementar
 
-Para implementar a feature "records", é necessário integrar os componentes documentados na interface desejada, garantindo que as props sejam passadas corretamente e que os hooks utilizados estejam devidamente configurados. A comunicação entre os componentes deve ser gerenciada através de callbacks e estados locais, conforme necessário.
+Para implementar a feature "records", importe os componentes necessários e utilize os hooks para gerenciar o estado e a lógica de negócios. Certifique-se de passar as props corretas para cada componente, conforme definido nas interfaces.
 
 ## ⚙️ Configurações
 
-Não foram identificadas configurações específicas no código analisado.
+Não foram identificadas configurações específicas no código fornecido.
 
 ## 🧪 Estratégias de Teste
 
 Os testes devem incluir:
-- Testes unitários para cada componente, garantindo que as props sejam recebidas e processadas corretamente.
-- Testes de integração para verificar a interação entre os componentes, especialmente entre `RecordModal`, `RecordDeleteModal` e `RecordDataTable`.
-- Testes de comportamento para validar a lógica de filtragem implementada no hook `useRecordFilters`.
+- Testes de unidade para cada componente, garantindo que as props sejam passadas corretamente e que os hooks funcionem como esperado.
+- Testes de integração para verificar a interação entre os componentes, especialmente nas funcionalidades de edição e exclusão de registros.
 
 ## 🔍 Performance & Otimizações
 
-A utilização de `useMemo` em componentes como `RecordModal` e `RecordsToolbar` ajuda a otimizar a performance, evitando cálculos desnecessários em renderizações.
+Não foram identificadas otimizações específicas implementadas no código fornecido.
 
 ## 📝 Notas para Desenvolvedores
 
-- Limitações: A validação de dados no `RecordModal` e no `RecordDeleteModal` deve ser revisada para garantir que todos os casos de uso sejam cobertos.
-- TODOs: Implementar testes unitários para todos os componentes e validar a integração com a API de backend.
-- Considerações: A estrutura atual permite fácil extensão para novas funcionalidades, como adição de novos filtros ou campos no formulário de registro.
+- As validações de formulários devem ser implementadas conforme as regras de negócio definidas.
+- Considere a adição de feedback visual para operações assíncronas, como salvamento e exclusão de registros.
+- Limitações e TODOs devem ser documentados conforme surgirem durante o desenvolvimento.

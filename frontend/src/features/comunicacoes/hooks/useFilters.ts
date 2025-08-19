@@ -1,4 +1,5 @@
 import type { Comunicacao } from "@features/comunicacoes/schemas/comunicacao.schemas";
+import type { DateRange } from "@shared/components/filters";
 import {
   parseAsArrayOf,
   parseAsIsoDate,
@@ -7,10 +8,17 @@ import {
 } from "nuqs";
 import { useMemo } from "react";
 
+export interface ComunicacaoFilters {
+  search: string;
+  tipo: string[];
+  autor: string;
+  dateRange: DateRange;
+}
+
 // 🎯 Query parsers for URL persistence
 const searchParser = parseAsString.withDefault("");
 const tipoParser = parseAsArrayOf(parseAsString).withDefault([]);
-const autorParser = parseAsArrayOf(parseAsString).withDefault([]);
+const autorParser = parseAsString.withDefault("");
 const startDateParser = parseAsIsoDate;
 const endDateParser = parseAsIsoDate;
 
@@ -23,12 +31,26 @@ export function useFilters() {
     endDate: endDateParser,
   });
 
+  // 🎯 Transform filters to more usable format
+  const activeFilters = useMemo<ComunicacaoFilters>(
+    () => ({
+      search: filters.search,
+      tipo: filters.tipo,
+      autor: filters.autor,
+      dateRange: {
+        startDate: filters.startDate || null,
+        endDate: filters.endDate || null,
+      },
+    }),
+    [filters],
+  );
+
   // 🎯 Check if any filters are active
   const hasActiveFilters = useMemo(
     () =>
       filters.search !== "" ||
       filters.tipo.length > 0 ||
-      filters.autor.length > 0 ||
+      filters.autor !== "" ||
       filters.startDate !== null ||
       filters.endDate !== null,
     [filters],
@@ -39,8 +61,8 @@ export function useFilters() {
     return (comunicacoes: Comunicacao[]): Comunicacao[] => {
       return comunicacoes.filter((comunicacao) => {
         // Search filter (título, autor, tipo, descrição)
-        if (filters.search) {
-          const searchTerm = filters.search.toLowerCase();
+        if (activeFilters.search) {
+          const searchTerm = activeFilters.search.toLowerCase();
           const searchableText = [
             comunicacao.titulo,
             comunicacao.autor,
@@ -56,39 +78,37 @@ export function useFilters() {
         }
 
         // Tipo filter
-        if (filters.tipo.length > 0) {
-          if (!filters.tipo.includes(comunicacao.tipo)) {
+        if (activeFilters.tipo.length > 0) {
+          if (!activeFilters.tipo.includes(comunicacao.tipo)) {
             return false;
           }
         }
 
         // Autor filter
-        if (filters.autor.length > 0) {
-          if (
-            !filters.autor.some((autorFiltro) =>
-              comunicacao.autor
-                .toLowerCase()
-                .includes(autorFiltro.toLowerCase()),
-            )
-          ) {
+        if (activeFilters.autor) {
+          const autorTerm = activeFilters.autor.toLowerCase();
+          if (!comunicacao.autor.toLowerCase().includes(autorTerm)) {
             return false;
           }
         }
 
         // Date range filter (dataCriacao)
-        if (filters.startDate || filters.endDate) {
+        if (
+          activeFilters.dateRange.startDate ||
+          activeFilters.dateRange.endDate
+        ) {
           const comunicacaoDate = new Date(comunicacao.dataCriacao);
 
-          if (filters.startDate) {
-            const startDate = new Date(filters.startDate);
+          if (activeFilters.dateRange.startDate) {
+            const startDate = new Date(activeFilters.dateRange.startDate);
             startDate.setHours(0, 0, 0, 0);
             if (comunicacaoDate < startDate) {
               return false;
             }
           }
 
-          if (filters.endDate) {
-            const endDate = new Date(filters.endDate);
+          if (activeFilters.dateRange.endDate) {
+            const endDate = new Date(activeFilters.dateRange.endDate);
             endDate.setHours(23, 59, 59, 999);
             if (comunicacaoDate > endDate) {
               return false;
@@ -99,29 +119,47 @@ export function useFilters() {
         return true;
       });
     };
-  }, [filters]);
+  }, [activeFilters]);
 
   // 🎯 Reset all filters
   const resetFilters = () => {
     setFilters({
       search: "",
       tipo: [],
-      autor: [],
+      autor: "",
       startDate: null,
       endDate: null,
     });
   };
 
-  // 🎯 Update filters (partial update)
-  const updateFilters = (newFilters: Partial<typeof filters>) => {
-    setFilters(newFilters);
+  // 🎯 Individual filter setters
+  const setSearch = (search: string) => {
+    setFilters({ search });
+  };
+
+  const setTipo = (tipo: string[]) => {
+    setFilters({ tipo });
+  };
+
+  const setAutor = (autor: string) => {
+    setFilters({ autor });
+  };
+
+  const setDateRange = (dateRange: DateRange) => {
+    setFilters({
+      startDate: dateRange.startDate,
+      endDate: dateRange.endDate,
+    });
   };
 
   return {
-    filters,
+    filters: activeFilters,
     hasActiveFilters,
     filterComunicacoes,
     resetFilters,
-    updateFilters,
+    setSearch,
+    setTipo,
+    setAutor,
+    setDateRange,
   };
 }

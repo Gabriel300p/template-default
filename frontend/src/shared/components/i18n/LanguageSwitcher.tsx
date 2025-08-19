@@ -1,7 +1,7 @@
 import { setLocale, SUPPORTED_LOCALES } from "@/app/i18n/init";
+import { Button } from "@shared/components/ui/button";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@shared/components/ui/button";
 
 interface LanguageOption {
   code: string;
@@ -48,7 +48,7 @@ export function LanguageSwitcher() {
                 role="option"
                 aria-selected={current === opt.code}
                 onClick={() => change(opt.code)}
-                className={`w-full px-3 py-1 text-left text-xs hover:bg-slate-100 ${current === opt.code ? "font-bold" : ""}`}
+                className={`w-full px-3 py-1 text-left text-xs text-gray-600 hover:bg-slate-100 ${current === opt.code ? "font-bold" : ""}`}
               >
                 {opt.label}
               </button>

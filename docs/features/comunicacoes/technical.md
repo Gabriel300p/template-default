@@ -1,10 +1,10 @@
 # comunicacoes - Documentação Técnica
 
-> **Para Desenvolvedores** | Última atualização: 12/08/2025
+> **Para Desenvolvedores** | Última atualização: 15/08/2025
 
 ## 📋 Visão Geral Técnica
 
-A feature "comunicacoes" implementa uma interface para gerenciar comunicações, incluindo a criação, edição e exclusão de registros. A arquitetura é baseada em componentes funcionais do React, utilizando hooks para gerenciar estado e efeitos colaterais. A implementação inclui modais para confirmação de ações e formulários para entrada de dados.
+A feature "comunicacoes" implementa uma interface de gerenciamento de comunicações, permitindo a criação, edição e exclusão de registros. A arquitetura é baseada em componentes funcionais do React e utiliza hooks para gerenciar estado e efeitos colaterais. A comunicação entre componentes é realizada através de props, e a internacionalização é gerenciada com o hook `useTranslation`.
 
 ### **Localização:**
 ```
@@ -31,7 +31,7 @@ useMemo;
 useForm;
 ```
 
-### **ModalDeleteConfirm** - Modal para confirmação de exclusão de comunicações
+### **ModalDeleteConfirm** - Modal de confirmação para exclusão de comunicações
 ```typescript
 // Props Interface REAL
 interface ModalDeleteConfirmProps {
@@ -46,48 +46,16 @@ useState;
 useTranslation;
 ```
 
-### **LanguageSwitchRecords.test** - Testes para troca de idioma
-```typescript
-// Dependências
-import { init } from '@/i18n/init';
-import { render } from '@/test/utils/test-utils';
-import { screen } from '@testing-library/react';
-import { describe, it } from 'vitest';
-```
-
-### **CommunicationSkeletons.test** - Testes para skeletons de comunicação
-```typescript
-// Dependências
-import { render } from '@testing-library/react';
-import CommunicationSkeletons from '@/features/comunicacoes/components/skeletons/CommunicationSkeletons';
-import { describe, it } from 'vitest';
-```
-
-### **CommunicationSkeletons** - Componente de skeleton para carregamento de comunicações
-```typescript
-// Dependências
-import { Skeleton } from '@shared/components/ui/skeleton';
-import { motion } from 'framer-motion';
-```
-
-### **columns** - Colunas da tabela de comunicações
+### **columns** - Definição de colunas para tabela de comunicações
 ```typescript
 // Props Interface REAL
 interface ColumnsProps {
   onEdit: (comunicacao: Comunicacao) => void;
   onDelete: (comunicacao: Comunicacao) => void;
 }
-
-// Dependências
-import { Icon } from '@shared/components/icons';
-import { Button } from '@shared/components/ui/button';
-import { format } from 'date-fns';
-import { locale } from 'date-fns/locale';
-import { init } from '@/i18n/init';
-import { TableSort } from '@shared/components/ui/table-sort';
 ```
 
-### **DataTable** - Tabela de comunicações
+### **DataTable** - Tabela para exibição de comunicações
 ```typescript
 // Hooks REALMENTE Utilizados
 useState;
@@ -95,13 +63,7 @@ useMemo;
 useReactTable;
 ```
 
-### **LazyDataTable** - Componente de tabela com carregamento preguiçoso
-```typescript
-// Dependências
-import React from 'react';
-```
-
-### **ComunicacoesToolbar** - Toolbar para filtros e contagem de comunicações
+### **ComunicacoesToolbar** - Barra de ferramentas para filtragem e contagem de comunicações
 ```typescript
 // Props Interface REAL
 interface ComunicacoesToolbarProps {
@@ -113,6 +75,18 @@ interface ComunicacoesToolbarProps {
 useFilters;
 useTranslation;
 useMemo;
+```
+
+### **CommunicationSkeletons** - Skeletons para carregamento de comunicações
+```typescript
+// Dependências
+// Não há props ou hooks específicos documentados.
+```
+
+### **LazyDataTable** - Componente para tabela de dados com carregamento sob demanda
+```typescript
+// Dependências
+// Não há props ou hooks específicos documentados.
 ```
 
 ## 🔧 Schemas de Validação
@@ -136,7 +110,7 @@ Não foram identificados hooks customizados no código analisado.
 - react-hook-form
 - react-i18next
 - @shared/components/ui/alert-dialog
-- @/i18n/init
+- @/app/i18n/init
 - @/test/utils/test-utils
 - @testing-library/react
 - vitest
@@ -155,7 +129,7 @@ Não foram identificados hooks customizados no código analisado.
 
 ## 🚀 Como Implementar
 
-Para implementar a feature "comunicacoes", importe os componentes necessários e utilize os hooks conforme a necessidade. Os componentes devem ser utilizados dentro de um contexto que forneça as funcionalidades de gerenciamento de estado e internacionalização.
+Para implementar a feature "comunicacoes", deve-se garantir que todos os componentes e suas dependências estejam corretamente importados e configurados. Utilize os hooks conforme necessário para gerenciar estado e efeitos colaterais. A internacionalização deve ser configurada através do `useTranslation`.
 
 ## ⚙️ Configurações
 
@@ -163,14 +137,14 @@ Não foram identificadas configurações específicas no código analisado.
 
 ## 🧪 Estratégias de Teste
 
-Os testes são realizados utilizando o `@testing-library/react` e `vitest`, focando na renderização dos componentes e na interação do usuário com a interface.
+Os testes são realizados utilizando `@testing-library/react` e `vitest`, focando na renderização dos componentes e na interação do usuário, como a confirmação de exclusão e a manipulação de formulários.
 
 ## 🔍 Performance & Otimizações
 
-Não foram identificadas otimizações específicas no código analisado.
+Não foram identificadas otimizações específicas implementadas no código analisado.
 
 ## 📝 Notas para Desenvolvedores
 
-- Limitações: A validação de formulários não foi detalhada no código analisado.
-- TODOs: Revisar a implementação de testes para garantir a cobertura adequada.
-- Considerações: A utilização de hooks como `useMemo` e `useEffect` deve ser feita com atenção para evitar re-renderizações desnecessárias.
+- **Limitações**: A validação de formulários não foi especificada, portanto, deve-se considerar a implementação de validações adicionais conforme necessário.
+- **TODOs**: Revisar a implementação de testes para garantir cobertura adequada dos componentes.
+- **Considerações**: A utilização de `useMemo` e `useEffect` deve ser revisada para garantir eficiência no desempenho dos componentes.
