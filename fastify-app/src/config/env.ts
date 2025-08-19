@@ -13,6 +13,8 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string(),
   SUPABASE_SERVICE_ROLE_KEY: z.string(),
   SUPABASE_JWT_SECRET: z.string(),
+  // Optional CORS configuration
+  FRONTEND_URLS: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);
