@@ -118,9 +118,9 @@ export class BarbershopService {
     currentUserId: string,
     currentUserRole: string
   ): Promise<BarbershopDetailsResponse> {
-    // Validate inputs
-    const idSchema = z.string().uuid();
-    const userIdSchema = z.string().uuid();
+    // Validate inputs - accept any string ID (CUID or UUID)
+    const idSchema = z.string().min(1);
+    const userIdSchema = z.string().min(1);
     const roleSchema = z.string();
 
     const validatedId = idSchema.parse(id);
@@ -154,12 +154,12 @@ export class BarbershopService {
     const response = {
       id: barbershop.id,
       name: barbershop.name,
-      description: barbershop.description,
-      phone: barbershop.phone,
-      website: barbershop.website,
-      logo_url: barbershop.logo_url,
-      cover_url: barbershop.cover_url,
-      appointment_link: barbershop.appointment_link,
+      description: barbershop.description || undefined,
+      phone: barbershop.phone || undefined,
+      website: barbershop.website || undefined,
+      logo_url: barbershop.logo_url || undefined,
+      cover_url: barbershop.cover_url || undefined,
+      appointment_link: barbershop.appointment_link || undefined,
       status: barbershop.status,
       owner: barbershop.owner,
       created_at: barbershop.created_at.toISOString(),

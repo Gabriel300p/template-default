@@ -7,6 +7,9 @@ const BYPASS_ROUTES = new Set([
   "/health",
   "/auth/reset-password", // Users need to reset password
   "/auth/logout", // Users should be able to logout
+  "/auth/profile", // Allow profile access for troubleshooting
+  "/auth/verify-mfa", // MFA verification should not require password reset
+  "/auth/login", // Users need to login to access MFA
 ]);
 
 export default fp(async (app: FastifyInstance) => {

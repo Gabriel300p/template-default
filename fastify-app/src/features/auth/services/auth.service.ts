@@ -325,17 +325,39 @@ export class AuthService {
       }
 
       // Create user profile in our database
-      await this.prismaSafe.update("user", {
+      // First, try to find if user already exists (might be created by trigger)
+      const existingUser = await this.prisma.user.findUnique({
         where: { id: supabaseUser.id },
-        data: {
-          cpf: validatedData.cpf || null,
-          passport: validatedData.passport || null,
-          is_foreigner: validatedData.isforeigner,
-          phone: validatedData.phone,
-          role,
-          must_reset_password: false,
-        },
       });
+
+      if (existingUser) {
+        // User already exists (created by trigger), just update
+        await this.prismaSafe.update("user", {
+          where: { id: supabaseUser.id },
+          data: {
+            cpf: validatedData.cpf || null,
+            passport: validatedData.passport || null,
+            is_foreigner: validatedData.isforeigner,
+            phone: validatedData.phone,
+            role,
+            must_reset_password: false,
+          },
+        });
+      } else {
+        // User doesn't exist, create new one
+        await this.prismaSafe.create("user", {
+          data: {
+            id: supabaseUser.id,
+            email: supabaseUser.email,
+            cpf: validatedData.cpf || null,
+            passport: validatedData.passport || null,
+            is_foreigner: validatedData.isforeigner,
+            phone: validatedData.phone,
+            role,
+            must_reset_password: false,
+          },
+        });
+      }
 
       const response = {
         message: "Cadastro realizado com sucesso.",
@@ -482,6 +504,7 @@ export class AuthService {
           data: {
             mfa_last_verified: new Date(),
             last_login: new Date(),
+            must_reset_password: false, // ✅ Clear password reset requirement after MFA
           },
         });
 
