@@ -30,7 +30,11 @@ async function requireAuth(request: any, reply: any) {
 }
 
 export async function authFeature(app: FastifyInstance) {
-  const authService = new AuthService(app.prisma);
+  const authService = new AuthService(
+    app.prisma,
+    app.prismaSafe,
+    app.uniqueValidator
+  );
   const authController = new AuthController(authService);
 
   // GET /auth/profile - Get user profile (requires auth)

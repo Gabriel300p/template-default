@@ -11,6 +11,8 @@ import {
   deleteSupabaseUser,
 } from "../../../shared/services/supabase-admin.service.js";
 import { generatePassword } from "../../../shared/utils/password.util.js";
+import { PrismaSafeOperations } from "../../../shared/utils/prisma-safe.utils.js";
+import { UniqueDataValidator } from "../../../shared/utils/unique-data-validator.utils.js";
 import {
   barbershopCreateResponseSchema,
   barbershopCreateSchema,
@@ -21,7 +23,11 @@ import {
 } from "../models/barbershop.models.js";
 
 export class BarbershopService {
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private prisma: PrismaClient,
+    private prismaSafe: PrismaSafeOperations,
+    private uniqueValidator: UniqueDataValidator
+  ) {}
 
   async createBarbershopWithOwner(
     request: BarbershopCreateRequest
@@ -29,16 +35,16 @@ export class BarbershopService {
     // Validate input using Zod
     const validatedRequest = barbershopCreateSchema.parse(request);
 
-    // Check if email is already registered
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email: validatedRequest.owner.email },
+    // Validate unique constraints for owner data
+    await this.uniqueValidator.validateUserUniqueFields({
+      email: validatedRequest.owner.email,
+      cpf: validatedRequest.owner.cpf,
+      phone: validatedRequest.owner.phone,
     });
 
-    if (existingUser) {
-      throw new Error(
-        `Email ${validatedRequest.owner.email} is already registered`
-      );
-    }
+    // Validate unique barbershop name (will be owned by new user)
+    // Note: We can't validate against owner ID yet since user doesn't exist
+    // This will be handled by the database unique constraint if needed
 
     const password = validatedRequest.owner.password || generatePassword(12);
     let createdAuth: { id: string; email: string } | null = null;
@@ -56,7 +62,7 @@ export class BarbershopService {
     }
 
     try {
-      const result = await this.prisma.$transaction(async (tx: any) => {
+      const result = await this.prismaSafe.transaction(async (tx: any) => {
         const user = await tx.user.create({
           data: {
             id: createdAuth!.id,
@@ -121,16 +127,18 @@ export class BarbershopService {
     const validatedUserId = userIdSchema.parse(currentUserId);
     const validatedRole = roleSchema.parse(currentUserRole);
 
-    const barbershop = await this.prisma.barbershop.findUnique({
-      where: { id: validatedId },
-      include: {
-        owner: {
-          select: {
-            id: true,
-            email: true,
+    const barbershop = await this.prismaSafe.safeExecute(async (prisma) => {
+      return await prisma.barbershop.findUnique({
+        where: { id: validatedId },
+        include: {
+          owner: {
+            select: {
+              id: true,
+              email: true,
+            },
           },
         },
-      },
+      });
     });
 
     if (!barbershop) throw new NotFoundError("Barbershop not found");

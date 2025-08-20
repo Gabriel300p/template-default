@@ -11,6 +11,8 @@ import {
   createSupabaseUser,
   resetPasswordSupabase,
 } from "../../../shared/services/supabase-admin.service.js";
+import { PrismaSafeOperations } from "../../../shared/utils/prisma-safe.utils.js";
+import { UniqueDataValidator } from "../../../shared/utils/unique-data-validator.utils.js";
 import type {
   AuthProfileResponse,
   ConfirmEmailRequest,
@@ -43,7 +45,11 @@ import {
 import { mfaService } from "./mfa.service.js";
 
 export class AuthService {
-  constructor(private prisma: PrismaClient) {}
+  constructor(
+    private prisma: PrismaClient,
+    private prismaSafe: PrismaSafeOperations,
+    private uniqueValidator: UniqueDataValidator
+  ) {}
 
   async getProfile(userId: string): Promise<AuthProfileResponse> {
     const user = await this.prisma.user.findUnique({
@@ -63,7 +69,7 @@ export class AuthService {
     const mfaRequired = await this.checkMfaRequired(user);
 
     if (mfaRequired) {
-      // Generate and send MFA code
+      // Generate and send MFA code for first access
       await this.generateMfaCode(user.id);
 
       throw new UnauthorizedError("MFA verification required");
@@ -119,6 +125,14 @@ export class AuthService {
 
     if (!existingUser) {
       throw new NotFoundError("User not found");
+    }
+
+    // Validate unique data constraints only if values are being changed
+    if (validatedData.phone && validatedData.phone !== existingUser.phone) {
+      await this.uniqueValidator.validateUniquePhone(
+        validatedData.phone,
+        userId
+      );
     }
 
     // Update user profile
@@ -282,6 +296,14 @@ export class AuthService {
     // Validate input using Zod
     const validatedData = registerSchema.parse(registerData);
 
+    // Validate unique data constraints
+    await this.uniqueValidator.validateUserUniqueFields({
+      email: validatedData.email,
+      cpf: validatedData.cpf,
+      phone: validatedData.phone,
+      passport: validatedData.passport,
+    });
+
     try {
       // Create user in Supabase Auth
       const supabaseUser = await createSupabaseUser({
@@ -299,11 +321,11 @@ export class AuthService {
           role = UserRole.BARBER; // Staff são barbeiros
           break;
         default:
-          role = UserRole.CLIENT; // Usuários comuns são clientes
+          role = UserRole.PENDING; // Usuários comuns são clientes
       }
 
       // Create user profile in our database
-      await this.prisma.user.update({
+      await this.prismaSafe.update("user", {
         where: { id: supabaseUser.id },
         data: {
           cpf: validatedData.cpf || null,

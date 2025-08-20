@@ -17,7 +17,11 @@ async function requireAuth(request: any, reply: any) {
 }
 
 export async function barbershopFeature(app: FastifyInstance) {
-  const barbershopService = new BarbershopService(app.prisma);
+  const barbershopService = new BarbershopService(
+    app.prisma,
+    app.prismaSafe,
+    app.uniqueValidator
+  );
   const barbershopController = new BarbershopController(barbershopService);
 
   // POST /barbershop - Create barbershop with owner

@@ -5,9 +5,8 @@ import { PasswordResetRequiredError } from "../errors/app-errors.js";
 // Routes that should bypass password reset check
 const BYPASS_ROUTES = new Set([
   "/health",
-  "/me",
-  "/onboarding/barbershop",
-  // Add password reset route when implemented: '/auth/reset-password'
+  "/auth/reset-password", // Users need to reset password
+  "/auth/logout", // Users should be able to logout
 ]);
 
 export default fp(async (app: FastifyInstance) => {

@@ -3,12 +3,12 @@ import { isDev } from "./config/env.js";
 import { registerFeatures } from "./features/index.js";
 import corsPlugin from "./plugins/cors.plugin.js";
 import loggerPlugin from "./plugins/logger.plugin.js";
-import prismaPlugin from "./plugins/prisma.plugin.js";
 import securityPlugin from "./plugins/security.plugin.js";
 import supabaseAuth from "./plugins/supabase-auth.plugin.js";
 import swaggerPlugin from "./plugins/swagger.plugin.js";
-import errorHandler from "./shared/errors/error.handler.js";
+import { createErrorHandler } from "./shared/handlers/error.handler.js";
 import passwordResetMiddleware from "./shared/middleware/password-reset.middleware.js";
+import prismaPlugin from "./shared/plugins/prisma.plugin.js";
 
 export async function buildApp() {
   const app = Fastify({
@@ -30,7 +30,10 @@ export async function buildApp() {
 
   await app.register(prismaPlugin);
   await app.register(supabaseAuth);
-  await app.register(errorHandler);
+
+  // 🛡️ Register global error handler
+  app.setErrorHandler(createErrorHandler(app));
+
   await app.register(passwordResetMiddleware);
 
   app.get(
